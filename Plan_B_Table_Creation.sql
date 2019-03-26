@@ -51,10 +51,10 @@ CREATE TABLE IF NOT EXISTS Employee (
 	UserName varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
 	--
 
-	EmployeeID int(9) NOT NULL UNIQUE,
+	EmployeeID char(9) NOT NULL UNIQUE,
 	--
 
-	Phone int(9) NOT NULL UNIQUE,
+	Phone char(9) NOT NULL UNIQUE,
 	--
 
 	Address varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
@@ -71,7 +71,7 @@ CREATE TABLE IF NOT EXISTS Employee (
 		'Other') DEFAULT 'GA' NOT NULL,
 	--
 
-	Zipcode int(5) NOT NULL,
+	Zipcode char(5) NOT NULL,
 	--
 
 	Title ENUM('Administrator', 'Manager', 'Staff') DEFAULT 'Staff' NOT NULL,
@@ -95,7 +95,7 @@ CREATE TABLE IF NOT EXISTS Transit (
 	TransportType ENUM('MARTA', 'Bus', 'Bike') NOT NULL,
 	--
 
-	Price float(3,2) NOT NULL,
+	Price float(5,2) NOT NULL,
 	--
 
 	CONSTRAINT PK_Transit PRIMARY KEY (Route, TransportType)
@@ -109,7 +109,7 @@ CREATE TABLE IF NOT EXISTS Site (
 	SiteName varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
 	--
 
-	Zipcode int(5) NOT NULL,
+	Zipcode char(5) NOT NULL,
 	--
 
 	Address varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
@@ -148,7 +148,7 @@ CREATE TABLE IF NOT EXISTS Events (
 	MinStaffReq int NOT NULL DEFAULT 1,
 	--
 
-	Price float(3,2) NOT NULL DEFAULT 000.00,
+	Price float(5,2) NOT NULL DEFAULT 000.00,
 	--
 
 	Capacity int NOT NULL DEFAULT 10,
