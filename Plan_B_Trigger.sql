@@ -75,25 +75,25 @@ BEGIN
     DECLARE rout varchar(20);
     DECLARE tt varchar(20);
 
-    SET @@byDeletingSite := "yes";
+    -- SET @@byDeletingSite := "yes";
 
-    WHILE (SELECT Num FROM
-        (SELECT count(*) AS Num FROM Connects WHERE SiteName LIKE OLD.SiteName) AS x
-        LIMIT 1 > 0) DO
-        SELECT Route, TransportType FROM Connects WHERE SiteName LIKE OLD.SiteName LIMIT 1 INTO rout, tt;
-        DELETE FROM Transit WHERE Route LIKE rout AND TransportType LIKE tt;
-    END WHILE;
+    -- WHILE (SELECT Num FROM
+    --     (SELECT count(*) AS Num FROM Connects WHERE SiteName LIKE OLD.SiteName) AS x
+    --     LIMIT 1 > 0) DO
+    --     SELECT Route, TransportType FROM Connects WHERE SiteName LIKE OLD.SiteName LIMIT 1 INTO rout, tt;
+    --     DELETE FROM Transit WHERE Route LIKE rout AND TransportType LIKE tt;
+    -- END WHILE;
 
-    SET @@byDeletingSite := "no";
+    -- SET @@byDeletingSite := "no";
 
-	-- IF (SELECT count(*) FROM
-    --         (SELECT Num, SiteName FROM
-    --             (SELECT count(*) AS Num, SiteName FROM Connects JOIN Transit USING (TransportType, Route) GROUP BY (TransportType, Route)) AS x
-    --          WHERE Num = 1 AND SiteName LIKE OLD.SiteName) AS y
-    --     LIMIT 1 ) > 0 THEN
-	-- 	SET ermsg = 'The Only Site Of Some Transit, Connot Delete!!';
-	-- 	SIGNAL SQLSTATE '45000' SET message_text = ermsg;
-	-- END IF;
+	IF (SELECT count(*) FROM
+             (SELECT Num, SiteName FROM
+                 (SELECT count(*) AS Num, SiteName FROM Connects JOIN Transit USING (TransportType, Route) GROUP BY (TransportType, Route)) AS x
+              WHERE Num = 1 AND SiteName LIKE OLD.SiteName) AS y
+         LIMIT 1 ) > 0 THEN
+	 	SET ermsg = 'The Only Site Of Some Transit, Connot Delete!!';
+	 	SIGNAL SQLSTATE '45000' SET message_text = ermsg;
+	 END IF;
 
 END $$
 
@@ -314,10 +314,10 @@ BEGIN
 
 	IF (SELECT count(*) FROM Connects WHERE Route = OLD.Route
 					AND TransportType = OLD.TransportType) = 1 THEN
-        IF @@byDeletingSite LIKE 'no' THEN
+        -- IF @@byDeletingSite LIKE 'no' THEN
 		    SET ermsg = 'The Only Site Of This Transit, Connot Delete!!';
 		    SIGNAL SQLSTATE '45000' SET message_text = ermsg;
-        END ID;
+        -- END IF;
 	END IF;
 END $$
 
