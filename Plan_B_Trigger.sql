@@ -1,5 +1,5 @@
 USE cs4400;
-SET @@byDeletingSite := "no";
+-- SET @@byDeletingSite := "no";
 DELIMITER $$
 
 CREATE TRIGGER tgr1_email1 BEFORE INSERT ON Email FOR EACH ROW
