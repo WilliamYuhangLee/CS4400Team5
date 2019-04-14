@@ -71,7 +71,7 @@ END $$
 
 CREATE TRIGGER tgr6_site3 BEFORE DELETE ON Site FOR EACH ROW
 BEGIN
-	-- DECLARE ermsg varchar(100);
+	DECLARE ermsg varchar(100);
     DECLARE rout varchar(20);
     DECLARE tt varchar(20);
 
@@ -201,9 +201,7 @@ BEGIN
 		SIGNAL SQLSTATE '45000' SET message_text = "Visiting After End Date!!!";
 	END IF;
 
-    IF SELECT Num FROM
-    (SELECT count(*) FROM VisitSite WHERE UserName LIKE NEW.UserName AND SiteName LIKE NEW.SiteName AND 'Date' = NEW.Date)
-    AS x LIMIT 1 > 0 THEN
+    IF EXISTS (SELECT * FROM VisitSite WHERE UserName LIKE NEW.UserName AND SiteName LIKE NEW.SiteName AND 'Date' = NEW.Date)  THEN
 	   INSERT INTO VisitSite VALUES (NEW.UserName, NEW.SiteName, NEW.Date);
     END IF;
 END $$
