@@ -222,9 +222,7 @@ BEGIN
 
 	DELETE FROM VisitSite WHERE UserName LIKE OLD.UserName AND SiteName LIKE OLD.SiteName AND Date = OLD.Date;
 
-    IF SELECT Num FROM
-    (SELECT count(*) FROM VisitSite WHERE UserName LIKE NEW.UserName AND SiteName LIKE NEW.SiteName AND 'Date' = NEW.Date)
-    AS x LIMIT 1 > 0 THEN
+    IF EXISTS (SELECT * FROM VisitSite WHERE UserName LIKE NEW.UserName AND SiteName LIKE NEW.SiteName AND 'Date' = NEW.Date) THEN
 	   INSERT INTO VisitSite VALUES (NEW.UserName, NEW.SiteName, NEW.Date);
     END IF;
 END $$

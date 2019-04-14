@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS Employee (
 	UserName varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
 	--
 
-	EmployeeID char(9) NOT NULL UNIQUE,
+	EmployeeID char(9) UNIQUE,
 	--
 
 	Phone char(10) NOT NULL UNIQUE,

@@ -23,4 +23,3 @@ END $$
 -- CALL screen_one_login(@a, @b);
 
 -- Then it will return the information about login
-		
