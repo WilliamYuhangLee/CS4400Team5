@@ -3,23 +3,24 @@ USE cs4400;
 DELIMITER $$
 CREATE FUNCTION get_type(em_title int, is_visitor int) RETURNS varchar(20)
 BEGIN
-    IF em_title = null THEN 
-        IF is_visitor = 1 THEN
-            RETURN "Visitor";
-        ELSE 
-            RETURN "User";
-        END IF;
-    ELSE
-        IF em_title = 1 THEN
+    IF em_title = 1 THEN
             RETURN "Administrator";
-        ELSE 
-            IF em_title = 2 THEN 
-                RETURN "Manager";
-            ELSE
+    ELSE 
+        IF em_title = 2 THEN 
+            RETURN "Manager";
+        ELSE
+            IF em_title = 3 THEN 
                 RETURN "Staff";
+            ELSE
+                IF is_visitor = 1 THEN 
+                    RETURN "Visitor";
+                ELSE 
+                    RETURN "User";
+                END IF;
             END IF;
         END IF;
     END IF;
+    
 END $$
 
 DELIMITER ;
@@ -101,7 +102,7 @@ FROM daily_site
 GROUP BY SiteName;
 
 CREATE VIEW for_site AS
-SELECT SiteName, TotalVisit, TotalRevenue, CountStaff, count(*) AS CountEvent, Manager 
+SELECT SiteName, TotalVisit, TotalRevenue, CountStaff, count(*) AS CountEvent, ManagerName 
 FROM total_site LEFT JOIN count_site_staff USING(SiteName) JOIN Events USING(SiteName) JOIN Site USING(SiteName) 
 GROUP BY SiteName;
 

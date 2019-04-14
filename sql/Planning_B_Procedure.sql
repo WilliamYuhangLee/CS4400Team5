@@ -43,11 +43,11 @@ BEGIN
     IF EXISTS(SELECT * FROM USERS WHERE UserName = user_name) THEN 
         SET @result = "Username already exists.";
     ELSE
-        IF is_visitor != 1 OR is_visitor != 2 THEN
+        IF is_visitor != 1 AND is_visitor != 2 THEN
             SET @result = "IsVisitor is out of range.";
         ELSE 
             INSERT INTO Users(UserName, Password, FirstName, LastName, IsVisitor) 
-                VALUES(user_name, pass_word, firs_name, last_name, is_visitor);
+                VALUES(user_name, pass_word, first_name, last_name, is_visitor);
             SET @result = "Registering successfully.";
         END IF;
     END IF;
@@ -74,7 +74,7 @@ CREATE PROCEDURE add_email(in user_name varchar(50), in email_address varchar(10
 -- order of parameter
 -- username, emailaddress
 BEGIN
-    INSERT INTO Email VALUES(user_name, email_address);
+    INSERT INTO Email VALUES(email_address, user_name);
 END $$
 
 
@@ -118,7 +118,7 @@ BEGIN
     DECLARE status_ int;
     DECLARE em_id int(9);
     SET status_ = new_status + 1;
-    IF new_status != 1 && new_status != 2 THEN
+    IF new_status != 1 AND new_status != 2 THEN
         SET @result = "New status out of range.";
     ELSE
         IF ("Approval" IN (SELECT `Status` FROM Users WHERE UserName = user_name)) AND (new_status = 1) THEN 
