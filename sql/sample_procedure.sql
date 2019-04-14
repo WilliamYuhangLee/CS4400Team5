@@ -22,4 +22,4 @@ END $$
 -- SET @b = "/*your password after hashing*/";
 -- CALL screen_one_login(@a, @b);
 
--- Then it will return the information about logina
+-- Then it will return the information about login

@@ -1,0 +1,10 @@
+CALL register_user("james.smith", "jsmith123", "James", "Smith", 2);
+CALL manage_user("james.smith", 2);
+CALL register_user("michael.smith", "msmith456", "Michael", "Smith", 1);
+CALL manage_user("michael.smith", 2);
+CALL register_user("robert.smith", "rsmith789", "Robert ", "Smith", 2);
+CALL manage_user("robert.smith", 2);
+CALL register_user("maria.garcia", "mgarcia123", "Maria", "Garcia", 1);
+CALL manage_user("maria.garcia", 2);
+CALL register_user("david.smith", "dsmith456", "David", "Smith", 2);
+CALL manage_user("david.smith", 2);
