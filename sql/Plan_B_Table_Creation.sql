@@ -112,7 +112,7 @@ CREATE TABLE IF NOT EXISTS Site (
 	Zipcode char(5) NOT NULL,
 	--
 
-	Address varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+	Address varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci,
 	--
 
 	EveryDay ENUM('Yes', 'No') NOT NULL,
