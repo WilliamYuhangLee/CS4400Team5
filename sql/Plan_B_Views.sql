@@ -1,4 +1,4 @@
-USE cs4400;
+USE atlbeltline;
 
 DELIMITER $$
 CREATE FUNCTION get_type(em_title int, is_visitor int) RETURNS varchar(20)

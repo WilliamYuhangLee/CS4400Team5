@@ -1,4 +1,4 @@
-USE cs4400;
+USE atlbeltline;
 DELIMITER $$
 
 CREATE TRIGGER tgr1_email1 BEFORE INSERT ON Email FOR EACH ROW

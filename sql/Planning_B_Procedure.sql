@@ -1,4 +1,4 @@
-USE cs4400;
+USE atlbeltline;
 
 DELIMITER $$
 
