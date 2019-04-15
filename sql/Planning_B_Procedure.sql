@@ -3,7 +3,7 @@ USE atlbeltline;
 DELIMITER $$
 
 
-CREATE PROCEDURE handle(out error varchar(100))
+CREATE PROCEDURE handle(out error varchar(300))
 BEGIN
     GET DIAGNOSTICS CONDITION 1
          @p1 = RETURNED_SQLSTATE, @p2 = MESSAGE_TEXT;
@@ -11,7 +11,7 @@ BEGIN
 END $$
 
 
-CREATE PROCEDURE login(in email_address varchar(100), out result varchar(100), out error varchar(100))
+CREATE PROCEDURE login(in email_address varchar(100), out result varchar(100), out error varchar(300))
 -- order of parameter
 -- email address, password
 BEGIN
@@ -41,7 +41,7 @@ END $$
 
 
 
-CREATE PROCEDURE register_user(in user_name varchar(50), in pass_word varchar(100), in first_name varchar(50), in last_name varchar(50), in is_visitor int, out error varchar(100)) 
+CREATE PROCEDURE register_user(in user_name varchar(50), in pass_word varchar(100), in first_name varchar(50), in last_name varchar(50), in is_visitor int, out error varchar(300)) 
 -- order of parameter
 -- username, password, firstname, lastname, is_visitor
 -- is_visitor's value shall be 1 or 2 (1 for "Yes", 2 for "No")
@@ -63,7 +63,7 @@ END $$
 
 
 
-CREATE PROCEDURE register_employee(in user_name varchar(50), in phone_ char(10), in city_ varchar(100), in address_ varchar(100),  in state_ varchar(5), in zip_code char(5), in title_ int, out error varchar(100)) 
+CREATE PROCEDURE register_employee(in user_name varchar(50), in phone_ char(10), in city_ varchar(100), in address_ varchar(100),  in state_ varchar(5), in zip_code char(5), in title_ int, out error varchar(300)) 
 -- order of parameter
 -- username, phone, city, address, state, zipcode, employee type
 -- state's value shall be the abbreviation of states in uppercase or be 'other'
@@ -77,7 +77,7 @@ BEGIN
 END $$
 
 
-CREATE PROCEDURE register_employee_aft(in user_name varchar(50), in employee_id varchar(9), in phone_ char(10), in address_ varchar(100), in city_ varchar(100),  in state_ varchar(5), in zip_code char(5), in title_ int, out error varchar(100)) 
+CREATE PROCEDURE register_employee_aft(in user_name varchar(50), in employee_id varchar(9), in phone_ char(10), in address_ varchar(100), in city_ varchar(100),  in state_ varchar(5), in zip_code char(5), in title_ int, out error varchar(300)) 
 -- order of parameter
 -- username, employee id, phone, address, city, state, zipcode, employee type
 -- state's value shall be the abbreviation of states in uppercase or be 'other'
@@ -92,7 +92,7 @@ END $$
 
 
 
-CREATE PROCEDURE add_email(in user_name varchar(50), in email_address varchar(100), out error varchar(100))
+CREATE PROCEDURE add_email(in user_name varchar(50), in email_address varchar(100), out error varchar(300))
 -- order of parameter
 -- username, emailaddress
 BEGIN
@@ -101,7 +101,7 @@ BEGIN
 END $$
 
 
-CREATE PROCEDURE delete_email(in email_address varchar(100), out error varchar(100))
+CREATE PROCEDURE delete_email(in email_address varchar(100), out error varchar(300))
 -- order of parameter
 -- emailaddress
 BEGIN
@@ -111,7 +111,7 @@ END $$
 
 
 
-CREATE PROCEDURE take_tansit(in user_name varchar(50), in route_ varchar(20), in transport_type int(1), in take_date date, out error varchar(100))
+CREATE PROCEDURE take_tansit(in user_name varchar(50), in route_ varchar(20), in transport_type int(1), in take_date date, out error varchar(300))
 -- order of parameter
 -- username, route, transport type, date
 -- transport_type's value shall be 1, 2, or 3 (1 for "MARTA", 2 for "Bus", 3 for "Bike")
@@ -121,7 +121,7 @@ BEGIN
 END $$
 
 
-CREATE PROCEDURE edit_profile(in user_name varchar(50), in first_name varchar(50), in last_name varchar(50), in is_visitor int(1), in phone_ char(10), out error varchar(100))
+CREATE PROCEDURE edit_profile(in user_name varchar(50), in first_name varchar(50), in last_name varchar(50), in is_visitor int(1), in phone_ char(10), out error varchar(300))
 -- order of parameter
 -- username, first name, last name, is visitor, phone
 -- is_visitor's value shall be 1 or 2 (1 for "Yes", 2 for "No")
@@ -136,7 +136,7 @@ BEGIN
 END $$
 
 
-CREATE PROCEDURE manage_user(in user_name varchar(50), in new_status int(1), out error varchar(100))
+CREATE PROCEDURE manage_user(in user_name varchar(50), in new_status int(1), out error varchar(300))
 -- order of parameters
 -- username, new status
 -- new_status' value should be 1 or 2 (1 for "Denied", 2 for "Approval")
@@ -160,7 +160,7 @@ BEGIN
 END $$
 
 
-CREATE PROCEDURE edit_site(in site_name varchar(50), in zip_code varchar(5), in address_ varchar(100), in manager_name varchar(50), in open_every_day int(1), out error varchar(100))
+CREATE PROCEDURE edit_site(in site_name varchar(50), in zip_code varchar(5), in address_ varchar(100), in manager_name varchar(50), in open_every_day int(1), out error varchar(300))
 -- order of parameter
 -- site name, zipcode, address, manager name, if open everyday
 -- open_every_day's value shall be 1 or 2 (1 for yes, 2 for no)
@@ -172,7 +172,7 @@ BEGIN
 END $$
 
 
-CREATE PROCEDURE create_site(in site_name varchar(50), in zip_code varchar(5), in address_ varchar(100), in manager_name varchar(50), in open_every_day int(1), out error varchar(100))
+CREATE PROCEDURE create_site(in site_name varchar(50), in zip_code varchar(5), in address_ varchar(100), in manager_name varchar(50), in open_every_day int(1), out error varchar(300))
 -- order of parameter
 -- site name, zipcode, address, manager name, if open everyday
 -- open_every_day's value shall be 1 or 2 (1 for yes, 2 for no)
@@ -182,7 +182,7 @@ BEGIN
 END $$
 
 
-CREATE PROCEDURE edit_transit(in transport_type int, in old_route varchar(20), in new_route varchar(20), in price_ float, out error varchar(100))
+CREATE PROCEDURE edit_transit(in transport_type int, in old_route varchar(20), in new_route varchar(20), in price_ float, out error varchar(300))
 -- order of parameter
 -- transport type, old route, new route , price
 -- transport_type's value shall be 1, 2, or 3 (1 for MARTA, 2 for Bus, 3 for Bike)
@@ -195,7 +195,7 @@ BEGIN
 END $$
 
 
-CREATE PROCEDURE create_transit(in transport_type int, in route_ varchar(20), in price_ float, out error varchar(100))
+CREATE PROCEDURE create_transit(in transport_type int, in route_ varchar(20), in price_ float, out error varchar(300))
 -- order of parameter
 -- transport type, route, price
 -- transport_type's value shall be 1, 2, or 3 (1 for MARTA, 2 for Bus, 3 for Bike)
@@ -205,7 +205,7 @@ BEGIN
 END $$
 
 
-CREATE PROCEDURE connect_site(in transport_type int, in route_ varchar(20), in site_name varchar(50), out error varchar(100))
+CREATE PROCEDURE connect_site(in transport_type int, in route_ varchar(20), in site_name varchar(50), out error varchar(300))
 -- order of parameter
 -- transport type, route, site_name
 -- transport_type's value shall be 1, 2, or 3 (1 for MARTA, 2 for Bus, 3 for Bike)
@@ -217,7 +217,7 @@ BEGIN
 END $$
 
 
-CREATE PROCEDURE disconnect_site(in transport_type int, in route_ varchar(20), in site_name varchar(50), out error varchar(100))
+CREATE PROCEDURE disconnect_site(in transport_type int, in route_ varchar(20), in site_name varchar(50), out error varchar(300))
 -- order of parameter
 -- transport type, route, site_name
 -- transport_type's value shall be 1, 2, or 3 (1 for MARTA, 2 for Bus, 3 for Bike)
@@ -229,7 +229,7 @@ BEGIN
 END $$
 
 
-CREATE PROCEDURE edit_evetn(in site_name varchar(50), in event_name varchar(50), in start_date date, in description_ text, out error varchar(100))
+CREATE PROCEDURE edit_evetn(in site_name varchar(50), in event_name varchar(50), in start_date date, in description_ text, out error varchar(300))
 -- order of parameter
 -- site name, event name, start date, new discription
 BEGIN 
@@ -240,7 +240,7 @@ BEGIN
 END $$
 
 
-CREATE PROCEDURE create_event(in site_name varchar(50), in event_name varchar(50), in start_date date, in end_date date, in min_staff_req int, in price_ float, in capacity_ int, in description_ text, out error varchar(100))
+CREATE PROCEDURE create_event(in site_name varchar(50), in event_name varchar(50), in start_date date, in end_date date, in min_staff_req int, in price_ float, in capacity_ int, in description_ text, out error varchar(300))
 -- order of parameter
 -- site name, event name, start date, end date, minimun staff requirment, price, capacity, discription
 BEGIN
@@ -249,7 +249,7 @@ BEGIN
 END $$
 
 
-CREATE PROCEDURE assign_staff(in site_name varchar(50), in event_name varchar(50), in start_date date, in staff_name varchar(50), out error varchar(100))
+CREATE PROCEDURE assign_staff(in site_name varchar(50), in event_name varchar(50), in start_date date, in staff_name varchar(50), out error varchar(300))
 -- order of parameter
 -- site name, event name, start date, staff name
 BEGIN
@@ -260,7 +260,7 @@ BEGIN
 END $$
 
 
-CREATE PROCEDURE remove_staff(in site_name varchar(50), in event_name varchar(50), in start_date date, in staff_name varchar(50), out error varchar(100))
+CREATE PROCEDURE remove_staff(in site_name varchar(50), in event_name varchar(50), in start_date date, in staff_name varchar(50), out error varchar(300))
 -- order of parameter
 -- site name, event name, start date, staff name
 BEGIN 
@@ -271,7 +271,7 @@ BEGIN
 END $$
 
 
-CREATE PROCEDURE log_event(in site_name varchar(50), in event_name varchar(50), in start_date date, in user_name varchar(50), in log_date date, out error varchar(100))
+CREATE PROCEDURE log_event(in site_name varchar(50), in event_name varchar(50), in start_date date, in user_name varchar(50), in log_date date, out error varchar(300))
 -- order of parameter
 -- site name, event name, start date, user name, visit date
 BEGIN 
@@ -280,7 +280,7 @@ BEGIN
 END $$
 
 
-CREATE PROCEDURE log_site(in site_name varchar(50), in user_name varchar(50), in log_date date, out error varchar(100))
+CREATE PROCEDURE log_site(in site_name varchar(50), in user_name varchar(50), in log_date date, out error varchar(300))
 -- order of parameter
 -- site name, user name, visit date
 BEGIN 
@@ -288,7 +288,7 @@ BEGIN
     INSERT INTO VisitSite VALUES(user_name, site_name, log_date);
 END $$
 
-CREATE PROCEDURE query_user_by_email(in email_address varchar(100), out user_name varchar(100), out pass_word varchar(100), out status_ varchar(100), out first_name varchar(100), out last_name varchar(100), out is_visitor varchar(10), out error varchar(100))
+CREATE PROCEDURE query_user_by_email(in email_address varchar(100), out user_name varchar(100), out pass_word varchar(100), out status_ varchar(100), out first_name varchar(100), out last_name varchar(100), out is_visitor varchar(10), out error varchar(300))
 -- order of parameter
 -- email address
 -- user name, password, status, first name, last name, is visitor
@@ -299,6 +299,22 @@ BEGIN
         SELECT `Password`, `Status`, FirstName, LastName, IsVisitor INTO pass_word, status_, first_name, last_name, is_visitor FROM Users WHERE UserName = user_name LIMIT 1 ;
     ELSE 
         SET error = "Email Address does not exist.";
+    END IF;
+END $$
+
+
+CREATE PROCEDURE query_employee_by_user(in user_name varchar(100), out employee_id varchar(9), out phone_ varchar(10), out address_ varchar(100), out city_ varchar(100), out state_ varchar(100), out zip_code varchar(10), out title_ varchar(10), out error varchar(300))
+-- order of parameter
+-- user name
+-- employee id, phone, address, city, state, zip code, title
+BEGIN 
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle(error);
+    IF EXISTS(SELECT * FROM Employee WHERE UserName = user_name) THEN
+        SELECT EmployeeID, Phone, Address, City, State, ZipCode, Title 
+        INTO employee_id, phone_, address_, city_, state_, zip_code, title_ 
+        FROM Employee WHERE UserName = user_name;
+    ELSE 
+        SET error = "This user is not an employee.";
     END IF;
 END $$
 
