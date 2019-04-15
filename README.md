@@ -9,4 +9,4 @@ Ordered by last name alphabetically:
 - Lechen Dai (MySQL Statements)
 - Yuhang Li (backend developer)
 - Wei Xin (frontend developer)
-- Wenye Yi (**FILL IN ROLE HERE**)
+- Wenye Yi (architecture design)
