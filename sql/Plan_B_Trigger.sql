@@ -242,16 +242,16 @@ BEGIN
 	IF (SELECT EndDate FROM Events WHERE SiteName LIKE NEW.SiteName
 					AND EventName LIKE NEW.EventName
 					AND StartDate = NEW.StartDate LIMIT 1)
-	<= ANY (SELECT StartDate FROM Events
+	>= ANY (SELECT StartDate FROM Events
 			JOIN AssignTo USING (SiteName, EventName, StartDate)
 			WHERE StaffName LIKE NEW.StaffName AND StartDate > NEW.StartDate) THEN
-		SIGNAL SQLSTATE '45000' SET message_text = "Time Conflict, Cannot Assign To Event!!";
+		SIGNAL SQLSTATE '45000' SET message_text = "Time Conflict, Cannot Assign To Event!! Type1";
 	END IF;
 
 	IF NEW.StartDate <= ANY (SELECT EndDate FROM Events
 			JOIN AssignTo USING (SiteName, EventName, StartDate)
 			WHERE StaffName LIKE NEW.StaffName AND StartDate < NEW.StartDate) THEN
-		SIGNAL SQLSTATE '45000' SET message_text = "Time Conflict, Cannot Assign To Event!!";
+		SIGNAL SQLSTATE '45000' SET message_text = "Time Conflict, Cannot Assign To Event!! Type2";
 	END IF;
 END $$
 

@@ -70,7 +70,7 @@ GROUP BY SiteName, EventName, StartDate;
 
 CREATE VIEW daily_visit_event AS 
 SELECT SiteName, EventName, StartDate, EndDate, `Date`, Price, count(*) AS DailyVisit 
-FROM Events LEFT JOIN VisitEvent USING(SiteName, EventName, StartDate) 
+FROM Events LEFT JOIN VisitEvent USING(SiteName, EventName, StartDate) WHERE `Date` != null 
 GROUP BY SiteName, EventName, StartDate, `Date`;
 
 CREATE VIEW daily_event AS
@@ -79,12 +79,12 @@ FROM daily_visit_event;
 
 CREATE VIEW for_event AS 
 SELECT SiteName, EventName, StartDate, Events.Price, count(DailyVisit) AS TotalVisit, count(DailyRevenue) AS TotalRevenue, (Capacity - count(DailyRevenue)) AS TicketRem, (Events.EndDate - StartDate) AS Duration 
-FROM daily_event LEFT JOIN Events USING(SiteName, EventName, StartDate)
+FROM daily_event LEFT JOIN Events USING(SiteName, EventName, StartDate) WHERE `Date` != null 
 GROUP BY `Date`;
 
 CREATE VIEW daily_site AS 
 SELECT SiteName, `Date`, count(DailyVisit) AS DailyVisit, count(DailyRevenue) AS DailyRevenue
-FROM daily_event LEFT JOIN Site USING(SiteName) 
+FROM daily_event LEFT JOIN Site USING(SiteName) WHERE `Date` != null 
 GROUP BY SiteName, `Date`;
 
 CREATE VIEW staff_site AS 
