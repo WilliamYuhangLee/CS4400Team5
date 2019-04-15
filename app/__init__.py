@@ -35,4 +35,8 @@ def create_app(config_class="Config"):
     bcrypt.init_app(app)
     login_manager.init_app(app)
 
+    # Register Blueprints
+    from app.user.routes import user
+    app.register_blueprint(user)
+
     return app

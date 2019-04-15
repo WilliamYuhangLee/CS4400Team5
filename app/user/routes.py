@@ -1,13 +1,15 @@
-from flask import flash, redirect, url_for, render_template, request
-from flask import current_app as app
+from flask import Blueprint, flash, redirect, url_for, render_template, request
 from flask_login import login_user, login_required
 
 from app import bcrypt
 from app.models import User
-from app.forms import LoginForm, UserRegistrationForm
+from app.user.forms import LoginForm, UserRegistrationForm
+
+# Create Blueprint
+user = Blueprint("user", __name__)
 
 
-@app.route("/register/user", methods=["GET", "POST"])
+@user.route("/register/user", methods=["GET", "POST"])
 def register_user():
     form = UserRegistrationForm()
     if form.validate_on_submit():
@@ -23,7 +25,8 @@ def register_user():
     return render_template("register.html", title="Registration", form=form)  # TODO: make sure register.html is implemented
 
 
-@app.route("/login", methods=["GET", "POST"])
+@user.route("/", methods=["GET", "POST"])
+@user.route("/login", methods=["GET", "POST"])
 def login():
     form = LoginForm()
     if form.validate_on_submit():
@@ -41,6 +44,6 @@ def login():
 
 
 @login_required
-@app.route("/home")
+@user.route("/home")
 def home():
     pass  # TODO: implement homepage
