@@ -1,66 +1,101 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Register</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <script type="text/javascript" src="../static/register.js"></script>
-</head>
-
-<body>
-    <div id="register_frame">
-
-        <p id="Title">User Register</p>
-
-            <form method="post" action="Register.js">
-                
-                <input type="hidden" name="usertype" value="employee" />
-                <p><label class="label_input">First Name</label><input type="text" required="required" id="fname"
-                        class="text_field" /></p>
-                <p><label class="label_input">Last Name</label><input type="text" required="required" id="lname"
-                        class="text_field" /></p>
-                <p><label class="label_input">Username</label><input type="text" required="required" id="username"
-                        class="text_field" /></p>
-                <p><label class="label_input">Password</label><input type="text" required="required" id="password"
-                        class="text_field" /></p>
-                <p><label class="label_input">Confirm Password</label><input type="text" required="required"
-                        id="password_confirm" class="text_field" oninput="check(this)" /></p>
-                <script language='javascript' type='text/javascript'>
-                    function check(input) {
-                        if (input.value != document.getElementById('password').value) {
-                            input.setCustomValidity('Password Must be Matching.');
-                        } else {
-                            input.setCustomValidity('');
-                        }
-                    }
-                </script>
-                <p><label class="label_input">Email</label><input type="text" id="lname" class="text_field" /></p>
-                <input type="button" onclick="addInput()" value="add"/>
-
-                <span id="responce"></span>
-                <script>
-                    var countBox = 1;
-                    var boxName = 0;
-
-                    function addInput() {
-                        var boxName = "email " + countBox;
-                        document.getElementById('responce').innerHTML += '<br/><input type="text" id="' + boxName +
-                            '" value="' + boxName + '" "  /><input type="button" onclick="removeInput()" value="remove"/><br/>';
-                        countBox += 1;
-                    }
-
-                </script>
-                <div id="login_control">
-                    <input type="button" id="btn_register" value="Register" onclick="register();" />
+{% extends "Register.html" %}
+<div class="content-section">
+    <form method="post" action="">
+        {{ form.hidden_tag() }}
+        <fieldset class="form-group">
+            {% block fieldset %}
+            {{ super() }}
+            <div class="form-group">
+                {{ form.usertype.label(class="form-control-label") }}
+                {% if form.usertype.errors %}
+                {{ form.usertype(class="form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.usertype.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
                 </div>
-            </form>
-            <a href="./RegisterNav.html">
-                <button>Back</button>
-            </a>
-    </div>
+                {% else %}
+                {{ form.usertype(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.phone.label(class="form-control-label") }}
+                {% if form.phone.errors %}
+                {{ form.phone(class="form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.phone.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                {{ form.phone(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.address.label(class="form-control-label") }}
+                {% if form.address.errors %}
+                {{ form.address(class="form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.address.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                {{ form.address(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.city.label(class="form-control-label") }}
+                {% if form.city.errors %}
+                {{ form.city(class="form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.city.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                {{ form.city(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.state.label(class="form-control-label") }}
+                {% if form.state.errors %}
+                {{ form.state(class="form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.state.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                {{ form.state(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.zipcode.label(class="form-control-label") }}
+                {% if form.zipcode.errors %}
+                {{ form.zipcode(class="form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.zipcode.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                {{ form.zipcode(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+            {% endblock fieldset %}
+        </fieldset>
+        <div class="form-group">
+            {{ form.submit(class="btn btn-outline-info") }}
+        </div>
+    </form>
+</div>
+<div class="border-top pt-2">
+    <small class="text-muted">
+        Already have an account? <a class="ml-2" href="{{ url_for("users.login") }}">Log in</a>
+    </small>
+</div>
 
-</body>
-
-</html>
+{% block scripts %}
+{{ super() }}
+{% endblock scripts %}
