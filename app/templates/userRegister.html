@@ -22,9 +22,9 @@
                         class="text_field" /></p>
                 <p><label class="label_input">Username</label><input type="text" required="required" id="username"
                         class="text_field" /></p>
-                <p><label class="label_input">Password</label><input type="text" required="required" id="password"
+                <p><label class="label_input">Password</label><input type="password" required="required" id="password"
                         class="text_field" /></p>
-                <p><label class="label_input">Confirm Password</label><input type="text" required="required"
+                <p><label class="label_input">Confirm Password</label><input type="password" required="required"
                         id="password_confirm" class="text_field" oninput="check(this)" /></p>
                 <script language='javascript' type='text/javascript'>
                     function check(input) {
@@ -35,21 +35,31 @@
                         }
                     }
                 </script>
-                <p><label class="label_input">Email</label><input type="text" id="lname" class="text_field" /></p>
-                <input type="button" onclick="addInput()" />
+                
+                <input type="hidden" id="someemail" name="Email[]" value="" />
+                <p><label class="label_input">Email</label><input type="text" id="email" class="text_field" /></p>
+                
+                <input type="button" onclick="addInput(); saveEmail()" value="Save and Add"/>
 
                 <span id="responce"></span>
                 <script>
                     var countBox = 1;
-                    var boxName = 0;
+                    var boxName = "email " + countBox;
 
                     function addInput() {
-                        var boxName = "email " + countBox;
                         document.getElementById('responce').innerHTML += '<br/><input type="text" id="' + boxName +
-                            '" value="' + boxName + '" "  /><input type="button" onclick="removeInput()" /><br/>';
+                            '" value="' + boxName + '" "  /><input type="button" onclick="removeInput()" value="remove"/><br/>';
                         countBox += 1;
                     }
 
+                    function saveEmail() {
+                        var email = document.getElementById(boxName).value;
+                        emaillarray.push(email);
+                        console.log(emailarray);
+                        document.getElementById("someemail").value=emailarray;
+                        console.log(document.getElementById("someemail").value);
+  
+                    }
                 </script>
                 <div id="register_control">
                     <input type="button" id="btn_register" value="Register" onclick="register();" />

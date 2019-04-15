@@ -36,7 +36,7 @@
                     }
                 </script>
                 <p><label class="label_input">Email</label><input type="text" id="lname" class="text_field" /></p>
-                <input type="button" onclick="addInput()" />
+               <input type="button" onclick="addInput()" value="add"/>
 
                 <span id="responce"></span>
                 <script>
@@ -46,7 +46,7 @@
                     function addInput() {
                         var boxName = "email " + countBox;
                         document.getElementById('responce').innerHTML += '<br/><input type="text" id="' + boxName +
-                            '" value="' + boxName + '" "  /><input type="button" onclick="removeInput()" /><br/>';
+                            '" value="' + boxName + '" "  /><input type="button" onclick="removeInput()" value="remove"/><br/>';
                         countBox += 1;
                     }
 
@@ -56,7 +56,7 @@
                 </div>
             </form>
             <a href="./RegisterNav.html">
-                <button>Register</button>
+                <button>Back</button>
             </a>
     </div>
 

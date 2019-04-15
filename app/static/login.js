@@ -1,19 +1,19 @@
 function login() {
  
     var username = document.getElementById("username");
-    var pass = document.getElementById("password");
- 
+    var password = document.getElementById("password");
+    
     if (username.value == "") {
  
         alert("Enter Username");
  
-    } else if (pass.value  == "") {
+    } else if (password.value  == "") {
  
         alert("Enter Password");
  
     } else {
  
-        alert("Input Incorrect")
+        //alert("Input Incorrect")
  
     }
 }
