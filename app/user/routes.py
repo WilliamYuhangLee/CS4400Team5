@@ -22,7 +22,7 @@ def register_user():
         login_user(user, remember=True)
         flash("Your account has been created! You are now logged in.", category="success")
         return redirect(url_for("login"))
-    return render_template("register.html", title="Registration", form=form)  # TODO: make sure register.html is implemented
+    return render_template("register-user.html", title="Registration", form=form)  # TODO: make sure register.html is implemented
 
 
 @user.route("/", methods=["GET", "POST"])

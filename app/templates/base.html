@@ -31,17 +31,17 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarToggle">
                 <div class="navbar-nav mr-auto">
-                    <a class="nav-item nav-link" href="{{ url_for('main.home') }}">Home</a>
-                    <a class="nav-item nav-link" href="{{ url_for('main.about') }}">About</a>
+{#                    <a class="nav-item nav-link" href="{{ url_for('main.home') }}">Home</a>#}
+{#                    <a class="nav-item nav-link" href="{{ url_for('main.about') }}">About</a>#}
                 </div>
                 <!-- Navbar Right Side -->
                 <div class="navbar-nav">
                     {% if current_user.is_authenticated %}
-                        <a class="nav-item nav-link" href="{{ url_for('users.account') }}">Account</a>
-                        <a class="nav-item nav-link" href="{{ url_for('users.logout') }}">Log out</a>
+{#                        <a class="nav-item nav-link" href="{{ url_for('user.account') }}">Account</a>#}
+{#                        <a class="nav-item nav-link" href="{{ url_for('user.logout') }}">Log out</a>#}
                     {% else %}
-                        <a class="nav-item nav-link" href="{{ url_for('users.login') }}">Log in</a>
-                        <a class="nav-item nav-link" href="{{ url_for('users.register') }}">Sign up</a>
+                        <a class="nav-item nav-link" href="{{ url_for('user.login') }}">Log in</a>
+{#                        <a class="nav-item nav-link" href="{{ url_for('user.register_user') }}">Sign up</a>#}
                     {% endif %}
                 </div>
             </div>
@@ -50,6 +50,19 @@
 </header>
 <main role="main" class="container">
     <div class="row">
+        <div class="col-md-8" id="content">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            <!-- content block -->
+            {% block content %}{% endblock content %}
+        </div>
         <div class="col-md-3" id=menu>
             {% block sidebar %}
                 <!--suppress Annotator -->
@@ -69,9 +82,9 @@
                             </button>
                         {% endblock sidebar_botton_1 %}
                         {% block sidebar_botton_2 %}
-                            <a role="button" class="btn btn-info btn-lg btn-block" href="{{ url_for('transit.get_history') }}">
-                                View Transit History
-                            </a>
+{#                            <a role="button" class="btn btn-info btn-lg btn-block" href="{{ url_for('transit.get_history') }}">#}
+{#                                View Transit History#}
+{#                            </a>#}
                         {% endblock sidebar_botton_2 %}
                     {% endblock sidebar_content %}
                 </div>
