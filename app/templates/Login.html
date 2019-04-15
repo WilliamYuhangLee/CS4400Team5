@@ -1,0 +1,32 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Login</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script type="text/javascript" src="../static/login.js"></script>
+</head>
+ 
+<body>
+<div id="login_frame">
+ 
+    <p id="Title">Base</p>
+ 
+    <form method="post" action="login.js">
+ 
+        <p><label class="label_input">Username</label><input type="text" required="required" id="username" class="text_field"/></p>
+        <p><label class="label_input">Password</label><input type="text" required="required" id="password" class="text_field"/></p>
+ 
+        <div id="login_control">
+            <input type="button" id="btn_login" value="Login" onclick="login();"/>
+        </div>
+    </form>
+        <a href="./RegisterNav.html">
+            <button>Register</button>
+        </a>
+</div>
+ 
+</body>
+</html>

@@ -1,32 +1,106 @@
-
 <!DOCTYPE html>
+<!--suppress ALL -->
 <html lang="en">
 <head>
+    <!-- Meta -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Login</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <script type="text/javascript" src="../static/login.js"></script>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
+
+    <!-- Page Title -->
+    {% if title %}
+        <title>{{ config.APP_NAME }} - {{ title }}</title>
+    {% else %}
+        <title>{{ config.APP_NAME }}</title>
+    {% endif %}
 </head>
- 
 <body>
-<div id="login_frame">
- 
-    <p id="Title">Base</p>
- 
-    <form method="post" action="login.js">
- 
-        <p><label class="label_input">Username</label><input type="text" required="required" id="username" class="text_field"/></p>
-        <p><label class="label_input">Password</label><input type="text" required="required" id="password" class="text_field"/></p>
- 
-        <div id="login_control">
-            <input type="button" id="btn_login" value="Login" onclick="login();"/>
+<header class="site-header">
+    <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
+        <div class="container">
+            <a class="navbar-brand mr-4" href="/">{{ config.APP_NAME }}</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle"
+                    aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarToggle">
+                <div class="navbar-nav mr-auto">
+                    <a class="nav-item nav-link" href="{{ url_for('main.home') }}">Home</a>
+                    <a class="nav-item nav-link" href="{{ url_for('main.about') }}">About</a>
+                </div>
+                <!-- Navbar Right Side -->
+                <div class="navbar-nav">
+                    {% if current_user.is_authenticated %}
+                        <a class="nav-item nav-link" href="{{ url_for('users.account') }}">Account</a>
+                        <a class="nav-item nav-link" href="{{ url_for('users.logout') }}">Log out</a>
+                    {% else %}
+                        <a class="nav-item nav-link" href="{{ url_for('users.login') }}">Log in</a>
+                        <a class="nav-item nav-link" href="{{ url_for('users.register') }}">Sign up</a>
+                    {% endif %}
+                </div>
+            </div>
         </div>
-    </form>
-        <a href="./RegisterNav.html">
-            <button>Register</button>
-        </a>
-</div>
- 
+    </nav>
+</header>
+<main role="main" class="container">
+    <div class="row">
+        <div class="col-md-3" id=menu>
+            {% block sidebar %}
+                <!--suppress Annotator -->
+                <div class="content-section">
+                    {% block sidebar_title %}
+                        <h3>Trip Advisor</h3>
+                    {% endblock sidebar_title %}
+                    {% block sidebar_description %}
+                        <p class='text-muted'>
+                            Welcome!
+                        </p>
+                    {% endblock sidebar_description %}
+                    {% block sidebar_content %}
+                        {% block sidebar_botton_1 %}
+                            <button type="button" class="btn btn-outline-info btn-lg btn-block">
+                                Take Transit
+                            </button>
+                        {% endblock sidebar_botton_1 %}
+                        {% block sidebar_botton_2 %}
+                            <a role="button" class="btn btn-info btn-lg btn-block" href="{{ url_for('transit.get_history') }}">
+                                View Transit History
+                            </a>
+                        {% endblock sidebar_botton_2 %}
+                    {% endblock sidebar_content %}
+                </div>
+            {% endblock sidebar %}
+        </div>
+    </div>
+</main>
+
+<!-- Bootstrap scripts -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+        integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+        integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+        crossorigin="anonymous"></script>
+
+<!-- Scripts extensions -->
+{% block scripts %}
+{% endblock %}
 </body>
 </html>
+
+<style>#menu
+    {
+        position: fixed;
+        right: 10px;
+        top: 10px;
+    }</style>

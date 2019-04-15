@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="content-section">
+        <legend class="border-bottom mb-4">
+            Register Menu
+        </legend>
+        <div id="registerNav_frame">
+                <p id="Title">Register</p>
+                    <a href="./userRegister.html">
+                        <button>User Only</button>
+                    </a>
+                    <a href="./visitorRegister.html">
+                        <button>Visitor Only</button>
+                    </a>
+                    <a href="./employeeRegister.html">
+                        <button>Employee Only</button>
+                    </a>
+                    <a href="./employeeVisitorRegister.html">
+                        <button>Employee-visitor</button>
+                    </a>
+                    <a href="./Login.html">
+                        <button>Back</button>
+                    </a>
+            </div>
+    </div>
+{% endblock content %}

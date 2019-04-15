@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Register</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <script type="text/javascript" src="../static/userRegister.js"></script>
+    <script type="text/javascript" src="../static/register.js"></script>
 </head>
 
 <body>
@@ -37,30 +37,12 @@
                 </script>
                 
                 <input type="hidden" id="someemail" name="Email[]" value="" />
-                <p><label class="label_input">Email</label><input type="text" id="email" class="text_field" /></p>
+                <p><label class="label_input">Email</label><input type="text" id="email1" class="text_field" /></p>
                 
-                <input type="button" onclick="addInput(); saveEmail()" value="Save and Add"/>
-
+                <input type="button" id="addemail1" onclick="addInput()" value="Save and Add"/>
+                
                 <span id="responce"></span>
-                <script>
-                    var countBox = 1;
-                    var boxName = "email " + countBox;
-
-                    function addInput() {
-                        document.getElementById('responce').innerHTML += '<br/><input type="text" id="' + boxName +
-                            '" value="' + boxName + '" "  /><input type="button" onclick="removeInput()" value="remove"/><br/>';
-                        countBox += 1;
-                    }
-
-                    function saveEmail() {
-                        var email = document.getElementById(boxName).value;
-                        emaillarray.push(email);
-                        console.log(emailarray);
-                        document.getElementById("someemail").value=emailarray;
-                        console.log(document.getElementById("someemail").value);
-  
-                    }
-                </script>
+                
                 <div id="register_control">
                     <input type="button" id="btn_register" value="Register" onclick="register();" />
                 </div>
