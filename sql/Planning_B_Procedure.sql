@@ -288,6 +288,18 @@ BEGIN
     INSERT INTO VisitSite VALUES(user_name, site_name, log_date);
 END $$
 
-
+CREATE PROCEDURE query_user_by_email(in email_address varchar(100), out user_name varchar(100), out pass_word varchar(100), out status_ varchar(100), out first_name varchar(100), out last_name varchar(100), out is_visitor varchar(10), out error varchar(100))
+-- order of parameter
+-- email address
+-- user name, password, status, first name, last name, is visitor
+BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle(error);
+    IF EXISTS(SELECT * FROM Email WHERE EmailAddress = email_address) THEN 
+        SET user_name = (SELECT UserName FROM Email WHERE EmailAddress = email_address LIMIT 1);
+        SELECT `Password`, `Status`, FirstName, LastName, IsVisitor INTO pass_word, status_, first_name, last_name, is_visitor FROM Users WHERE UserName = user_name LIMIT 1 ;
+    ELSE 
+        SET error = "Email Address does not exist.";
+    END IF;
+END $$
 
 DELIMITER ;
