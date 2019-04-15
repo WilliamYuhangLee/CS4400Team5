@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Register</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script type="text/javascript" src="../static/Register.js"></script>
+</head>
+
+<body>
+    <div id="register_frame">
+
+        <p id="Title">User Register</p>
+
+            <form method="post" action="Register.js">
+                <input type="hidden" name="usertype" value="employeeVisitor" />
+                <p><label class="label_input">First Name</label><input type="text" required="required" id="fname"
+                        class="text_field" /></p>
+                <p><label class="label_input">Last Name</label><input type="text" required="required" id="lname"
+                        class="text_field" /></p>
+                <p><label class="label_input">Username</label><input type="text" required="required" id="username"
+                        class="text_field" /></p>
+                <p><label class="label_input">Password</label><input type="text" required="required" id="password"
+                        class="text_field" /></p>
+                <p><label class="label_input">Confirm Password</label><input type="text" required="required"
+                        id="password_confirm" class="text_field" oninput="check(this)" /></p>
+                <script language='javascript' type='text/javascript'>
+                    function check(input) {
+                        if (input.value != document.getElementById('password').value) {
+                            input.setCustomValidity('Password Must be Matching.');
+                        } else {
+                            input.setCustomValidity('');
+                        }
+                    }
+                </script>
+                <p><label class="label_input">Email</label><input type="text" id="lname" class="text_field" /></p>
+                <input type="button" onclick="addInput()" />
+
+                <span id="responce"></span>
+                <script>
+                    var countBox = 1;
+                    var boxName = 0;
+
+                    function addInput() {
+                        var boxName = "email " + countBox;
+                        document.getElementById('responce').innerHTML += '<br/><input type="text" id="' + boxName +
+                            '" value="' + boxName + '" "  /><input type="button" onclick="removeInput()" /><br/>';
+                        countBox += 1;
+                    }
+
+                </script>
+                <div id="login_control">
+                    <input type="button" id="btn_Register" value="Register" onclick="Register();" />
+                </div>
+            </form>
+            <a href="./RegisterNav.html">
+                <button>Register</button>
+            </a>
+    </div>
+
+</body>
+
+</html>
