@@ -16,7 +16,7 @@
         <div class="col-md-8" id="content">
         {% block content %}
         {{super()}}
-        {% block content %}
+        {% endblock content %}
             </div>
         <div class="col-md-3" id=menu>
                 {% block sidebar %}
@@ -27,5 +27,5 @@
     
         {% block scripts %}
         {{super()}}
-        {% endblock script %}
+        {% endblock scripts %}
     </body>
