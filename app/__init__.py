@@ -1,3 +1,4 @@
+import os
 from flask import Flask
 from flask_mysqldb import MySQL
 from flask_bcrypt import Bcrypt
@@ -16,18 +17,17 @@ login_manager.login_view = "login"  # set view function for login (when login_re
 login_manager.login_message_category = "info"  # set login message style
 
 
-def create_app(config_class="Config"):
+def create_app():
     """
     Factory method to create an app instance.
 
-    :param config_class: the name of the Config class to import
-    :type config_class: configs.Config
     :return: a Flask app instance
     :rtype: Flask
     """
     app = Flask(__name__)
 
-    # Import the specified Config class from configs.py
+    # Detect Config class from environment and import the specified Config class from configs.py
+    config_class = os.getenv("FLASK_CONFIG", "Config")
     app.config.from_object(configs.__name__ + "." + config_class)
 
     # Initialize extensions
