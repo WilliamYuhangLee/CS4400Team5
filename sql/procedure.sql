@@ -266,7 +266,7 @@ BEGIN
 END $$
 
 
-CREATE PROCEDURE edit_evetn(in site_name varchar(50), in event_name varchar(50), in start_date date, in description_ text, out error varchar(300))
+CREATE PROCEDURE edit_eventt(in site_name varchar(50), in event_name varchar(50), in start_date date, in description_ text, out error varchar(300))
 -- order of parameter
 -- site name, event name, start date, new discription
 BEGIN 
