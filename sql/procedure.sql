@@ -58,8 +58,6 @@ BEGIN
                 VALUES(user_name, pass_word, first_name, last_name, is_visitor);
         END IF;
     END IF;
-    INSERT INTO Users(UserName, Password, FirstName, LastName, IsVisitor) 
-        VALUES(user_name, pass_word, first_name, last_name, is_visitor);
 END $$
 
 
@@ -74,7 +72,7 @@ BEGIN
     IF title_ = "ADMINISTRATOR" THEN 
         SET error = "Cannot create administrator.";
     ELSE 
-        INSERT INTO Employee(Username, Phone, Address, City, State, ZipCode, Title) VALUES(user_name, phone_, address_, city_, state_, zip_code, new_title);
+        INSERT INTO Employee(Username, Phone, Address, City, State, ZipCode, Title) VALUES(user_name, phone_, address_, city_, state_, zip_code, title_);
     END IF;
 END $$
 
@@ -89,7 +87,7 @@ BEGIN
     IF title_ = "ADMINISTRATOR" THEN 
         SET error = "Cannot create administrator.";
     ELSE 
-        INSERT INTO Employee(Username, Phone, Address, City, State, ZipCode, Title, EmployeeID) VALUES(user_name, phone_, address_, city_, state_, zip_code, new_title, employee_id);
+        INSERT INTO Employee(Username, Phone, Address, City, State, ZipCode, Title, EmployeeID) VALUES(user_name, phone_, address_, city_, state_, zip_code, title_, employee_id);
     END IF;
     
 END $$
