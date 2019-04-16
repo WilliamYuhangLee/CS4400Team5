@@ -200,10 +200,6 @@ BEGIN
 						AND StartDate = NEW.StartDate LIMIT 1) THEN
 		SIGNAL SQLSTATE '45000' SET message_text = "Visiting After End Date!!!";
 	END IF;
-
-    IF EXISTS (SELECT * FROM VisitSite WHERE UserName LIKE NEW.UserName AND SiteName LIKE NEW.SiteName AND 'Date' = NEW.Date)  THEN
-	   INSERT INTO VisitSite VALUES (NEW.UserName, NEW.SiteName, NEW.Date);
-    END IF;
 END $$
 
 

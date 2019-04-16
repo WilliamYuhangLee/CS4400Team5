@@ -21,17 +21,18 @@ END $$
 
 CREATE PROCEDURE login(in email_address varchar(100), out result varchar(100), out error varchar(300))
 -- order of parameter
--- email address, password
+-- email address
+-- password
 BEGIN
-    DECLARE username varchar(50);
+    DECLARE user_name varchar(50);
     DECLARE EXIT HANDLER FOR SQLSTATE '45000' CALL handle2(error);
     DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle1(error);
 	
-	SET username = (SELECT UserName FROM Email WHERE EmailAddress LIKE email_address LIMIT 1);
-	IF (SELECT username IS NULL) THEN 
+	SET user_name = (SELECT UserName FROM Email WHERE EmailAddress LIKE email_address LIMIT 1);
+	IF length(user_name) <= 0 THEN 
 		SET error = "Email address does not exist.";
 	ELSE
-        SET result = (SELECT Password FROM Users WHERE UserName LIKE username LIMIT 1);
+        SET result = (SELECT Password FROM Users WHERE UserName = user_name LIMIT 1);
 	END IF;
     SELECT result, error;
 END $$
@@ -427,7 +428,7 @@ CREATE PROCEDURE check_email(in email_address varchar(100), out result int(1), o
 BEGIN
     DECLARE EXIT HANDLER FOR SQLSTATE '45000' CALL handle2(error);
     DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle1(error);
-    IF (SELECT UserName FROM Email WHERE EmailAddress = email_address LIMIT 1) THEN 
+    IF EXISTS(SELECT UserName FROM Email WHERE EmailAddress = email_address LIMIT 1) THEN 
         SET result = 0;
     ELSE
         SET result = 1;
@@ -442,7 +443,7 @@ CREATE PROCEDURE check_username(in user_name varchar(100), out result int(1), ou
 BEGIN
     DECLARE EXIT HANDLER FOR SQLSTATE '45000' CALL handle2(error);
     DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle1(error);
-    IF (SELECT UserName FROM Users WHERE UserName = user_address LIMIT 1) THEN 
+    IF EXISTS(SELECT UserName FROM Users WHERE UserName = user_address LIMIT 1) THEN 
         SET result = 0;
     ELSE
         SET result = 1;
@@ -464,6 +465,23 @@ BEGIN
     END IF;
     SELECT result, error;
 END $$
+
+
+CREATE PROCEDURE query_site_by_site_name(in site_name varchar(100), out zip_code varchar(5), out address_ varchar(100), out manager_name varchar(100), out error varchar(300))
+-- order of parameter
+-- site name
+-- zip code, address, manager name
+BEGIN   
+    DECLARE EXIT HANDLER FOR SQLSTATE '45000' CALL handle2(error);
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle1(error);
+    IF length(usite_name) > 0 THEN
+        SELECT ZipCode, Address, ManagerName INTO zip_code, address_, manager_name FROM Site WHERE SiteName = site_name;
+    ELSE 
+        SET error = "Site name cannot be null.";
+    END IF;
+    SELECT zip_code, address_, manager_name, error;
+END $$
+
 
 
 
