@@ -1,3 +1,3 @@
-DROP USER IF EXISTS 'altbeltline'@'%';
-CREATE USER 'altbeltline'@'%' IDENTIFIED BY 'cs4400team5';
-GRANT ALL PRIVILEGES ON altbeltline.* TO 'altbeltline'@'%';
+DROP USER IF EXISTS 'atlbeltline'@'localhost';
+CREATE USER 'atlbeltline'@'localhost' IDENTIFIED BY 'cs4400team5';
+GRANT ALL PRIVILEGES ON atlbeltline.* TO 'atlbeltline'@'localhost';

@@ -694,7 +694,7 @@ USE atlbeltline;
 
 
 DELIMITER $$
-CREATE FUNCTION get_type(em_title int, is_visitor int) RETURNS varchar(20)
+CREATE FUNCTION get_type(em_title int, is_visitor int) RETURNS varchar(20)  DETERMINISTIC 
 BEGIN
     IF em_title = 1 THEN
             RETURN "Administrator";

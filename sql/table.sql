@@ -1,6 +1,6 @@
 DROP DATABASE IF EXISTS atlbeltline;
 
-CREATE DATABASE IF NOT EXISTS atlbeltline CHARACTER SET utf8 COLLATE utf8_general_ci;
+CREATE DATABASE IF NOT EXISTS atlbeltline CHARACTER SET utf8MB3 COLLATE utf8MB4;
 USE atlbeltline;
 
 -- SET GLOBAL log_bin_trust_function_creators = 1;
@@ -8,7 +8,7 @@ USE atlbeltline;
 
 
 CREATE TABLE IF NOT EXISTS Users (
-	UserName varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+	UserName varchar(50) CHARACTER SET utf8MB3 COLLATE utf8MB4 NOT NULL,
 	-- there is no domain constraint on UserName
 
 	Password varchar(100) NOT NULL,
@@ -17,10 +17,10 @@ CREATE TABLE IF NOT EXISTS Users (
 	Status ENUM('DENIED', 'APPROVED', 'PENDING') DEFAULT 'PENDING' NOT NULL,
 	-- Status of a user can only be one of these three
 
-	FirstName varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+	FirstName varchar(50) CHARACTER SET utf8MB3 COLLATE utf8MB4 NOT NULL,
 	--
 
-	LastName varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+	LastName varchar(50) CHARACTER SET utf8MB3 COLLATE utf8MB4 NOT NULL,
 	--
 
 	IsVisitor ENUM('NO', 'YES') DEFAULT 'NO' NOT NULL,
@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS Users (
 	CONSTRAINT PK_User PRIMARY KEY (UserName)
 	--
 
-) ENGINE INNODB CHARACTER SET utf8 COLLATE utf8_general_ci;
+) ENGINE INNODB CHARACTER SET utf8MB3 COLLATE utf8MB4;
 
 
 
@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS Email (
 	EmailAddress varchar(100) NOT NULL,
 	--
 
-	UserName varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+	UserName varchar(50) CHARACTER SET utf8MB3 COLLATE utf8MB4 NOT NULL,
 	--
 
 	CONSTRAINT FK1_Email1 FOREIGN KEY (UserName) REFERENCES Users(UserName)
@@ -47,12 +47,12 @@ CREATE TABLE IF NOT EXISTS Email (
 	CONSTRAINT PK_Email PRIMARY KEY (EmailAddress)
 	--
 
-) ENGINE INNODB  CHARACTER SET utf8 COLLATE utf8_general_ci;
+) ENGINE INNODB  CHARACTER SET utf8MB3 COLLATE utf8MB4;
 
 
 
 CREATE TABLE IF NOT EXISTS Employee (
-	UserName varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+	UserName varchar(50) CHARACTER SET utf8MB3 COLLATE utf8MB4 NOT NULL,
 	--
 
 	EmployeeID char(9) UNIQUE,
@@ -61,10 +61,10 @@ CREATE TABLE IF NOT EXISTS Employee (
 	Phone char(10) NOT NULL UNIQUE,
 	--
 
-	Address varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+	Address varchar(100) CHARACTER SET utf8MB3 COLLATE utf8MB4 NOT NULL,
 	--
 
-	City varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+	City varchar(100) CHARACTER SET utf8MB3 COLLATE utf8MB4 NOT NULL,
 	--
 
 	State ENUM('AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA',
@@ -88,12 +88,12 @@ CREATE TABLE IF NOT EXISTS Employee (
 	CONSTRAINT PK_Employee PRIMARY KEY (UserName)
 	--
 
-) ENGINE INNODB CHARACTER SET utf8 COLLATE utf8_general_ci;
+) ENGINE INNODB CHARACTER SET utf8MB3 COLLATE utf8MB4;
 
 
 
 CREATE TABLE IF NOT EXISTS Transit (
-	Route varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+	Route varchar(20) CHARACTER SET utf8MB3 COLLATE utf8MB4 NOT NULL,
 	--
 
 	TransportType ENUM('MARTA', 'BUS', 'BIKE') NOT NULL,
@@ -105,24 +105,24 @@ CREATE TABLE IF NOT EXISTS Transit (
 	CONSTRAINT PK_Transit PRIMARY KEY (Route, TransportType)
 	--
 
-) ENGINE INNODB CHARACTER SET utf8 COLLATE utf8_general_ci;
+) ENGINE INNODB CHARACTER SET utf8MB3 COLLATE utf8MB4;
 
 
 
 CREATE TABLE IF NOT EXISTS Site (
-	SiteName varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+	SiteName varchar(50) CHARACTER SET utf8MB3 COLLATE utf8MB4 NOT NULL,
 	--
 
 	Zipcode char(5) NOT NULL,
 	--
 
-	Address varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci,
+	Address varchar(100) CHARACTER SET utf8MB3 COLLATE utf8MB4,
 	--
 
 	EveryDay ENUM('NO', 'YES') NOT NULL,
 	--
 
-	ManagerName varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL UNIQUE,
+	ManagerName varchar(50) CHARACTER SET utf8MB3 COLLATE utf8MB4 NOT NULL UNIQUE,
 	--
 
 	CONSTRAINT PK_Site PRIMARY KEY (SiteName),
@@ -132,15 +132,15 @@ CREATE TABLE IF NOT EXISTS Site (
 	ON DELETE RESTRICT ON UPDATE CASCADE
 	--
 
-) ENGINE INNODB CHARACTER SET utf8 COLLATE utf8_general_ci;
+) ENGINE INNODB CHARACTER SET utf8MB3 COLLATE utf8MB4;
 
 
 
 CREATE TABLE IF NOT EXISTS Events (
-	SiteName varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+	SiteName varchar(50) CHARACTER SET utf8MB3 COLLATE utf8MB4 NOT NULL,
 	--
 
-	EventName varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+	EventName varchar(50) CHARACTER SET utf8MB3 COLLATE utf8MB4 NOT NULL,
 	--
 
 	StartDate date NOT NULL,
@@ -158,7 +158,7 @@ CREATE TABLE IF NOT EXISTS Events (
 	Capacity int NOT NULL DEFAULT 10,
 	--
 
-	Description text CHARACTER SET utf8 COLLATE utf8_general_ci,
+	Description text CHARACTER SET utf8MB3 COLLATE utf8MB4,
 	--
 
 	CONSTRAINT FK4_Event1_Host FOREIGN KEY (SiteName) REFERENCES Site(SiteName)
@@ -168,18 +168,18 @@ CREATE TABLE IF NOT EXISTS Events (
 	CONSTRAINT PK_Event PRIMARY KEY (SiteName, EventName, StartDate)
 	--
 
-) ENGINE INNODB CHARACTER SET utf8 COLLATE utf8_general_ci;
+) ENGINE INNODB CHARACTER SET utf8MB3 COLLATE utf8MB4;
 
 
 
 CREATE TABLE IF NOT EXISTS Connects (
-	Route varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+	Route varchar(20) CHARACTER SET utf8MB3 COLLATE utf8MB4 NOT NULL,
 	--
 
 	TransportType ENUM('MARTA', 'BUS', 'BIKE') NOT NULL,
 	--
 
-	SiteName varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+	SiteName varchar(50) CHARACTER SET utf8MB3 COLLATE utf8MB4 NOT NULL,
 	--
 	CONSTRAINT FK_Connect_A_18 FOREIGN KEY (SiteName) REFERENCES Site(SiteName)
 	ON DELETE CASCADE ON UPDATE CASCADE,
@@ -192,15 +192,15 @@ CREATE TABLE IF NOT EXISTS Connects (
 	CONSTRAINT PK_AT PRIMARY KEY (SiteName, Route, TransportType)
 	--
 
-) ENGINE INNODB CHARACTER SET utf8 COLLATE utf8_general_ci;
+) ENGINE INNODB CHARACTER SET utf8MB3 COLLATE utf8MB4;
 
 
 
 CREATE TABLE IF NOT EXISTS Take (
-	UserName varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+	UserName varchar(50) CHARACTER SET utf8MB3 COLLATE utf8MB4 NOT NULL,
 	--
 
-	Route varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+	Route varchar(20) CHARACTER SET utf8MB3 COLLATE utf8MB4 NOT NULL,
 	--
 
 	TransportType ENUM('MARTA', 'BUS', 'BIKE') NOT NULL,
@@ -220,15 +220,15 @@ CREATE TABLE IF NOT EXISTS Take (
 	CONSTRAINT PK_Take PRIMARY KEY (UserName, Route, TransportType, `Date`)
 	--
 
-) ENGINE INNODB CHARACTER SET utf8 COLLATE utf8_general_ci;
+) ENGINE INNODB CHARACTER SET utf8MB3 COLLATE utf8MB4;
 
 
 
 CREATE TABLE IF NOT EXISTS VisitSite (
-	UserName varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+	UserName varchar(50) CHARACTER SET utf8MB3 COLLATE utf8MB4 NOT NULL,
 	--
 
-	SiteName varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+	SiteName varchar(50) CHARACTER SET utf8MB3 COLLATE utf8MB4 NOT NULL,
 	--
 
 	`Date` date NOT NULL,
@@ -245,18 +245,18 @@ CREATE TABLE IF NOT EXISTS VisitSite (
 	CONSTRAINT PK_VS PRIMARY KEY (UserName, SiteName, `Date`)
 	--
 
-) ENGINE INNODB CHARACTER SET utf8 COLLATE utf8_general_ci;
+) ENGINE INNODB CHARACTER SET utf8MB3 COLLATE utf8MB4;
 
 
 
 CREATE TABLE IF NOT EXISTS VisitEvent (
-	UserName varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+	UserName varchar(50) CHARACTER SET utf8MB3 COLLATE utf8MB4 NOT NULL,
 	--
 
-	SiteName varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+	SiteName varchar(50) CHARACTER SET utf8MB3 COLLATE utf8MB4 NOT NULL,
 	--
 
-	EventName varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+	EventName varchar(50) CHARACTER SET utf8MB3 COLLATE utf8MB4 NOT NULL,
 	--
 
 	StartDate date NOT NULL,
@@ -276,18 +276,18 @@ CREATE TABLE IF NOT EXISTS VisitEvent (
 	CONSTRAINT PK_SE PRIMARY KEY (UserName, SiteName, EventName, StartDate, `Date`)
 	--
 
-) ENGINE INNODB CHARACTER SET utf8 COLLATE utf8_general_ci;
+) ENGINE INNODB CHARACTER SET utf8MB3 COLLATE utf8MB4;
 
 
 
 CREATE TABLE IF NOT EXISTS AssignTo (
-	StaffName varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+	StaffName varchar(50) CHARACTER SET utf8MB3 COLLATE utf8MB4 NOT NULL,
 	--
 
-	SiteName varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+	SiteName varchar(50) CHARACTER SET utf8MB3 COLLATE utf8MB4 NOT NULL,
 	--
 
-	EventName varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+	EventName varchar(50) CHARACTER SET utf8MB3 COLLATE utf8MB4 NOT NULL,
 	--
 
 	StartDate date NOT NULL,
@@ -304,4 +304,4 @@ CREATE TABLE IF NOT EXISTS AssignTo (
 	CONSTRAINT PK_AT PRIMARY KEY (StaffName, SiteName, EventName, StartDate)
 	--
 
-) ENGINE INNODB CHARACTER SET utf8 COLLATE utf8_general_ci;
+) ENGINE INNODB CHARACTER SET utf8MB3 COLLATE utf8MB4;
