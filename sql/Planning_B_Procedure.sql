@@ -144,12 +144,12 @@ BEGIN
     DECLARE status_ int;
     DECLARE em_id int(9);
     DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle(error);
-    SET status_ = new_status + 1;
+    SET status_ = new_status;
     IF ("Approval" IN (SELECT `Status` FROM Users WHERE UserName = user_name)) AND (new_status = 1) THEN 
         SET error = "Cannot deny an approved user.";
     ELSE
         UPDATE Users SET Status = status_ WHERE UserName = user_name;
-        IF EXISTS(SELECT * FROM Employee WHERE UserName = user_name) AND (SELECT EmployeeID FROM Employee WHERE UserName = user_name = null) AND status_ = 3 THEN                
+        IF EXISTS(SELECT * FROM Employee WHERE UserName = user_name) AND (SELECT EmployeeID FROM Employee WHERE UserName = user_name = null) AND status_ = 2 THEN                
             SET em_id = 000000001;
             WHILE EXISTS(SELECT * FROM Employee WHERE EmployeeID = em_id) DO
                 SET em_id = em_id + 1;
@@ -288,17 +288,39 @@ BEGIN
     INSERT INTO VisitSite VALUES(user_name, site_name, log_date);
 END $$
 
-CREATE PROCEDURE query_user_by_email(in email_address varchar(100), out user_name varchar(100), out pass_word varchar(100), out status_ varchar(100), out first_name varchar(100), out last_name varchar(100), out is_visitor varchar(10), out error varchar(300))
+
+CREATE PROCEDURE query_user_by_email(in email_address varchar(100), out user_name varchar(100), out pass_word varchar(100), out status_ int(1), out first_name varchar(100), out last_name varchar(100), out is_visitor int(1), out is_employee int(1), out error varchar(300))
 -- order of parameter
 -- email address
--- user name, password, status, first name, last name, is visitor
+-- user name, password, status, first name, last name, is visitor, is employee
 BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle(error);
     IF EXISTS(SELECT * FROM Email WHERE EmailAddress = email_address) THEN 
         SET user_name = (SELECT UserName FROM Email WHERE EmailAddress = email_address LIMIT 1);
         SELECT `Password`, `Status`, FirstName, LastName, IsVisitor INTO pass_word, status_, first_name, last_name, is_visitor FROM Users WHERE UserName = user_name LIMIT 1 ;
+        SET is_visitor = is_visitor - 1;
+        IF EXISTS(SELECT * FROM Employee WHERE UserName = user_name) THEN
+            SET is_employee = 1;
+        ELSE 
+            SET is_employee = 0;
+        END IF;
     ELSE 
         SET error = "Email Address does not exist.";
+    END IF;
+END $$
+
+
+CREATE PROCEDURE query_user_by_username(in user_name varchar(100), out pass_word varchar(100), out status_ int(1), out first_name varchar(100), out last_name varchar(100), out is_visitor int(1), out is_employee int(1), out error varchar(300))
+-- order of parameter
+-- user name
+-- password, status, first name, last name, is visitor, is employee
+BEGIN
+    SELECT `Password`, `Status`, FirstName, LastName, IsVisitor INTO pass_word, status_, first_name, last_name, is_visitor FROM Users WHERE UserName = user_name LIMIT 1 ;
+    SET is_visitor = is_visitor - 1;
+    IF EXISTS(SELECT * FROM Employee WHERE UserName = user_name) THEN
+        SET is_employee = 1;
+    ELSE 
+        SET is_employee = 0;
     END IF;
 END $$
 
@@ -317,5 +339,21 @@ BEGIN
         SET error = "This user is not an employee.";
     END IF;
 END $$
+
+
+CREATE PROCEDURE query_employee_by_email(in email_address varchar(100), out user_name varchar(100), out employee_id varchar(9), out phone_ varchar(10), out address_ varchar(100), out city_ varchar(100), out state_ varchar(100), out zip_code varchar(10), out title_ varchar(10), out error varchar(300))
+-- order of parameter
+-- email address
+-- user name, employee id, phone, address, city, state, zip code, title
+BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle(error);
+    SELECT UserName INTO user_name FROM Email WHERE EmailAddress = email_address;
+    CALL query_employee_by_user(user_name, employee_id, phone_, address_, city_, state_, zip_code, title_, error);
+END $$
+
+
+
+
+
 
 DELIMITER ;

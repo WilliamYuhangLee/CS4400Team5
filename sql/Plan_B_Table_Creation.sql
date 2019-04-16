@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS Users (
 	Password varchar(100) NOT NULL,
 	-- Password required to be hashed before storage, so I actually store a hash code
 
-	Status ENUM('Pending', 'Denied', 'Approval') DEFAULT 'Pending' NOT NULL,
+	Status ENUM('Denied', 'Approval', 'Pending') DEFAULT 'Pending' NOT NULL,
 	-- Status of a user can only be one of these three
 
 	FirstName varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
