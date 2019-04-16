@@ -1168,11 +1168,46 @@ BEGIN
 END $$
 
 
+CREATE PROCEDURE revert_user(in user_name varchar(100), out error varchar(300))
+-- order of parameter
+-- user name
+BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle(error);
+    DELETE FROM Users WHERE UserName = user_name;
+END $$
+
+
+CREATE PROCEDURE check_email(in email_address varchar(100), out result int(1), out error varchar(300))
+-- order of parameter
+-- email address, result
+BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle(error);
+    IF (SELECT UserName FROM Email WHERE EmailAddress = email_address LIMIT 1) THEN 
+        SET result = 0;
+    ELSE
+        SET result = 1;
+    END IF;
+END $$
+
+
+CREATE PROCEDURE check_username(in user_name varchar(100), out result int(1), out error varchar(300))
+-- order of parameter
+-- user name, result
+BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle(error);
+    IF (SELECT UserName FROM Users WHERE UserName = user_address LIMIT 1) THEN 
+        SET result = 0;
+    ELSE
+        SET result = 1;
+    END IF;
+END $$
+
 
 
 
 
 DELIMITER ;
 
+DROP USER IF EXISTS 'alterbeltline'@'%';
 CREATE USER 'alterbeltline'@'%' IDENTIFIED BY 'cs4400team5';
 GRANT ALL PRIVILEGES ON altbeltline.* TO 'alterbeltline'@'%';
