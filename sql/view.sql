@@ -46,10 +46,13 @@ CREATE VIEW for_visitor AS
 SELECT UserName, FirstName, LastName, NumMySiteVisit, NumMyEventVisit 
 FROM site_visit_num LEFT JOIN event_visit_num USING(UserName, FirstName, LastName);
 
-CREATE VIEW for_staff AS 
+CREATE VIEW for_staff_pre AS 
 SELECT UserName, EmployeeID, count(*) AS NumEventShifts, Title 
 FROM Employee LEFT JOIN AssignTo ON Employee.UserName = AssignTo.StaffName 
 GROUP BY UserName HAVING Title = "Staff";
+
+CREATE VIEW for_staff AS
+SELECT * FROM for_staff_pre JOIN AssignTO ON for_staff_pre.UserName = AssignTo.StaffName INNER JOIN Users USING (UserName) LEFT JOIN Events USING(SiteName, EventName, StartDate); 
 
 CREATE VIEW tansit_logged_num AS 
 SELECT Route, TransportType, count(*) AS NumLogged 
@@ -104,6 +107,12 @@ SELECT SiteName, `Date`, sum(DailyVisit) AS DailyVisit, sum(DailyRevenue) AS Dai
 FROM daily_site_pre 
 GROUP BY SiteName, `Date`;
 
+CREATE VIEW full_daily_site_pre AS
+SELECT SiteName, `Date`, DailyVisit, DailyRevenue, IF(daily_site.Date >= for_event.StartDate AND daily_site.Date <= (for_event.StartDate + for_event.Duration), CountStaff, 0) AS CountStaff FROM daily_site LEFT JOIN for_event USING(SiteName);
+
+CREATE VIEW full_daily_site AS
+SELECT SiteName, `Date`, DailyVisit, DailyRevenue, sum(CountStaff) AS CountStaff, sum(IF(CountStaff = 0, 0, 1)) AS EventCount FROM full_daily_site_pre GROUP BY SiteName, `Date`;
+
 CREATE VIEW staff_site AS 
 SELECT DISTINCT SiteName, StaffName 
 FROM AssignTo;
@@ -139,3 +148,7 @@ CREATE VIEW visit_hisotry_pre AS
 CREATE VIEW visit_history AS
 SELECT `Date`, EventName, SiteName, Price, UserName
 FROM VisitEvent FULL JOIN visit_hisotry_pre USING(`Date`, SiteName, UserName) LEFT JOIN `EVENTS` USING(SiteName, EventName, StartDate);
+
+CREATE VIEW for_schedule AS
+SELECT EventName, SiteName, StartDate, (StartDate + Duration) AS EndDate, CountStaff, StaffName 
+FROM AssignTo JOIN for_event USING(EventName, SiteName, StartDate);
