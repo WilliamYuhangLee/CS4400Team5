@@ -1,10 +1,19 @@
 from flask import Flask
 from flask_mysqldb import MySQL
+from flask_bcrypt import Bcrypt
+from flask_login import LoginManager
 
 from app import configs
 
 # Instantiate extensions
 db = MySQL()
+bcrypt = Bcrypt()
+login_manager = LoginManager()
+
+
+# Login Manager setup
+login_manager.login_view = "login"  # set view function for login (when login_required is triggered)
+login_manager.login_message_category = "info"  # set login message style
 
 
 def create_app(config_class="Config"):
@@ -23,5 +32,11 @@ def create_app(config_class="Config"):
 
     # Initialize extensions
     db.init_app(app)
+    bcrypt.init_app(app)
+    login_manager.init_app(app)
+
+    # Register Blueprints
+    from app.user.routes import user
+    app.register_blueprint(user)
 
     return app

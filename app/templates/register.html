@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>{% block head %}
+    {{super()}}
+    {% endblock head %}
+</head>
+
+<body>
+    <header class="site-header">
+        {% block header %}
+        {{super()}}
+        {% endblock header %}
+    </header>
+    <main>
+        <div class="col-md-8" id="content">
+        {% block content %}
+        <div class="content-section">
+            <form method="post" action="">
+                {{ form.hidden_tag() }}
+                <fieldset class="form-group">
+                    <legend class="border-bottom mb-4">
+                        Welcome to {{ config.APP_NAME }}
+                    </legend>
+                    <div class="form-group">
+                        {{ form.firstname.label(class="form-control-label") }}
+                        {% if form.firstname.errors %}
+                        {{ form.firstname(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.firstname.errors %}
+                            <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        {{ form.firstname(class="form-control form-control-lg") }}
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        {{ form.lastname.label(class="form-control-label") }}
+                        {% if form.lastname.errors %}
+                        {{ form.lastname(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.lastname.errors %}
+                            <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        {{ form.lastname(class="form-control form-control-lg") }}
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        {{ form.username.label(class="form-control-label") }}
+                        {% if form.username.errors %}
+                        {{ form.username(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.username.errors %}
+                            <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        {{ form.username(class="form-control form-control-lg") }}
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        {{ form.password.label(class="form-control-label") }}
+                        {% if form.password.errors %}
+                        {{ form.password(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.password.errors %}
+                            <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        {{ form.password(class="form-control form-control-lg") }}
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        {{ form.confirm_password.label(class="form-control-label") }}
+                        {% if form.confirm_password.errors %}
+                        {{ form.confirm_password(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.confirm_password.errors %}
+                            <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        {{ form.confirm_password(class="form-control form-control-lg") }}
+                        {% endif %}
+                    </div>
+                    <div class="form-group">
+                        {{ form.confirm_password.label(class="form-control-label") }}
+                        {% if form.confirm_password.errors %}
+                        {{ form.confirm_password(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.confirm_password.errors %}
+                            <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        {{ form.confirm_password(class="form-control form-control-lg") }}
+                        {% endif %}
+                    </div>
+                    <div class="form-group" id="container">
+                        {% block container %}
+                        {% endblock container %}
+                    </div>
+                    <fieldset class="form-group" id="emaillist">
+                        {% block email %}
+                        <div class="form-group" id="email">
+                            {{ form.email.label(class="form-control-label") }}
+                            {% if form.email.errors %}
+                            {{ form.email(class="form-control form-control-lg is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.email.errors %}
+                                <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            {{ form.email(class="form-control form-control-lg") }}
+                            {% endif %}
+                            <a role="button" class="btn btn-info btn-lg btn-block" id="addEmail">
+                                Add New Email
+                            </a>
+                        </div>
+                        {% endblock email %}
+                    </fieldset>
+                </fieldset>
+                <div class="form-group">
+                    {{ form.submit(class="btn btn-outline-info") }}
+                </div>
+            </form>
+        </div>
+        <div class="border-top pt-2">
+            <small class="text-muted">
+                Already have an account? <a class="ml-2" href="{{ url_for("login") }}">Log in</a>
+            </small>
+        </div>
+        {% block content %}
+            </div>
+        <div class="col-md-3" id=menu>
+                {% block sidebar %}
+                <!--suppress Annotator -->
+                <div class="content-section">
+                    {% block sidebar_title %}
+                        <h3>Trip Advisor</h3>
+                    {% endblock sidebar_title %}
+                    {% block sidebar_description %}
+                        <p class='text-muted'>
+                            Welcome!
+                        </p>
+                    {% endblock sidebar_description %}
+                    {% block sidebar_content %}
+                        {% block sidebar_botton_1 %}
+                            <button type="button" class="btn btn-outline-info btn-lg btn-block" href="{{ url_for('nav-register') }}">
+                                Reset Account Type
+                            </button>
+                        {% endblock sidebar_botton_1 %}
+                        {% block sidebar_botton_2 %}
+                            <a role="button" class="btn btn-info btn-lg btn-block" href="{{ url_for('login') }}">
+                                Back to Login Page
+                           </a>
+                        {% endblock sidebar_botton_2 %}
+                    {% endblock sidebar_content %}
+                </div>
+            {% endblock sidebar %}
+            </div>
+        </main>
+    
+        {% block scripts %}
+        <script>
+                $("#addEmail").click(function () {
+                    $("#emaillist").append('<div id="email">');
+                });
+            </script>
+        {% endblock script %}
+    </body>
