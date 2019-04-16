@@ -3,6 +3,8 @@ DROP DATABASE IF EXISTS atlbeltline;
 CREATE DATABASE IF NOT EXISTS atlbeltline CHARACTER SET utf8 COLLATE utf8_general_ci;
 USE atlbeltline;
 
+SET GLOBAL log_bin_trust_function_creators = 1;
+
 
 
 CREATE TABLE IF NOT EXISTS Users (
@@ -689,7 +691,7 @@ DELIMITER ;
 
 USE atlbeltline;
 
-SET GLOBAL log_bin_trust_function_creators = 1;
+
 
 DELIMITER $$
 CREATE FUNCTION get_type(em_title int, is_visitor int) RETURNS varchar(20)
@@ -1257,7 +1259,3 @@ END $$
 
 
 DELIMITER ;
-
-DROP USER IF EXISTS 'alterbeltline'@'%';
-CREATE USER 'alterbeltline'@'%' IDENTIFIED BY 'cs4400team5';
-GRANT ALL PRIVILEGES ON altbeltline.* TO 'alterbeltline'@'%';

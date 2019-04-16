@@ -3,6 +3,8 @@ DROP DATABASE IF EXISTS atlbeltline;
 CREATE DATABASE IF NOT EXISTS atlbeltline CHARACTER SET utf8 COLLATE utf8_general_ci;
 USE atlbeltline;
 
+SET GLOBAL log_bin_trust_function_creators = 1;
+
 
 
 CREATE TABLE IF NOT EXISTS Users (
