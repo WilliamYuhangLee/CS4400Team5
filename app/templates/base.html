@@ -2,6 +2,7 @@
 <!--suppress ALL -->
 <html lang="en">
 <head>
+    {% block head %}
     <!-- Meta -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -19,9 +20,10 @@
     {% else %}
         <title>{{ config.APP_NAME }}</title>
     {% endif %}
+    {% endblock head %}
 </head>
 <body>
-<header class="site-header">
+<!--header class="site-header">
     <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
         <div class="container">
             <a class="navbar-brand mr-4" href="/">{{ config.APP_NAME }}</a>
@@ -34,34 +36,23 @@
 {#                    <a class="nav-item nav-link" href="{{ url_for('main.home') }}">Home</a>#}
 {#                    <a class="nav-item nav-link" href="{{ url_for('main.about') }}">About</a>#}
                 </div>
-                <!-- Navbar Right Side -->
                 <div class="navbar-nav">
                     {% if current_user.is_authenticated %}
 {#                        <a class="nav-item nav-link" href="{{ url_for('user.account') }}">Account</a>#}
 {#                        <a class="nav-item nav-link" href="{{ url_for('user.logout') }}">Log out</a>#}
                     {% else %}
                         <a class="nav-item nav-link" href="{{ url_for('user.login') }}">Log in</a>
-{#                        <a class="nav-item nav-link" href="{{ url_for('user.register_user') }}">Sign up</a>#}
+{#                        <a class="nav-item nav-link" href="{{ url_for('user.register-user') }}">Sign up</a>#}
                     {% endif %}
                 </div>
             </div>
         </div>
     </nav>
-</header>
+</header-->
 <main role="main" class="container">
     <div class="row">
         <div class="col-md-8" id="content">
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                        <div class="alert alert-{{ category }}">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
-            <!-- content block -->
-            {% block content %}{% endblock content %}
+                {% block content %}{% endblock %}
         </div>
         <div class="col-md-3" id=menu>
             {% block sidebar %}
@@ -77,14 +68,14 @@
                     {% endblock sidebar_description %}
                     {% block sidebar_content %}
                         {% block sidebar_botton_1 %}
-                            <button type="button" class="btn btn-outline-info btn-lg btn-block">
-                                Take Transit
+                            <button type="button" class="btn btn-outline-info btn-lg btn-block" href="{{ url_for('login') }}">
+                                Login
                             </button>
                         {% endblock sidebar_botton_1 %}
                         {% block sidebar_botton_2 %}
-{#                            <a role="button" class="btn btn-info btn-lg btn-block" href="{{ url_for('transit.get_history') }}">#}
-{#                                View Transit History#}
-{#                            </a>#}
+                            <a role="button" class="btn btn-info btn-lg btn-block" href="{{ url_for('nav-register') }}">
+                                Register
+                           </a>
                         {% endblock sidebar_botton_2 %}
                     {% endblock sidebar_content %}
                 </div>
@@ -94,7 +85,7 @@
 </main>
 
 <!-- Bootstrap scripts -->
-<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+{% block scripts %}
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
         integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
         crossorigin="anonymous"></script>
@@ -104,16 +95,12 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
         integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
         crossorigin="anonymous"></script>
-
-<!-- Scripts extensions -->
-{% block scripts %}
 {% endblock %}
 </body>
 </html>
 
 <style>#menu
     {
-        position: fixed;
-        right: 10px;
-        top: 10px;
+        position:absolute;
+        text-align: center;
     }</style>

@@ -1,21 +1,23 @@
 {% extends "register.html" %}
-<div class="content-section">
-    <form method="post" action="">
-        {{ form.hidden_tag() }}
-        <fieldset class="form-group">
-            {% block fieldset %}
-            {{ super() }}
+{% block head %}
+{{super()}}
+{% endblock head %}
+{% block head %}
+{{super()}}
+{% endblock head %}
+
+{% block container %}
             <div class="form-group">
-                {{ form.usertype.label(class="form-control-label") }}
-                {% if form.usertype.errors %}
-                {{ form.usertype(class="form-control form-control-lg is-invalid") }}
+                {{ form.employeetype.label(class="form-control-label") }}
+                {% if form.employeetype.errors %}
+                {{ form.employeetype(class="form-control form-control-lg is-invalid") }}
                 <div class="invalid-feedback">
-                    {% for error in form.usertype.errors %}
+                    {% for error in form.employeetype.errors %}
                     <span>{{ error }}</span>
                     {% endfor %}
                 </div>
                 {% else %}
-                {{ form.usertype(class="form-control form-control-lg") }}
+                {{ form.employeetype(class="form-control form-control-lg") }}
                 {% endif %}
             </div>
             <div class="form-group">
@@ -45,19 +47,6 @@
                 {% endif %}
             </div>
             <div class="form-group">
-                {{ form.city.label(class="form-control-label") }}
-                {% if form.city.errors %}
-                {{ form.city(class="form-control form-control-lg is-invalid") }}
-                <div class="invalid-feedback">
-                    {% for error in form.city.errors %}
-                    <span>{{ error }}</span>
-                    {% endfor %}
-                </div>
-                {% else %}
-                {{ form.city(class="form-control form-control-lg") }}
-                {% endif %}
-            </div>
-            <div class="form-group">
                 {{ form.state.label(class="form-control-label") }}
                 {% if form.state.errors %}
                 {{ form.state(class="form-control form-control-lg is-invalid") }}
@@ -83,19 +72,13 @@
                 {{ form.zipcode(class="form-control form-control-lg") }}
                 {% endif %}
             </div>
-            {% endblock fieldset %}
-        </fieldset>
-        <div class="form-group">
-            {{ form.submit(class="btn btn-outline-info") }}
-        </div>
-    </form>
 </div>
-<div class="border-top pt-2">
-    <small class="text-muted">
-        Already have an account? <a class="ml-2" href="{{ url_for("users.login") }}">Log in</a>
-    </small>
-</div>
+{% endblock container %}
 
 {% block scripts %}
 {{ super() }}
 {% endblock scripts %}
+
+{% block content %}
+{{super()}}
+{% endblock %}

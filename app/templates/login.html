@@ -1,23 +1,26 @@
 {% extends "base.html" %}
+{% block head %}
+{{super()}}
+{% endblock head %}
 {% block content %}
     <div class="content-section">
-        <form method="post" action="">
+        <form method="post" action="" title="Login">
             {{ form.hidden_tag() }}
             <fieldset class="form-group">
                 <legend class="border-bottom mb-4">
                     Sign In
                 </legend>
                 <div class="form-group">
-                    {{ form.username.label(class="form-control-label") }}
-                    {% if form.username.errors %}
-                        {{ form.username(class="form-control form-control-lg is-invalid") }}
+                    {{ form.email.label(class="form-control-label") }}
+                    {% if form.email.errors %}
+                        {{ form.email(class="form-control form-control-lg is-invalid") }}
                         <div class="invalid-feedback">
-                            {% for error in form.username.errors %}
+                            {% for error in form.email.errors %}
                                 <span>{{ error }}</span>
                             {% endfor %}
                         </div>
                     {% else %}
-                        {{ form.username(class="form-control form-control-lg") }}
+                        {{ form.email(class="form-control form-control-lg") }}
                     {% endif %}
                 </div>
                 <div class="form-group">
@@ -33,10 +36,10 @@
                         {{ form.password(class="form-control form-control-lg") }}
                     {% endif %}
                 </div>
-                <div class="form-check">
+                <!----div class="form-check">
                     {{ form.remember(class="form-check-input") }}
                     {{ form.remember.label(class="form-check-label") }}
-                </div>
+                </div-->
             </fieldset>
             <div class="form-group">
                 {{ form.submit(class="btn btn-outline-info") }}
@@ -48,7 +51,7 @@
     </div>
     <div class="border-top pt-2">
         <small class="text-muted">
-            Don't have an account? <a class="ml-2" href="{{ url_for("users.register") }}">Sign up now</a>
+            Don't have an account? <a class="ml-2" href="{{ url_for('nav-register') }}">Sign up now</a>
         </small>
     </div>
 {% endblock content %}

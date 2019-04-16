@@ -1,22 +1,10 @@
-{% extends "employeeRegister2.html" %}
-<div class="content-section">
-        <form method="post" action="">
-            {{ form.hidden_tag() }}
-            <fieldset class="form-group">
-                    {% block fieldset %}
-                    {{ super() }}
-                    {% endblock fieldset %}
-            </fieldset>
-            <div class="form-group">
-                {{ form.submit(class="btn btn-outline-info") }}
-            </div>
-        </form>
-    </div>
-    <div class="border-top pt-2">
-        <small class="text-muted">
-            Already have an account? <a class="ml-2" href="{{ url_for("users.login") }}">Log in</a>
-        </small>
-    </div>
+{% extends "register-employee.html" %}
+{% block head %}
+{{super()}}
+{% endblock head %}
+{% block content %}
+{{super()}}
+    {% block content %}
 
 {% block scripts %}
 {{ super() }}

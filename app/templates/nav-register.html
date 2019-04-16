@@ -1,26 +1,29 @@
 {% extends "base.html" %}
+{% block head %}
+{{super()}}
+{% endblock head %}
 {% block content %}
-    <div class="content-section">
-        <legend class="border-bottom mb-4">
-            Register Menu
-        </legend>
-        <div id="registerNav_frame">
-                <p id="Title">Register</p>
-                    <a href="register-user.html">
-                        <button>User Only</button>
-                    </a>
-                    <a href="register-visitor.html">
-                        <button>Visitor Only</button>
-                    </a>
-                    <a href="register-employee.html">
-                        <button>Employee Only</button>
-                    </a>
-                    <a href="register-employee-visitor.html">
-                        <button>Employee-visitor</button>
-                    </a>
-                    <a href="login.html">
-                        <button>Back</button>
-                    </a>
-            </div>
+<div class="content-section">
+    <legend class="border-bottom mb-4">
+        Register Menu
+    </legend>
+    <div id="registerNav_frame">
+        <p id="Title">Register</p>
+        <a href="{{ url_for('register-user', usertype=user, isVisitor=false)}}">
+                User Register
+        </a>
+        <a href="{{ url_for('register-visitor', usertype=user, isVisitor=true)}}">
+                Visitor Register
+        </a>
+        <a href="{{ url_for(register-employee', usertype=employee, isVisitor=false)}}">
+                Employee Register
+        </a>
+        <a href="{{ url_for('register-employee-visitor', usertype=employee, isVisitor=true)}}">
+                Employee Visitor Register
+        </a>
+        <a href="{{ url_for('login')}}">
+                Back
+        </a>
     </div>
+</div>
 {% endblock content %}
