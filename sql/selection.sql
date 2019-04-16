@@ -1,0 +1,220 @@
+DELIMITER $$
+
+
+CREATE PROCEDURE filter_transit(in site_name varchar(50), in route_ varchar(20), in transport_type varchar(10), in low_price float, in high_price float, in error varchar(300))
+-- order of parameter
+-- site name, transport type, lower bondary of price, higher bondary of price
+-- null value means not apply to the filter
+BEGIN
+    DECLARE new_site_name varchar(100);
+    DECLARE new_route_ varchar(20);
+    DECLARE new_high_price int;
+    DECLARE EXIT HANDLER FOR SQLSTATE '45000' CALL handle2(error);
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle1(error);
+    
+    IF length(site_name) > 0 THEN
+        SET new_site_name = site_name;
+    ELSE 
+        SET new_site_name = "%";
+    END IF;
+    IF length(route_) > 0 THEN
+        SET new_route_ = route_;
+    ELSE 
+        SET new_route_ = "%";
+    END IF;
+    IF high_price = 0 THEN
+        SET new_high_price = 1000.00;
+    ELSE
+        SET new_high_price = high_price;
+    END IF;
+    IF length(transport_type) > 0 THEN 
+        SELECT DISTINCT Route, TransportType, Price, NumConnected FROM for_transit JOIN Connects USING(Route, TransportType) WHERE SiteName LIKE new_site_name AND TransportType = transport_type AND Price >= low_price AND Price <= new_high_price AND Route LIKE new_route_;
+    ELSE 
+        SELECT DISTINCT Route, TransportType, Price, NumConnected FROM for_transit JOIN Connects USING(Route, TransportType) WHERE SiteName LIKE new_site_name AND Price >= low_price AND Price <= new_high_price AND Route LIKE new_route_;
+    END IF;
+END $$
+
+
+CREATE PROCEDURE filter_transit_history(in user_name varchar(100), in site_name varchar(50), in transport_type varchar(10), in start_date date, in end_date date, out error varchar(300))
+BEGIN
+    DECLARE new_site_name varchar(100);
+    DECLARE new_start_date date;
+    DECLARE new_end_date date;
+    DECLARE EXIT HANDLER FOR SQLSTATE '45000' CALL handle2(error);
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle1(error);
+    
+    IF length(user_name) > 0 THEN
+        IF length(site_name) > 0 THEN
+            SET new_site_name = site_name;
+        ELSE 
+            SET new_site_name = "%";
+        END IF;
+        IF end_date = "0000-00-00" THEN
+            SET new_end_date = "9999-12-31";
+        ELSE 
+            SET new_end_date = end_date;
+        END IF;
+        IF start_date = "1000-01-01" THEN
+            SET new_start_date = "9999-12-31";
+        ELSE 
+            SET new_start_date = start_date;
+        END IF;
+        IF length(transport_type) >  0 THEN 
+            SELECT DISTINCT `Date`, Route, TransportType, Price FROM Take JOIN Transit USING(Route, TransportType) JOIN Connects USING(Route, TransportType) WHERE UserName = user_name AND SiteName LIKE new_site_name AND TransportType = transport_type AND `Date` >= new_start_date AND `Date` <= new_end_date;
+        ELSE 
+            SELECT DISTINCT `Date`, Route, TransportType, Price FROM Take JOIN Transit USING(Route, TransportType) JOIN Connects USING(Route, TransportType) WHERE UserName = user_name AND SiteName LIKE new_site_name AND `Date` >= new_start_date AND `Date` <= new_end_date;
+        END IF;
+    ELSE 
+        SET error = "Username cannot be null.";
+        SELECT error;
+    END IF;  
+    
+   
+END $$
+
+
+
+CREATE PROCEDURE filter_user(in user_name varchar(100), in type_ varchar(20), in status_ varchar(10), out error varchar(300))
+-- order of parameter
+-- username, type, status
+BEGIN 
+    DECLARE new_user_name varchar(100);
+    DECLARE new_type_ varchar(20);
+    DECLARE new_status_ varchar(10);
+    DECLARE EXIT HANDLER FOR SQLSTATE '45000' CALL handle2(error);
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle1(error);
+    IF length(user_name) > 0 THEN 
+        SET new_user_name = user_name;
+    ELSE 
+        SET new_user_name = "%";
+    END IF;
+    IF length(type_) > 0 THEN 
+        SET new_type_ = type_;
+    ELSE 
+        SET new_type_ = "%";
+    END IF;
+    IF length(status_) > 0 THEN 
+        SELECT UserName, NumEmailCount, Type, `Status`, NumLogged FROM for_users WHERE UserName LIKE new_user_name AND Type LIKE new_type_ AND `Status` = status_;
+    ELSE 
+        SELECT UserName, NumEmailCount, Type, `Status`, NumLogged FROM for_users WHERE UserName LIKE new_user_name AND Type LIKE new_type_;
+    END IF;
+END $$
+
+
+CREATE PROCEDURE filter_site(in site_name varchar(50), in manager_name varchar(100), in open_everyday int, out error varchar(300))
+-- order of parameter
+-- site name, manager name, if open every day
+BEGIN 
+    DECLARE new_site_name varchar(50);
+    DECLARE new_manager_name varchar(100);
+    DECLARE new_open_everyday int;
+    
+    DECLARE EXIT HANDLER FOR SQLSTATE '45000' CALL handle2(error);
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle1(error);
+    
+    IF length(site_name) > 0 THEN 
+        SET new_site_name = site_name;
+    ELSE 
+        SET new_site_name = "%";
+    END IF;
+    IF length(manager_name) > 0 THEN 
+        SET new_manager_name = manager_name;
+    ELSE 
+        SET new_manager_name = "%";
+    END IF;
+    SET new_open_everyday = open_everyday + 1;
+    
+    SELECT SiteName, ManagerName, EveryDay FROM for_site WHERE SiteName LIKE new_siter_name AND ManagerName LIKE new_manager_name AND EveryDay = new_open_everyday;
+END $$
+
+
+CREATE PROCEDURE filter_event(in event_name varchar(50), in key_word varchar(100), in start_date date, in end_date date, in short_duration int, in long_duration int, in low_visit int, in high_visit int, in low_revenue float, in high_revenue float, out error varchar(300))
+-- order of parameter
+-- event nane, key word in description, start date, end date, lower bondary of duration, higher bondary of duration, lower bondary of visit, higher bondary of visit, lower bondary of revenue, higher bondary of revenue
+BEGIN 
+    DECLARE new_event_name varchar(50);
+    DECLARE new_mkey_word varchar(100);
+    DECLARE new_start_date date;
+    DECLARE new_end_date date;
+    DECLARE new_long_duration int;
+    DECLARE new_high_visit int;
+    DECLARE new_high_revenue float;
+    
+    DECLARE EXIT HANDLER FOR SQLSTATE '45000' CALL handle2(error);
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle1(error);
+    
+    IF length(event_name) > 0 THEN 
+        SET new_event_name = event_name;
+    ELSE 
+        SET new_event_name = "%";
+    END IF;
+    IF length(key_word) > 0 THEN 
+        SET new_key_word = concat("%", concat(key_word, "%"));
+    ELSE 
+        SET new_key_word = "%";
+    END IF;
+    IF end_date = "0000-00-00" THEN
+        SET new_end_date = "9999-12-31";
+    ELSE 
+        SET new_end_date = end_date;
+    END IF;
+    IF start_date = "1000-01-01" THEN
+        SET new_start_date = "9999-12-31";
+    ELSE 
+        SET new_start_date = start_date;
+    END IF;
+    IF long_duration = 0 THEN
+        SET new_long_duration = ~0;
+    ELSE
+        SET new_long_duration = long_duration;
+    END IF;
+    IF high_visit = 0 THEN
+        SET new_high_visit = ~0;
+    ELSE
+        SET new_high_visit = high_visit;
+    END IF;
+    IF high_revenue = 0 THEN
+        SET new_high_revenue = ~0 - 1.0;
+    ELSE
+        SET new_high_revenue = high_revenue;
+    END IF;   
+    
+    
+    SELECT EventName, CountStaff, Duration, TotalVisit, TotalRevenue FROM for_event WHERE EventName LIKE new_event_name AND Description LIKE new_key_word AND StartDate >= new_start_date AND EndDate <= new_end_date AND Duration >= short_duration AND Duration <= new_long_duration AND TotalVisit >= low_visit AND TotalVisit <= new_high_visit AND TotalRevenue >= low_revenue AND TotalRevenue <= new_high_revenue;
+    
+END $$
+
+
+
+
+
+
+
+
+CREATE PROCEDURE query_email_by_username(in user_name varchar(100), out error varchar(300))
+-- order of parameter
+-- username
+BEGIN   
+    DECLARE EXIT HANDLER FOR SQLSTATE '45000' CALL handle2(error);
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle1(error);
+    IF length(user_name) > 0 THEN
+        SELECT EmailAddress FROM Email WHERE UserName = user_name;
+    ELSE 
+        SET error = "Username cannot be null.";
+    END IF;
+END $$
+
+
+CREATE PROCEDURE query_transit_by_pk(in route_ varchar(20), in transport_type varchar(20) out error varchar(300))
+-- order of parameter
+-- route, transport type
+BEGIN   
+    DECLARE EXIT HANDLER FOR SQLSTATE '45000' CALL handle2(error);
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle1(error);
+    IF length(route_) > 0  AND length(transport_type) > 0 THEN
+        SELECT SiteName, Price FROM Connects JOIN Transit USING(Route, TransportType) WHERE Route = route_ AND TransportType = transport_type;
+    ELSE 
+        SET error = "Username cannot be null.";
+    END IF;
+END $$
+

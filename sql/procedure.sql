@@ -8,6 +8,7 @@ BEGIN
     GET DIAGNOSTICS CONDITION 1
          @p1 = RETURNED_SQLSTATE, @p2 = MESSAGE_TEXT;
      SET error = '11';
+     SELECT error;
      -- SELECT @p2;
 END $$
 
@@ -16,24 +17,27 @@ BEGIN
     GET DIAGNOSTICS CONDITION 1
          @p1 = RETURNED_SQLSTATE, @p2 = MESSAGE_TEXT;
      SET error = @p2;
+     SELECT error;
 END $$
 
 
 CREATE PROCEDURE login(in email_address varchar(100), out result varchar(100), out error varchar(300))
 -- order of parameter
--- email address, password
+-- email address
+-- password
 BEGIN
-    DECLARE username varchar(50);
+    DECLARE user_name varchar(50);
     DECLARE EXIT HANDLER FOR SQLSTATE '45000' CALL handle2(error);
     DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle1(error);
 	
-	SET username = (SELECT UserName FROM Email WHERE EmailAddress LIKE email_address LIMIT 1);
-	IF (SELECT username IS NULL) THEN 
+	SET user_name = (SELECT UserName FROM Email WHERE EmailAddress LIKE email_address LIMIT 1);
+	IF length(user_name) <= 0 THEN 
 		SET error = "Email address does not exist.";
+        SELECT error;
 	ELSE
-        SET result = (SELECT Password FROM Users WHERE UserName LIKE username LIMIT 1);
+        SET result = (SELECT Password FROM Users WHERE UserName = user_name LIMIT 1);
+        SELECT result, email_address;
 	END IF;
-    SELECT result, error;
 END $$
 -- Correct way to call it
 
@@ -60,16 +64,17 @@ BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle1(error);
     IF EXISTS(SELECT * FROM USERS WHERE UserName = user_name) THEN 
         SET error = "Username already exists.";
+        SELECT error;
     ELSE
         IF is_visitor != 1 AND is_visitor != 0 THEN
             SET error = "IsVisitor is out of range.";
+            SELECT error;
         ELSE 
             SET is_visitor = is_visitor + 1;
             INSERT INTO Users(UserName, Password, FirstName, LastName, IsVisitor) 
                 VALUES(user_name, pass_word, first_name, last_name, is_visitor);
         END IF;
     END IF;
-    SELECT error;
 END $$
 
 
@@ -84,10 +89,10 @@ BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle1(error);    
     IF title_ = "ADMINISTRATOR" THEN 
         SET error = "Cannot create administrator.";
+        SELECT error;
     ELSE 
         INSERT INTO Employee(Username, Phone, Address, City, State, ZipCode, Title) VALUES(user_name, phone_, address_, city_, state_, zip_code, title_);
     END IF;
-    SELECT error;
 END $$
 
 
@@ -101,10 +106,10 @@ BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle1(error);
     IF title_ = "ADMINISTRATOR" THEN 
         SET error = "Cannot create administrator.";
+        SELECT error;
     ELSE 
         INSERT INTO Employee(Username, Phone, Address, City, State, ZipCode, Title, EmployeeID) VALUES(user_name, phone_, address_, city_, state_, zip_code, title_, employee_id);
     END IF;
-    SELECT error;
 END $$
 
 
@@ -116,7 +121,6 @@ BEGIN
     DECLARE EXIT HANDLER FOR SQLSTATE '45000' CALL handle2(error);
     DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle1(error);
     INSERT INTO Email VALUES(email_address, user_name);
-    SELECT error;
 END $$
 
 
@@ -127,7 +131,6 @@ BEGIN
     DECLARE EXIT HANDLER FOR SQLSTATE '45000' CALL handle2(error);
     DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle1(error);
     DELETE FROM Email WHERE EmailAddress LIKE email_address;
-    SELECT error;
 END $$
 
 
@@ -139,7 +142,6 @@ BEGIN
     DECLARE EXIT HANDLER FOR SQLSTATE '45000' CALL handle2(error);
     DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle1(error);
     INSERT INTO Take VALUES(user_name, route_, transport_type, take_date);
-    SELECT error;
 END $$
 
 
@@ -156,7 +158,6 @@ BEGIN
     UPDATE Employee
     SET Phone = phone_ 
     WHERE UserName LIKE user_name;
-    SELECT error;
 END $$
 
 
@@ -171,6 +172,7 @@ BEGIN
     SET status_ = new_status;
     IF ("APPROVED" IN (SELECT `Status` FROM Users WHERE UserName = user_name)) AND (new_status = "DENIED") THEN 
         SET error = "Cannot deny an approved user.";
+        SELECT error;
     ELSE
         UPDATE Users SET Status = status_ WHERE UserName = user_name;
         IF EXISTS(SELECT * FROM Employee WHERE UserName = user_name) AND (SELECT EmployeeID FROM Employee WHERE UserName = user_name = null) AND status_ = "APPROVED" THEN                
@@ -181,7 +183,6 @@ BEGIN
             UPDATE Employee SET EmployeeID = em_id WHERE UserName = user_name;
         END IF;
     END IF;
-    SELECT error;
 END $$
 
 
@@ -196,7 +197,6 @@ BEGIN
     UPDATE Site 
     SET Zipcode = zip_code, Address = address_, ManagerName = manager_name, EveryDay = open_every_day 
     WHERE SiteName = site_name;
-    SELECT error;
 END $$
 
 
@@ -209,7 +209,6 @@ BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle1(error);
     SET open_every_day = open_every_day + 1;    
     INSERT INTO Site VALUES(site_name, zip_code, address_, open_every_day, manager_name);
-    SELECT error;
 END $$
 
 
@@ -223,7 +222,6 @@ BEGIN
     UPDATE Transit 
     SET Route = new_route, Price = price_ 
     WHERE TransportType = transport_type AND Route = old_route;
-    SELECT error;
 END $$
 
 
@@ -234,7 +232,6 @@ BEGIN
     DECLARE EXIT HANDLER FOR SQLSTATE '45000' CALL handle2(error);
     DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle1(error);
     INSERT INTO Transit VALUES(route_, transport_type, price_);
-    SELECT error;
 END $$
 
 
@@ -246,8 +243,10 @@ BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle1(error);
     IF ! EXISTS(SELECT * FROM Connects WHERE TransportType = transport_type AND Route = route_ AND SiteName = site_name) THEN 
         INSERT INTO Connects VALUES(route_, transport_type, site_name);
+    ELSE 
+        SET error = "This site has been connected.";
+        SELECT error;
     END IF;
-    SELECT error;
 END $$
 
 
@@ -259,8 +258,11 @@ BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle1(error);
     IF EXISTS(SELECT * FROM Connects WHERE TransportType = transport_type AND Route = route_ AND SiteName = site_name) THEN 
         DELETE FROM Connects WHERE TransportType = transport_type AND Route = route_ AND SiteName = site_name;
+    ELSE 
+        SET error = "This site has been disconnected.";
+        SELECT error;
     END IF;
-    SELECT error;
+    
 END $$
 
 
@@ -273,7 +275,6 @@ BEGIN
     UPDATE `Events` 
     SET Description = description_ 
     WHERE SiteName = site_name AND EventName = event_name AND StartDate = start_date;
-    SELECT error;
 END $$
 
 
@@ -284,7 +285,6 @@ BEGIN
     DECLARE EXIT HANDLER FOR SQLSTATE '45000' CALL handle2(error);
     DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle1(error);
     INSERT INTO Events VALUES(site_name, event_name, start_date, end_date, min_staff_req, price_, capacity_, description_);
-    SELECT error;
 END $$
 
 
@@ -296,8 +296,11 @@ BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle1(error);
     IF ! EXISTS(SELECT * FROM AssignTo WHERE SiteName = site_name AND EventName = event_name AND StartDate = start_date AND StaffName = staff_name) THEN 
         INSERT INTO AssignTo VALUES(staff_name, site_name, event_name, start_date);
+    ELSE 
+        SET error = "This staff has been assigned.";
+        SELECT error;
     END IF;
-    SELECT error;
+    
 END $$
 
 
@@ -309,8 +312,10 @@ BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle1(error);
     IF EXISTS(SELECT * FROM AssignTo WHERE SiteName = site_name AND EventName = event_name AND StartDate = start_date AND StaffName = staff_name) THEN 
         DELETE FROM AssignTo WHERE SiteName = site_name AND EventName = event_name AND StartDate = start_date AND StaffName = staff_name;
+    ELSE 
+        SET error = "This staff has been unassigned.";
+        SELECT error;
     END IF;
-    SELECT error;
 END $$
 
 
@@ -321,7 +326,6 @@ BEGIN
     DECLARE EXIT HANDLER FOR SQLSTATE '45000' CALL handle2(error);
     DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle1(error);
     INSERT INTO VisitEvent VALUES(user_name, site_name, event_name, start_date, log_date);
-    SELECT error;
 END $$
 
 
@@ -332,7 +336,6 @@ BEGIN
     DECLARE EXIT HANDLER FOR SQLSTATE '45000' CALL handle2(error);
     DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle1(error);
     INSERT INTO VisitSite VALUES(user_name, site_name, log_date);
-    SELECT error;
 END $$
 
 
@@ -354,8 +357,9 @@ BEGIN
         END IF;
     ELSE 
         SET error = "Email Address does not exist.";
+        SELECT error;
     END IF;
-    SELECT user_name, pass_word, status_, first_name, last_name, is_visitor, is_employee, error;
+    SELECT user_name, pass_word, status_, first_name, last_name, is_visitor, is_employee;
 END $$
 
 
@@ -375,7 +379,7 @@ BEGIN
     ELSE 
         SET is_employee = 0;
     END IF;
-    SELECT pass_word, status, first_name, last_name, is_visitor, is_employee, error;
+    SELECT pass_word, status_, first_name, last_name, is_visitor, is_employee;
 END $$
 
 
@@ -390,10 +394,11 @@ BEGIN
         SELECT EmployeeID, Phone, Address, City, State, ZipCode, Title 
         INTO employee_id, phone_, address_, city_, state_, zip_code, title_ 
         FROM Employee WHERE UserName = user_name;
+        SELECT employee_id, phone_, address_, city_, state_, zip_code, title_;
     ELSE 
         SET error = "This user is not an employee.";
-    END IF;
-    SELECT employee_id, phone_, address_, city_, state_, zip_code, title_, error;
+        SELECT error;
+    END IF;    
 END $$
 
 
@@ -406,7 +411,7 @@ BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle1(error);
     SELECT UserName INTO user_name FROM Email WHERE EmailAddress = email_address;
     CALL query_employee_by_user(user_name, employee_id, phone_, address_, city_, state_, zip_code, title_, error);
-    SELECT user_name, employee_id, phone_, address_, city_, state_, zip_code, title_, error;
+    SELECT user_name, employee_id, phone_, address_, city_, state_, zip_code, title_;
 END $$
 
 
@@ -417,7 +422,6 @@ BEGIN
     DECLARE EXIT HANDLER FOR SQLSTATE '45000' CALL handle2(error);
     DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle1(error);
     DELETE FROM Users WHERE UserName = user_name;
-    SELECT error;
 END $$
 
 
@@ -427,12 +431,12 @@ CREATE PROCEDURE check_email(in email_address varchar(100), out result int(1), o
 BEGIN
     DECLARE EXIT HANDLER FOR SQLSTATE '45000' CALL handle2(error);
     DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle1(error);
-    IF (SELECT UserName FROM Email WHERE EmailAddress = email_address LIMIT 1) THEN 
+    IF EXISTS(SELECT UserName FROM Email WHERE EmailAddress = email_address LIMIT 1) THEN 
         SET result = 0;
     ELSE
         SET result = 1;
     END IF;
-    SELECT result, error;
+    SELECT result, "place holder";
 END $$
 
 
@@ -442,12 +446,12 @@ CREATE PROCEDURE check_username(in user_name varchar(100), out result int(1), ou
 BEGIN
     DECLARE EXIT HANDLER FOR SQLSTATE '45000' CALL handle2(error);
     DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle1(error);
-    IF (SELECT UserName FROM Users WHERE UserName = user_address LIMIT 1) THEN 
+    IF EXISTS(SELECT UserName FROM Users WHERE UserName = user_address LIMIT 1) THEN 
         SET result = 0;
     ELSE
         SET result = 1;
     END IF;
-    SELECT result, error;
+    SELECT result, "place holder";
 END $$
 
 
@@ -462,10 +466,43 @@ BEGIN
     ELSE
         SET result = 0;
     END IF;
-    SELECT result, error;
+    SELECT result, "place holder";
 END $$
 
 
+CREATE PROCEDURE query_site_by_site_name(in site_name varchar(100), out zip_code varchar(5), out address_ varchar(100), out manager_name varchar(100), out error varchar(300))
+-- order of parameter
+-- site name
+-- zip code, address, manager name
+BEGIN   
+    DECLARE EXIT HANDLER FOR SQLSTATE '45000' CALL handle2(error);
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle1(error);
+    IF length(site_name) > 0 THEN
+        SELECT ZipCode, Address, ManagerName INTO zip_code, address_, manager_name FROM Site WHERE SiteName = site_name;
+        SELECT zip_code, address_, manager_name;
+    ELSE 
+        SET error = "Site name cannot be null.";
+        SELECT error;
+    END IF;    
+END $$
+
+
+CREATE PROCEDURE query_event_by_pk(in site_name varchar(50), in event_name varchar(50), in start_date date, out end_date date, out min_staff_req int, out capacity_ int, out description_ text, out error varchar(300))
+-- order of parameter
+-- site name, event name, start date
+-- end date, minimun staff requirement, capacity, description
+BEGIN
+    DECLARE EXIT HANDLER FOR SQLSTATE '45000' CALL handle2(error);
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle1(error);
+    IF length(site_name) > 0 AND length(event_name) > 0 AND start_date != "0000-00-00" THEN
+        SELECT EndDate, MinSraffReq, Capacity, Description INTO end_date, min_staff_req, capacity_, description_ FROM Events WHERE SiteName = site_name AND EventName = event_date AND StartDate = start_date LIMIT 1;
+        SELECT end_date, min_staff_req, capacity_, description_;
+    ELSE 
+        SET error = "Primary key cannot have null value.";
+        SELECT error;
+    END IF;
+    
+END $$
 
 
 DELIMITER ;
