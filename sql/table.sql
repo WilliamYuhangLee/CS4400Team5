@@ -1,3 +1,5 @@
+DROP DATABASE IF EXISTS atlbeltline;
+
 CREATE DATABASE IF NOT EXISTS atlbeltline CHARACTER SET utf8 COLLATE utf8_general_ci;
 USE atlbeltline;
 
@@ -10,7 +12,7 @@ CREATE TABLE IF NOT EXISTS Users (
 	Password varchar(100) NOT NULL,
 	-- Password required to be hashed before storage, so I actually store a hash code
 
-	Status ENUM('Denied', 'Approval', 'Pending') DEFAULT 'Pending' NOT NULL,
+	Status ENUM('DENIED', 'APPROVED', 'PENDING') DEFAULT 'PENDING' NOT NULL,
 	-- Status of a user can only be one of these three
 
 	FirstName varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
@@ -19,7 +21,7 @@ CREATE TABLE IF NOT EXISTS Users (
 	LastName varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
 	--
 
-	IsVisitor ENUM('Yes', 'No') DEFAULT 'No' NOT NULL,
+	IsVisitor ENUM('NO', 'YES') DEFAULT 'NO' NOT NULL,
 	-- This labeled if a user also a visitor
 
 	CONSTRAINT PK_User PRIMARY KEY (UserName)
@@ -68,13 +70,13 @@ CREATE TABLE IF NOT EXISTS Employee (
 		'MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ',
 		'NM','NY','NC','ND','OH','OK','OR','PA','RI','SC',
 		'SD','TN','TX','UT','VT','VA','WA','WV','WI','WY',
-		'Other') DEFAULT 'GA' NOT NULL,
+		'OTHER') DEFAULT 'GA' NOT NULL,
 	--
 
 	Zipcode char(5) NOT NULL,
 	--
 
-	Title ENUM('Administrator', 'Manager', 'Staff') DEFAULT 'Staff' NOT NULL,
+	Title ENUM('ADMINISTRATOR', 'MANAGER', 'STAFF') DEFAULT 'STAFF' NOT NULL,
 	--
 
 	CONSTRAINT FK2_Employee1 FOREIGN KEY (UserName) REFERENCES Users(UserName)
@@ -92,7 +94,7 @@ CREATE TABLE IF NOT EXISTS Transit (
 	Route varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
 	--
 
-	TransportType ENUM('MARTA', 'Bus', 'Bike') NOT NULL,
+	TransportType ENUM('MARTA', 'BUS', 'BIKE') NOT NULL,
 	--
 
 	Price float(5,2) NOT NULL,
@@ -115,7 +117,7 @@ CREATE TABLE IF NOT EXISTS Site (
 	Address varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci,
 	--
 
-	EveryDay ENUM('Yes', 'No') NOT NULL,
+	EveryDay ENUM('NO', 'YES') NOT NULL,
 	--
 
 	ManagerName varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL UNIQUE,
@@ -172,7 +174,7 @@ CREATE TABLE IF NOT EXISTS Connects (
 	Route varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
 	--
 
-	TransportType ENUM('MARTA', 'Bus', 'Bike') NOT NULL,
+	TransportType ENUM('MARTA', 'BUS', 'BIKE') NOT NULL,
 	--
 
 	SiteName varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
@@ -199,7 +201,7 @@ CREATE TABLE IF NOT EXISTS Take (
 	Route varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
 	--
 
-	TransportType ENUM('MARTA', 'Bus', 'Bike') NOT NULL,
+	TransportType ENUM('MARTA', 'BUS', 'BIKE') NOT NULL,
 	--
 
 	`Date` date NOT NULL,

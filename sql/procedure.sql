@@ -44,15 +44,16 @@ END $$
 CREATE PROCEDURE register_user(in user_name varchar(50), in pass_word varchar(100), in first_name varchar(50), in last_name varchar(50), in is_visitor int, out error varchar(300)) 
 -- order of parameter
 -- username, password, firstname, lastname, is_visitor
--- is_visitor's value shall be 1 or 2 (1 for "Yes", 2 for "No")
+-- is_visitor's value shall be 0 or 1 (0 for "Yes", 1 for "No")
 BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle(error);
     IF EXISTS(SELECT * FROM USERS WHERE UserName = user_name) THEN 
         SET error = "Username already exists.";
     ELSE
-        IF is_visitor != 1 AND is_visitor != 2 THEN
+        IF is_visitor != 1 AND is_visitor != 0 THEN
             SET error = "IsVisitor is out of range.";
         ELSE 
+            SET is_visitor = is_visitor + 1;
             INSERT INTO Users(UserName, Password, FirstName, LastName, IsVisitor) 
                 VALUES(user_name, pass_word, first_name, last_name, is_visitor);
         END IF;
@@ -63,31 +64,34 @@ END $$
 
 
 
-CREATE PROCEDURE register_employee(in user_name varchar(50), in phone_ char(10), in city_ varchar(100), in address_ varchar(100),  in state_ varchar(5), in zip_code char(5), in title_ int, out error varchar(300)) 
+CREATE PROCEDURE register_employee(in user_name varchar(50), in phone_ char(10), in city_ varchar(100), in address_ varchar(100),  in state_ varchar(5), in zip_code char(5), in title_ varchar(20), out error varchar(300)) 
 -- order of parameter
 -- username, phone, city, address, state, zipcode, employee type
 -- state's value shall be the abbreviation of states in uppercase or be 'other'
--- title's value shall be 1 or 2 (1 for "Manager", 2 for "Staff")
 -- this procedure require a register_user() to be called before it
 BEGIN
-    DECLARE new_title int;
     DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle(error);    
-    SET new_title = title_ + 1;
-    INSERT INTO Employee(Username, Phone, Address, City, State, ZipCode, Title) VALUES(user_name, phone_, address_, city_, state_, zip_code, new_title);
+    IF title_ = "ADMINISTRATOR" THEN 
+        SET error = "Cannot create administrator.";
+    ELSE 
+        INSERT INTO Employee(Username, Phone, Address, City, State, ZipCode, Title) VALUES(user_name, phone_, address_, city_, state_, zip_code, new_title);
+    END IF;
 END $$
 
 
-CREATE PROCEDURE register_employee_aft(in user_name varchar(50), in employee_id varchar(9), in phone_ char(10), in address_ varchar(100), in city_ varchar(100),  in state_ varchar(5), in zip_code char(5), in title_ int, out error varchar(300)) 
+CREATE PROCEDURE register_employee_aft(in user_name varchar(50), in employee_id varchar(9), in phone_ char(10), in address_ varchar(100), in city_ varchar(100),  in state_ varchar(5), in zip_code char(5), in title_ varchar(20), out error varchar(300)) 
 -- order of parameter
 -- username, employee id, phone, address, city, state, zipcode, employee type
 -- state's value shall be the abbreviation of states in uppercase or be 'other'
--- title's value shall be 1 or 2 (1 for "Manager", 2 for "Staff")
 -- this procedure require a register_user() to be called before it
 BEGIN
-    DECLARE new_title int;
     DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle(error);
-    SET new_title = title_ + 1;
-    INSERT INTO Employee(Username, Phone, Address, City, State, ZipCode, Title, EmployeeID) VALUES(user_name, phone_, address_, city_, state_, zip_code, new_title, employee_id);
+    IF title_ = "ADMINISTRATOR" THEN 
+        SET error = "Cannot create administrator.";
+    ELSE 
+        INSERT INTO Employee(Username, Phone, Address, City, State, ZipCode, Title, EmployeeID) VALUES(user_name, phone_, address_, city_, state_, zip_code, new_title, employee_id);
+    END IF;
+    
 END $$
 
 
@@ -111,10 +115,9 @@ END $$
 
 
 
-CREATE PROCEDURE take_tansit(in user_name varchar(50), in route_ varchar(20), in transport_type int(1), in take_date date, out error varchar(300))
+CREATE PROCEDURE take_tansit(in user_name varchar(50), in route_ varchar(20), in transport_type varchar(10), in take_date date, out error varchar(300))
 -- order of parameter
 -- username, route, transport type, date
--- transport_type's value shall be 1, 2, or 3 (1 for "MARTA", 2 for "Bus", 3 for "Bike")
 BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle(error);
     INSERT INTO Take VALUES(user_name, route_, transport_type, take_date);
@@ -124,9 +127,9 @@ END $$
 CREATE PROCEDURE edit_profile(in user_name varchar(50), in first_name varchar(50), in last_name varchar(50), in is_visitor int(1), in phone_ char(10), out error varchar(300))
 -- order of parameter
 -- username, first name, last name, is visitor, phone
--- is_visitor's value shall be 1 or 2 (1 for "Yes", 2 for "No")
 BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle(error);
+    SET is_visitor = is_visitor + 1;
     UPDATE Users 
     SET FirstName = first_name, LastName = last_name, IsVisitor = is_visitor 
     WHERE UserName LIKE user_name;
@@ -136,20 +139,19 @@ BEGIN
 END $$
 
 
-CREATE PROCEDURE manage_user(in user_name varchar(50), in new_status int(1), out error varchar(300))
+CREATE PROCEDURE manage_user(in user_name varchar(50), in new_status varchar(10), out error varchar(300))
 -- order of parameters
 -- username, new status
--- new_status' value should be 1 or 2 (1 for "Denied", 2 for "Approval")
 BEGIN
-    DECLARE status_ int;
+    DECLARE status_ varchar(10);
     DECLARE em_id int(9);
     DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle(error);
     SET status_ = new_status;
-    IF ("Approval" IN (SELECT `Status` FROM Users WHERE UserName = user_name)) AND (new_status = 1) THEN 
+    IF ("APPROVED" IN (SELECT `Status` FROM Users WHERE UserName = user_name)) AND (new_status = "DENIED") THEN 
         SET error = "Cannot deny an approved user.";
     ELSE
         UPDATE Users SET Status = status_ WHERE UserName = user_name;
-        IF EXISTS(SELECT * FROM Employee WHERE UserName = user_name) AND (SELECT EmployeeID FROM Employee WHERE UserName = user_name = null) AND status_ = 2 THEN                
+        IF EXISTS(SELECT * FROM Employee WHERE UserName = user_name) AND (SELECT EmployeeID FROM Employee WHERE UserName = user_name = null) AND status_ = "APPROVED" THEN                
             SET em_id = 000000001;
             WHILE EXISTS(SELECT * FROM Employee WHERE EmployeeID = em_id) DO
                 SET em_id = em_id + 1;
@@ -163,9 +165,10 @@ END $$
 CREATE PROCEDURE edit_site(in site_name varchar(50), in zip_code varchar(5), in address_ varchar(100), in manager_name varchar(50), in open_every_day int(1), out error varchar(300))
 -- order of parameter
 -- site name, zipcode, address, manager name, if open everyday
--- open_every_day's value shall be 1 or 2 (1 for yes, 2 for no)
+-- open_every_day's value shall be 0 or 1 (1 for yes, 0 for no)
 BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle(error);
+    SET open_every_day = open_every_day + 1;
     UPDATE Site 
     SET Zipcode = zip_code, Address = address_, ManagerName = manager_name, EveryDay = open_every_day 
     WHERE SiteName = site_name;
@@ -175,17 +178,17 @@ END $$
 CREATE PROCEDURE create_site(in site_name varchar(50), in zip_code varchar(5), in address_ varchar(100), in manager_name varchar(50), in open_every_day int(1), out error varchar(300))
 -- order of parameter
 -- site name, zipcode, address, manager name, if open everyday
--- open_every_day's value shall be 1 or 2 (1 for yes, 2 for no)
+-- open_every_day's value shall be 0 or 1 (1 for yes, 0 for no)
 BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle(error);
+    SET open_every_day = open_every_day + 1;    
     INSERT INTO Site VALUES(site_name, zip_code, address_, open_every_day, manager_name);
 END $$
 
 
-CREATE PROCEDURE edit_transit(in transport_type int, in old_route varchar(20), in new_route varchar(20), in price_ float, out error varchar(300))
+CREATE PROCEDURE edit_transit(in transport_type varchar(10), in old_route varchar(20), in new_route varchar(20), in price_ float, out error varchar(300))
 -- order of parameter
 -- transport type, old route, new route , price
--- transport_type's value shall be 1, 2, or 3 (1 for MARTA, 2 for Bus, 3 for Bike)
 -- if the route has no change, new_route and old_route shall have the same value
 BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle(error);
@@ -195,20 +198,18 @@ BEGIN
 END $$
 
 
-CREATE PROCEDURE create_transit(in transport_type int, in route_ varchar(20), in price_ float, out error varchar(300))
+CREATE PROCEDURE create_transit(in transport_type varchar(10), in route_ varchar(20), in price_ float, out error varchar(300))
 -- order of parameter
 -- transport type, route, price
--- transport_type's value shall be 1, 2, or 3 (1 for MARTA, 2 for Bus, 3 for Bike)
 BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle(error);
     INSERT INTO Transit VALUES(route_, transport_type, price_);
 END $$
 
 
-CREATE PROCEDURE connect_site(in transport_type int, in route_ varchar(20), in site_name varchar(50), out error varchar(300))
+CREATE PROCEDURE connect_site(in transport_type varchar(10), in route_ varchar(20), in site_name varchar(50), out error varchar(300))
 -- order of parameter
 -- transport type, route, site_name
--- transport_type's value shall be 1, 2, or 3 (1 for MARTA, 2 for Bus, 3 for Bike)
 BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle(error);
     IF ! EXISTS(SELECT * FROM Connects WHERE TransportType = transport_type AND Route = route_ AND SiteName = site_name) THEN 
@@ -217,10 +218,9 @@ BEGIN
 END $$
 
 
-CREATE PROCEDURE disconnect_site(in transport_type int, in route_ varchar(20), in site_name varchar(50), out error varchar(300))
+CREATE PROCEDURE disconnect_site(in transport_type varchar(10), in route_ varchar(20), in site_name varchar(50), out error varchar(300))
 -- order of parameter
 -- transport type, route, site_name
--- transport_type's value shall be 1, 2, or 3 (1 for MARTA, 2 for Bus, 3 for Bike)
 BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle(error);
     IF EXISTS(SELECT * FROM Connects WHERE TransportType = transport_type AND Route = route_ AND SiteName = site_name) THEN 
@@ -289,7 +289,7 @@ BEGIN
 END $$
 
 
-CREATE PROCEDURE query_user_by_email(in email_address varchar(100), out user_name varchar(100), out pass_word varchar(100), out status_ int(1), out first_name varchar(100), out last_name varchar(100), out is_visitor int(1), out is_employee int(1), out error varchar(300))
+CREATE PROCEDURE query_user_by_email(in email_address varchar(100), out user_name varchar(100), out pass_word varchar(100), out status_ varchar(20), out first_name varchar(100), out last_name varchar(100), out is_visitor int(1), out is_employee int(1), out error varchar(300))
 -- order of parameter
 -- email address
 -- user name, password, status, first name, last name, is visitor, is employee
@@ -310,13 +310,15 @@ BEGIN
 END $$
 
 
-CREATE PROCEDURE query_user_by_username(in user_name varchar(100), out pass_word varchar(100), out status_ int(1), out first_name varchar(100), out last_name varchar(100), out is_visitor int(1), out is_employee int(1), out error varchar(300))
+CREATE PROCEDURE query_user_by_username(in user_name varchar(100), out pass_word varchar(100), out status_ varchar(20), out first_name varchar(100), out last_name varchar(100), out is_visitor int(1), out is_employee int(1), out error varchar(300))
 -- order of parameter
 -- user name
 -- password, status, first name, last name, is visitor, is employee
 BEGIN
     SELECT `Password`, `Status`, FirstName, LastName, IsVisitor INTO pass_word, status_, first_name, last_name, is_visitor FROM Users WHERE UserName = user_name LIMIT 1 ;
-    SET is_visitor = is_visitor - 1;
+    IF is_visitor = 2 THEN 
+        SET is_visitor = 0;
+    END IF;
     IF EXISTS(SELECT * FROM Employee WHERE UserName = user_name) THEN
         SET is_employee = 1;
     ELSE 
@@ -325,7 +327,7 @@ BEGIN
 END $$
 
 
-CREATE PROCEDURE query_employee_by_user(in user_name varchar(100), out employee_id varchar(9), out phone_ varchar(10), out address_ varchar(100), out city_ varchar(100), out state_ varchar(100), out zip_code varchar(10), out title_ varchar(10), out error varchar(300))
+CREATE PROCEDURE query_employee_by_username(in user_name varchar(100), out employee_id varchar(9), out phone_ varchar(10), out address_ varchar(100), out city_ varchar(100), out state_ varchar(100), out zip_code varchar(10), out title_ varchar(10), out error varchar(300))
 -- order of parameter
 -- user name
 -- employee id, phone, address, city, state, zip code, title
