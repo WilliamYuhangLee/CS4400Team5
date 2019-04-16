@@ -1,10 +1,20 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, FormField, FieldList
 from wtforms.validators import DataRequired, Email, EqualTo
+from app import db
 
 
 class EmailEntryForm(FlaskForm):
-    email = StringField(validators=[DataRequired(), Email()])
+    email = StringField(validators=[DataRequired(), Email(message="The email has been registered!")])
+
+    def validate_email(self, email_field):
+        cur = db.connection.cursor()
+        args = (email_field.data, 0, "")
+        args = cur.callproc("check_email", args)
+        _, is_unique, error = args
+        if error is not None:
+            print("An error occurred when checking with database for the validness of email:", error)
+        return error is None and is_unique
 
 
 class UserRegistrationForm(FlaskForm):
@@ -25,6 +35,15 @@ class UserRegistrationForm(FlaskForm):
         :rtype: FormField
         """
         return self.emails.append_entry()
+
+    def validate_username(self, username_field):
+        cur = db.connection.cursor()
+        args = (username_field.data, 0, "")
+        args = cur.callproc("check_username", args)
+        _, is_unique, error = args
+        if error is not None:
+            print("An error occurred when checking with database for the validness of username:", error)
+        return error is None and is_unique
 
 
 class LoginForm(FlaskForm):

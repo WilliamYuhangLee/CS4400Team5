@@ -10,15 +10,16 @@ user = Blueprint("user", __name__)
 
 
 @user.route("/register/user", methods=["GET", "POST"])
-def register_user():
+def register():
     form = UserRegistrationForm()
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode("utf-8")
         user = User(username=form.username.data,
                     password=hashed_password,
                     first_name=form.first_name.data,
-                    last_name=form.last_name.data)  # TODO: complete user instantiation logic
-        user.create()  # TODO: implement User.create() method
+                    last_name=form.last_name.data,
+                    is_visitor=False)
+        user.create()
         login_user(user, remember=True)
         flash("Your account has been created! You are now logged in.", category="success")
         return redirect(url_for("login"))
@@ -30,8 +31,8 @@ def register_user():
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.get_by_email(form.email.data)  # TODO: implement User.get_by_email() method
-        if user and bcrypt.check_password_hash(user.password, form.password.data):  # TODO: make sure user can be None
+        user = User.get_by_email(form.email.data)
+        if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember_me.data)
             next_page = request.args.get("next")
             if next_page:
