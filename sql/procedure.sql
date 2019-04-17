@@ -360,7 +360,7 @@ BEGIN
         SELECT EmployeeID, Phone, Address, City, State, ZipCode, Title 
         INTO employee_id, phone_, address_, city_, state_, zip_code, title_ 
         FROM Employee WHERE UserName = user_name;
-        SELECT employee_id, phone_, address_, city_, state_, zip_code, title_;
+        SELECT  phone_, address_, city_, state_, zip_code, title_, employee_id;
     ELSE 
         SET @error = "This user is not an employee.";
         SIGNAL SQLSTATE '45000' SET message_text = @error;
@@ -384,7 +384,7 @@ BEGIN
     DECLARE title_ varchar(10);
     SELECT UserName INTO user_name FROM Email WHERE EmailAddress = email_address;
     CALL query_employee_by_user(user_name, employee_id, phone_, address_, city_, state_, zip_code, title_, @error);
-    SELECT user_name, employee_id, phone_, address_, city_, state_, zip_code, title_;
+    SELECT user_name, phone_, address_, city_, state_, zip_code, title_, employee_id;
 END $$
 
 

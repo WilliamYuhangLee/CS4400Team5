@@ -308,7 +308,7 @@ BEGIN
         SELECT `Date`, EventCount, CountStaff, DailyVisit, DailyReveneu FROM full_daily_size 
         WHERE SiteName = site_name AND `Date` >= new_start_date AND `Date` <= new_end_date AND EventCount >= low_event AND EventCount <= new_high_event AND CountStaff >= low_staff AND CountStaff <= new_high_staff AND DailyVisit >= low_visit AND DailyVisit <= low_new_high_visit AND DailyRevenue >= low_revenue AND DailyRevenue <= new_high_revenue;
     END IF;
-END;
+END $$
 
 
 

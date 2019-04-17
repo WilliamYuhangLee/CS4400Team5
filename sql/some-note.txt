@@ -5,3 +5,5 @@ for a number value (int or float), 0 means not apply to the filter;
 for boolean value, only open evaryday do not have to participate filter which is indecated as 0, and 1 for false, 2 for true.
 
 
+To delete all the data from database, you can run 'empty_data.sql'.
+
