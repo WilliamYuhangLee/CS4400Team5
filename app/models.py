@@ -2,7 +2,8 @@ from enum import Enum
 
 from flask_login import UserMixin
 
-from app import db, login_manager
+from app import login_manager
+from app.util import db_procedure, DatabaseError
 
 
 @login_manager.user_loader
@@ -10,12 +11,7 @@ def load_user(user_id):
     return User.get_by_username(user_id)
 
 
-class DatabaseError(Exception):
-    pass
-
-
 class User(UserMixin):
-
     class Status(Enum):
         DECLINED = "DECLINED"
         APPROVED = "APPROVED"
@@ -26,105 +22,111 @@ class User(UserMixin):
         self.password = password
         self.first_name = first_name
         self.last_name = last_name
-        self.status = status
         self.is_visitor = is_visitor
+        self.status = status
 
     def create(self):
-        cur = db.connection.cursor()
-        args = (self.username, self.password, self.first_name, self.last_name, int(self.is_visitor), "")
-        cur.callproc("register_user", args)
-        results = cur.fetchone()
-        cur.close()
-        db.connection.commit()
-        error = results[0]
-        print("error:", error)
+        args = (self.username, self.password, self.first_name, self.last_name, self.is_visitor)
+        result, error = db_procedure("register_user", args)
         if error:
             raise DatabaseError("Fail to create user in database: " + error)
 
     def delete(self):
-        cur = db.connection.cursor()
-        args = (self.username, "")
-        args = cur.callproc("delete_user", args)
-        _, error = args
-        if error is not None:
-            raise DatabaseError("Fail to delete user from database!")
+        args = (self.username,)
+        result, error = db_procedure("delete_user", args)
+        if error:
+            raise DatabaseError("Fail to delete user from database: " + error)
 
     def add_email(self, email):
-        cur = db.connection.cursor()
-        args = (self.username, email, "")
-        args = cur.callproc("add_email", args)
-        _, _, error = args
-        if error is not None:
-            raise DatabaseError("Fail to add email of user to database!")
+        args = (self.username, email)
+        result, error = db_procedure("add_email", args)
+        if error:
+            raise DatabaseError("Fail to add email of user to database: " + error)
 
     def delete_email(self, email):
-        cur = db.connection.cursor()
-        args = (email, "")
-        args = cur.callproc("delete_email", args)
-        _, error = args
-        if error is not None:
-            raise DatabaseError("Fail to delete email of user from database!")
+        args = (email,)
+        result, error = db_procedure("delete_email", args)
+        if error:
+            raise DatabaseError("Fail to delete email of user from database: " + error)
 
     def get_id(self):
         return self.username
 
     @staticmethod
     def change_status(username, status):
-        cur = db.connection.cursor()
-        args = (username, status, "")
-        args = cur.callproc("manage_user", args)
-        _, _, error = args
-        if error is not None:
-            raise DatabaseError("Fail to change status of user!")
+        args = (username, status)
+        result, error = db_procedure("manage_user", args)
+        if error:
+            raise DatabaseError("Fail to change status of user: " + error)
 
     @staticmethod
     def get_by_email(email):
-        cur = db.connection.cursor()
-        args = (email, "", "", "", "", "", 0, 0, "")
-        args = cur.callproc("query_user_by_email", args)
-        _, username, password, status, first_name, last_name, is_visitor, is_employee, error = args
-        if error is not None:
-            print("Query user by email failed:", error)
+        args = (email,)
+        result, error = db_procedure("query_user_by_email", args)
+        if error:
+            print("Query user by email failed: " + error)
             return None
-        user = User(username, password, status, first_name, last_name, is_visitor)
+        username, *params, is_employee = result
+        user = User(username, *params)
         if is_employee:
-            args = (username, "", "", "", "", "", "", "", "")
-            args = cur.callproc("query_employee_by_username", args)
-            _, employee_id, phone, address, city, state, zip_code, title, error = args
-            if error is not None:
-                print("Query employee by username failed:", error)
+            args = (username,)
+            result, error = db_procedure("query_employee_by_username", args)
+            if error:
+                print("Query employee by username failed: " + error)
                 return None
-            user = Employee(user, employee_id, phone, address, city, state, zip_code, title)
+            user = Employee(user, *result)
         return user
 
     @staticmethod
     def get_by_username(username):
-        cur = db.connection.cursor()
-        args = (username, "", "", "", "", 0, 0, "")
-        args = cur.callproc("query_user_by_username", args)
-        _, password, status, first_name, last_name, is_visitor, is_employee, error = args
-        if error is not None:
-            print("Query user by username failed:", error)
+        args = (username,)
+        result, error = db_procedure("query_user_by_username", args)
+        if error:
+            print("Query user by username failed: " + error)
             return None
-        user = User(username, password, status, first_name, last_name, is_visitor)
+        *params, is_employee = result
+        user = User(username, *params)
         if is_employee:
-            args = (username, "", "", "", "", "", "", "", "")
-            args = cur.callproc("query_employee_by_username", args)
-            _, employee_id, phone, address, city, state, zip_code, title, error = args
-            if error is not None:
-                print("Query employee by username failed:", error)
+            result, error = db_procedure("query_employee_by_username", args)
+            if error:
+                print("Query employee by username failed: " + error)
                 return None
-            user = Employee(user, employee_id, phone, address, city, state, zip_code, title)
+            user = Employee(user, *result)
         return user
 
 
 class Employee(User):
-    def __init__(self, user, employee_id, phone, address, city, state, zip_code, title):
+    class Title(Enum):
+        ADMINISTRATOR = "ADMINISTRATOR"
+        MANAGER = "MANAGER"
+        STAFF = "STAFF"
 
+    def __init__(self, user, employee_id, phone, address, city, state, zip_code, title):
+        """
+        Construct an Employee object with an existing User object and some additional parameters.
+
+        :param user:
+        :type user: User
+        :param employee_id:
+        :type employee_id: str
+        :param phone:
+        :type phone: str
+        :param address:
+        :type address: str
+        :param city:
+        :type city: str
+        :param state:
+        :type state: str
+        :param zip_code:
+        :type zip_code: str
+        :param title:
+        :type title: Employee.Title
+        """
         if user is None:
             raise ValueError("Employee must be constructed with a valid User!")
         else:
-            super().__init__(user.username, user.password, user.first_name, user.last_name, user.status, user.is_visitor)
+            super().__init__(user.username, user.password, user.first_name, user.last_name, user.status,
+                             user.is_visitor)
 
         self.employee_id = employee_id
         self.phone = phone
@@ -139,10 +141,8 @@ class Employee(User):
         # Call User's create first
         super().create()
         # If successful, insert this into employee table
-        cur = db.connection.cursor()
-        args = (self.username, self.phone, self.address, self.city, self.state, self.zip_code, self.title, "")
-        args = cur.callproc("register_employee", args)
-        _, _, _, _, _, _, _, error = args
-        if error is not None:
+        args = (self.username, self.phone, self.address, self.city, self.state, self.zip_code, self.title)
+        result, error = db_procedure("register_employee", args)
+        if error:
             self.delete()
-            raise DatabaseError("Fail to create employee in database!")
+            raise DatabaseError("Fail to create employee in database: " + error)
