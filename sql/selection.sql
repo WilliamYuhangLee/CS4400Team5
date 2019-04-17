@@ -101,7 +101,7 @@ BEGIN
 END $$
 
 
-CREATE PROCEDURE filter_site(in site_name varchar(50), in manager_name varchar(100), in open_everyday int, out error varchar(300))
+CREATE PROCEDURE filter_site_adm(in site_name varchar(50), in manager_name varchar(100), in open_everyday int, out error varchar(300))
 -- order of parameter
 -- site name, manager name, if open every day
 BEGIN 
@@ -128,12 +128,12 @@ BEGIN
 END $$
 
 
-CREATE PROCEDURE filter_event(in event_name varchar(50), in key_word varchar(100), in start_date date, in end_date date, in short_duration int, in long_duration int, in low_visit int, in high_visit int, in low_revenue float, in high_revenue float, out error varchar(300))
+CREATE PROCEDURE filter_event_adm(in event_name varchar(50), in key_word varchar(100), in start_date date, in end_date date, in short_duration int, in long_duration int, in low_visit int, in high_visit int, in low_revenue float, in high_revenue float, out error varchar(300))
 -- order of parameter
 -- event nane, key word in description, start date, end date, lower bondary of duration, higher bondary of duration, lower bondary of visit, higher bondary of visit, lower bondary of revenue, higher bondary of revenue
 BEGIN 
     DECLARE new_event_name varchar(50);
-    DECLARE new_mkey_word varchar(100);
+    DECLARE new_key_word varchar(100);
     DECLARE new_start_date date;
     DECLARE new_end_date date;
     DECLARE new_long_duration int;
@@ -185,6 +185,323 @@ BEGIN
 END $$
 
 
+CREATE PROCEDURE filter_event_daily(in site_name varchar(50), in event_name varchar(50), in start_date date, in low_visit int, in high_visit int, in low_revenue float, in high_revenue float, out error varchar(300))
+-- order of parameter
+-- site name, manager name, if open every day
+BEGIN 
+    DECLARE new_high_visit int;
+    DECLARE new_high_revenue float;
+    
+    DECLARE EXIT HANDLER FOR SQLSTATE '45000' CALL handle2(error);
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle1(error);
+    
+    IF high_visit = 0 THEN
+        SET new_high_visit = ~0;
+    ELSE
+        SET new_high_visit = high_visit;
+    END IF;
+    IF high_revenue = 0 THEN
+        SET new_high_revenue = ~0 - 1.0;
+    ELSE
+        SET new_high_revenue = high_revenue;
+    END IF;  
+    
+    IF length(site_name) > 0 AND length(event_name) > 0 AND start_date != "0000-00-00" THEN
+        SELECT `Date`, DailyVisit, DailyRevenue FROM daily_event WHERE SiteName = site_name AND EventName = event_date AND StartDate = start_date AND DailyVisit >= low_price AND DailyVisit <= new_high_price AND DailyRevenue >= low_revenue AND DailyRevenue <= new_high_revenue;
+    ELSE 
+        SET error = "Primary key cannot have null value.";
+        SELECT error;
+    END IF;
+END $$
+
+
+CREATE PROCEDURE filter_staff(in site_name varchar(50), in first_name varchar(50), in last_name varchar(50), in start_date date, in end_date date, out error varchar(300))
+-- order of parameter
+-- site name, first name, last name, start date, end date
+BEGIN
+    DECLARE new_site_name varchar(50);
+    DECLARE new_first_name varchar(50);
+    DECLARE new_last_name varchar(50);
+    DECLARE new_start_date date;
+    DECLARE new_end_date date;
+    
+    DECLARE EXIT HANDLER FOR SQLSTATE '45000' CALL handle2(error);
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle1(error);
+    
+    IF length(site_name) > 0 THEN 
+        SET new_site_name = site_name;
+    ELSE 
+        SET new_site_name = "%";
+    END IF;
+    IF length(first_name) > 0 THEN 
+        SET new_first_name = first_name;
+    ELSE 
+        SET new_first_name = "%";
+    END IF;
+    IF length(last_name) > 0 THEN 
+        SET new_last_name = last_name;
+    ELSE 
+        SET new_last_name = "%";
+    END IF;
+    IF end_date = "0000-00-00" THEN
+        SET new_end_date = "9999-12-31";
+    ELSE 
+        SET new_end_date = end_date;
+    END IF;
+    IF start_date = "1000-01-01" THEN
+        SET new_start_date = "1000-01-01";
+    ELSE 
+        SET new_start_date = start_date;
+    END IF;
+    
+    SELECT concat(FirstName, LastName) AS `Staff Name`, NumEventShifts FROM for_staff 
+    WHERE SiteName LIKE new_site_name AND FistName LIKE new_first_name AND LastName LIKE new_last_name AND StartDate >= new_start_date AND EndDate <= new_end_date;
+
+END $$
+
+CREATE PROCEDURE filter_daily_site(in site_name varchar(50), in start_date date, in end_date date, low_event int, in high_event int, in low_staff int, in high_staff int, in low_visit int, in high_visit int, in low_revenue float, in high_revenue float, out error varchar(300))
+-- order of parameters
+-- site name, start date, end date, lower bondary of event count, higher bondary of event count, lower bondary of staff count, higher bondary of staff count, lower bondary of daily visits, higher bondary of daily visits, lower bondary of daily revenue, higher bondary of daily revenue
+BEGIN
+    DECLARE new_start_date date;
+    DECLARE new_end_date date;
+    DECLARE new_high_event int;
+    DECLARE new_high_staff int;
+    DECLARE new_high_visit int;
+    DECLARE new_high_revenue float;
+    
+    DECLARE EXIT HANDLER FOR SQLSTATE '45000' CALL handle2(error);
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle1(error);
+    
+    IF length(site_name) = 0 THEN 
+        SET error = "Site name cannot be null.";
+        SELECT error;
+    ELSE
+        IF end_date = "0000-00-00" THEN
+            SET new_end_date = "9999-12-31";
+        ELSE 
+            SET new_end_date = end_date;
+        END IF;
+        IF start_date = "1000-01-01" THEN
+            SET new_start_date = "9999-12-31";
+        ELSE 
+            SET new_start_date = start_date;
+        END IF;
+        IF high_revenue = 0 THEN
+            SET new_high_revenue = ~0 - 1.0;
+        ELSE
+            SET new_high_revenue = high_revenue;
+        END IF;
+        IF high_staff = 0 THEN
+            SET new_high_staff = ~0;
+        ELSE
+            SET new_high_staff = high_staff;
+        END IF;
+        IF high_visit = 0 THEN
+            SET new_high_visit = ~0;
+        ELSE
+            SET new_high_visit = high_visit;
+        END IF;
+        IF high_event = 0 THEN
+            SET new_high_event = ~0;
+        ELSE
+            SET new_high_event = high_event;
+        END IF;
+        SELECT `Date`, EventCount, CountStaff, DailyVisit, DailyReveneu FROM full_daily_size 
+        WHERE SiteName = site_name AND `Date` >= new_start_date AND `Date` <= new_end_date AND EventCount >= low_event AND EventCount <= new_high_event AND CountStaff >= low_staff AND CountStaff <= new_high_staff AND DailyVisit >= low_visit AND DailyVisit <= low_new_high_visit AND DailyRevenue >= low_revenue AND DailyRevenue <= new_high_revenue;
+    END IF;
+END;
+
+
+
+CREATE PROCEDURE filter_daily_event(in site_name varchar(50), in date_ date, out error varchar(300))
+-- order of parameters
+-- site name, date
+BEGIN
+    DECLARE EXIT HANDLER FOR SQLSTATE '45000' CALL handle2(error);
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle1(error);
+    
+    IF length(site_name) = 0 OR date_ = "0000-00-00" THEN 
+        SET error = "Site name or date cannot be null.";
+        SELECT error;
+    ELSE 
+        SELECT EventName, SiteName, StartDate, DailyVisit, DailyRevenue FROM daily_event WHERE SiteNeme = site_name AND `Date` = date_;
+    END IF;
+END $$
+
+
+CREATE PROCEDURE filter_schedule(in user_name varchar(100), in event_name varchar(50), in key_word varchar(200), in start_date date, in end_date date)
+-- order of parameter
+-- username, event name, description keyword, start date, end date
+BEGIN
+    DECLARE new_event_name varchar(50);
+    DECLARE new_key_word varchar(200);
+    
+    DECLARE EXIT HANDLER FOR SQLSTATE '45000' CALL handle2(error);
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle1(error);
+    
+    IF length(event_name) > 0 THEN 
+        SET new_event_name = event_name;
+    ELSE 
+        SET new_event_name = "%";
+    END IF;
+    IF length(key_word) > 0 THEN 
+        SET new_key_word = concat("%", concat(key_word, "%"));
+    ELSE 
+        SET new_key_word = "%";
+    END IF;
+    
+    IF start_date = "0000-00-00" THEN 
+        IF end_date = "0000-00-00" THEN
+            SELECT EventName, SiteName, StartDate, EndDate, CountStaff FROM for_schedule 
+            WHERE StaffName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key_word;
+        ELSE 
+            SELECT EventName, SiteName, StartDate, EndDate, CountStaff FROM for_schedule 
+            WHERE StaffName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key_word AND EndDate = end_date;
+        END IF;
+    ELSE 
+        IF end_date = "0000-00-00" THEN
+            SELECT EventName, SiteName, StartDate, EndDate, CountStaff FROM for_schedule 
+            WHERE StaffName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key_word AND StartDate = start_date;
+        ELSE 
+            SELECT EventName, SiteName, StartDate, EndDate, CountStaff FROM for_schedule 
+            WHERE StaffName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key_word AND EndDate = end_date AND StartDate = start_date;
+        END IF;
+    END IF;     
+END $$
+
+
+CREATE PROCEDURE filter_event_vis(in user_name varchar(100), in event_name varchar(50), in key_word varchar(200), in site_name varchar(50), in start_date date, in end_date date, in low_visit int, in high_visit int, in low_price float, in high_price float, in is_visited int, in is_sold_out int, out error varchar(300))
+-- order of parameter
+-- username, event name, description keyword, site name, start date, end date, lower bondary of total visit, higher bondary of total visit, lower bondary of price, higher bondary of price, if show visited event, if show sold-out-ticket event
+BEGIN
+    DECLARE new_site_name varchar(100);
+    DECLARE new_event_name varchar(100);
+    DECLARE new_key varchar(200);
+    DECLARE new_high_visit int;
+    DECLARE new_high_price float;
+    DECLARE new_visited int;
+    DECLARE new_sold int;
+    
+    DECLARE EXIT HANDLER FOR SQLSTATE '45000' CALL handle2(error);
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle1(error);
+    
+    SET new_event_name = concat("%", concat(event_name, "%"));
+    SET new_key = concat("%", concat(key_word, "%"));
+    IF length(site_name) > 0 THEN
+        SET new_site_name = site_name;
+    ELSE 
+        SET new_site_name = "%";
+    END IF;    
+    IF high_visit > 0 THEN
+        SET new_high_visit = high_visit;
+    ELSE 
+        SET new_high_visit = ~0;
+    END IF;    
+    IF high_price > 0 THEN
+        SET new_high_price = high_price;
+    ELSE 
+        SET new_high_price = ~0;
+    END IF;
+    IF is_visited = 1 THEN
+        SET new_visited = ~0;
+    ELSE 
+        SET new_visited = 1;
+    END IF;
+    IF is_sold_out = 1 THEN
+        SET new_sold = 0;
+    ELSE 
+        SET new_sold = 1;
+    END IF;
+    
+    IF length(user_name) > 0 THEN
+        IF start_date = "0000-00-00" THEN 
+            IF end_date = "0000-00-00" THEN
+                SELECT EventName, SiteName, Price, TicketRem, TotalVisit, MyVisit FROM explore _event
+                WHERE UserName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key AND TotalVisit <= new_high_visit AND TotalVisit >= low_visit AND Price >= low_price AND Price <= new_high_price AND MyVisit < new_visited AND TicketRem >= new_sold ;
+            ELSE 
+                SELECT EventName, SiteName, Price, TicketRem, TotalVisit, MyVisit FROM explore _event
+                WHERE UserName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key AND TotalVisit <= new_high_visit AND TotalVisit >= low_visit AND Price >= low_price AND Price <= new_high_price AND MyVisit < new_visited AND TicketRem >= new_sold AND EndDate = end_date;
+            END IF;
+        ELSE 
+            IF end_date = "0000-00-00" THEN
+                SELECT EventName, SiteName, Price, TicketRem, TotalVisit, MyVisit FROM explore _event
+                WHERE UserName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key AND TotalVisit <= new_high_visit AND TotalVisit >= low_visit AND Price >= low_price AND Price <= new_high_price AND MyVisit < new_visited AND TicketRem >= new_sold AND StartDate = start_date;
+            ELSE 
+                SELECT EventName, SiteName, Price, TicketRem, TotalVisit, MyVisit FROM explore _event
+                WHERE UserName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key AND TotalVisit <= new_high_visit AND TotalVisit >= low_visit AND Price >= low_price AND Price <= new_high_price AND MyVisit < new_visited AND TicketRem >= new_sold AND EndDate = end_date AND StartDate = start_date;
+            END IF;
+        END IF;     
+    ELSE
+        SET error = "Username cannot be null.";
+        SELECT error;
+    END IF;
+    
+END $$
+
+
+
+CREATE PROCEDURE filter_site_vis(in user_name varchar(100), in site_name varchar(50), in open_everyday int, in start_date date, in end_date date, in low_visit int, in high_visit int, in low_event int, in high_event int, in is_visited int, out error varchar(300))
+-- order of paremeter
+-- username, site name, if site open everyday, start date, end date, lower bondary of total visit, higher bondary of total visit, lower bondary of event count, higher bondary of event count, if this site has been visited 
+-- open_everyday's value shall be 0, 1, or 2, in which 0 for all, 1 for no, 2 for yes
+BEGIN
+    DECLARE new_site_name varchar(50);
+    DECLARE new_start_date date;
+    DECLARE new_end_date date;
+    DECLARE new_high_visit int;
+    DECLARE new_high_event int;
+    DECLARE new_visited int;
+    
+    IF length(site_name) > 0 THEN
+        SET new_site_name = site_name;
+    ELSE 
+        SET new_site_name = "%";
+    END IF; 
+    IF end_date = "0000-00-00" THEN
+        SET new_end_date = "9999-12-31";
+    ELSE 
+        SET new_end_date = end_date;
+    END IF;
+    IF start_date = "1000-01-01" THEN
+        SET new_start_date = "1000-01-01";
+    ELSE 
+        SET new_start_date = start_date;
+    END IF;
+    IF high_visit = 0 THEN
+        SET new_high_visit = ~0;
+    ELSE
+        SET new_high_visit = high_visit;
+    END IF;
+    IF high_event = 0 THEN
+        SET new_high_event = ~0;
+    ELSE
+        SET new_high_event = high_event;
+    END IF;
+    IF is_visited = 1 THEN
+        SET new_visited = ~0;
+    ELSE 
+        SET new_visited = 1;
+    END IF;
+    
+    IF length(user_name) > 0 THEN 
+        IF open_everyday = 0 THEN
+            SELECT SiteName, CountEvent, TotalVist, sum(MyVisit) AS MyVisits FROM explore_site 
+            WHERE UserName = user_name AND SiteName LIKE new_site_name AND `Date` >= new_start_date AND `Date` <= new_end_date AND
+            TotalVisit >= low_visit AND TotalVisit <= new_high_visit GROUP BY SiteName, UserName HAVING MyVisits < new_visited;
+        ELSE 
+            SELECT SiteName, CountEvent, TotalVist, sum(MyVisit) AS MyVisits FROM explore_site 
+            WHERE UserName = user_name AND SiteName LIKE new_site_name AND `Date` >= new_start_date AND `Date` <= new_end_date AND
+            TotalVisit >= low_visit AND TotalVisit <= new_high_visit GROUP BY SiteName, UserName HAVING MyVisits < new_visited AND 
+            EveryDay = open_everyday;
+        END IF;
+    ELSE 
+        SET error = "Username cannot be null.";
+        SELECT error;
+    END IF;
+END $$
+
+
 
 
 
@@ -198,14 +515,15 @@ BEGIN
     DECLARE EXIT HANDLER FOR SQLSTATE '45000' CALL handle2(error);
     DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle1(error);
     IF length(user_name) > 0 THEN
-        SELECT EmailAddress FROM Email WHERE UserName = user_name;
+        SELECT EmailAddress, UserName FROM Email WHERE UserName = user_name;
     ELSE 
         SET error = "Username cannot be null.";
+        SELECT error;
     END IF;
 END $$
 
 
-CREATE PROCEDURE query_transit_by_pk(in route_ varchar(20), in transport_type varchar(20) out error varchar(300))
+CREATE PROCEDURE query_transit_by_pk(in route_ varchar(20), in transport_type varchar(20), out error varchar(300))
 -- order of parameter
 -- route, transport type
 BEGIN   
@@ -215,6 +533,36 @@ BEGIN
         SELECT SiteName, Price FROM Connects JOIN Transit USING(Route, TransportType) WHERE Route = route_ AND TransportType = transport_type;
     ELSE 
         SET error = "Username cannot be null.";
+        SELECT error;
+    END IF;
+END $$
+
+
+
+CREATE PROCEDURE query_staff_by_event (in site_name varchar(50), in event_name varchar(50), in start_date date, out error varchar(300))
+-- order of parameter
+-- site name, event name, start date
+BEGIN
+    DECLARE EXIT HANDLER FOR SQLSTATE '45000' CALL handle2(error);
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle1(error);
+    IF length(site_name) > 0 AND length(event_name) > 0 AND start_date != "0000-00-00" THEN
+        SELECT StaffName, SiteName FROM AssignTo WHERE SiteName = site_name AND EventName = event_date AND StartDate = start_date;
+    ELSE 
+        SET error = "Primary key cannot have null value.";
+        SELECT error;
+    END IF;
+END $$
+
+
+CREATE PROCEDURE query_transit_by_site(in site_name varchar(50), out error varchar(300))
+BEGIN
+    DECLARE EXIT HANDLER FOR SQLSTATE '45000' CALL handle2(error);
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION CALL handle1(error);
+    IF length(site_name) > 0 THEN 
+        SELECT Route, TransportType, Price FROM Transit JOIN Connects USING(Route, TransportType) WHERE SiteName = site_name;
+    ELSE 
+        SET error = "Site name cannot be null.";
+        SELECT error;
     END IF;
 END $$
 

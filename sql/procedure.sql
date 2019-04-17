@@ -359,7 +359,7 @@ BEGIN
         SET error = "Email Address does not exist.";
         SELECT error;
     END IF;
-    SELECT user_name, pass_word, status_, first_name, last_name, is_visitor, is_employee;
+    SELECT user_name, pass_word, first_name, last_name, is_visitor, status_, is_employee;
 END $$
 
 
@@ -379,7 +379,7 @@ BEGIN
     ELSE 
         SET is_employee = 0;
     END IF;
-    SELECT pass_word, status_, first_name, last_name, is_visitor, is_employee;
+    SELECT pass_word, first_name, last_name, is_visitor, status_, is_employee;
 END $$
 
 
@@ -503,6 +503,7 @@ BEGIN
     END IF;
     
 END $$
+
 
 
 DELIMITER ;
