@@ -87,9 +87,9 @@ SELECT SiteName, EventName, StartDate, count(*) AS CountStaff
 FROM AssignTo GROUP BY SiteName, EventName, StartDate;
 
 CREATE VIEW for_event AS 
-SELECT SiteName, EventName, StartDate, Events.Price, sum(DailyVisit) AS TotalVisit, sum(DailyRevenue) AS TotalRevenue, (Capacity - sum(DailyVisit)) AS TicketRem, (Events.EndDate - StartDate) AS Duration, Description, CountStaff   
-FROM daily_event INNER JOIN Events USING(SiteName, EventName, StartDate) JOIN for_event_pre USING (SiteName, EventName, StartDate)
-GROUP BY `Date`;
+SELECT SiteName, EventName, StartDate, Events.Price, sum(DailyVisit) AS TotalVisit, sum(DailyRevenue) AS TotalRevenue, (Capacity - sum(DailyVisit)) AS TicketRem, (Events.EndDate - StartDate) AS Duration, Description, CountStaff, daily_event.EndDate   
+FROM daily_event INNER JOIN Events USING(SiteName, EventName, StartDate) INNER JOIN for_event_pre USING (SiteName, EventName, StartDate)
+GROUP BY SiteName, EventName, StartDate;
 
 CREATE VIEW daily_visit_site AS 
 SELECT SiteName, `Date`, count(*) AS DailyVisit, 0 AS DailyRevenue 
@@ -133,8 +133,8 @@ FROM total_site LEFT JOIN count_site_staff USING(SiteName) JOIN Events USING(Sit
 GROUP BY SiteName;
 
 CREATE VIEW visit_one_event AS
-SELECT UserName, EventName, SiteName, Price, TicketRem, TotalVisit, count(*) AS MyVisit
-FROM for_event FULL JOIN VisitEvent USING(SiteName, EventName, StartDate)
+SELECT UserName, EventName, SiteName, count(*) AS MyVisit, StartDate 
+FROM for_event JOIN VisitEvent USING(SiteName, EventName, StartDate)
 GROUP BY UserName, EventName, SiteName, StartDate;
 
 CREATE VIEW visit_one_site AS
@@ -150,5 +150,12 @@ SELECT `Date`, EventName, SiteName, Price, UserName
 FROM VisitEvent FULL JOIN visit_hisotry_pre USING(`Date`, SiteName, UserName) LEFT JOIN `EVENTS` USING(SiteName, EventName, StartDate);
 
 CREATE VIEW for_schedule AS
-SELECT EventName, SiteName, StartDate, (StartDate + Duration) AS EndDate, CountStaff, StaffName 
+SELECT EventName, SiteName, StartDate, (StartDate + Duration) AS EndDate, CountStaff, StaffName, Description 
 FROM AssignTo JOIN for_event USING(EventName, SiteName, StartDate);
+
+CREATE VIEW explore_event AS 
+SELECT x.SiteName AS Site, x.SiteName, x.StartDate, x.EndDate, x.TicketRem, x.Price, x.TotalVisit, x.Description, y.UserName, IF(x.SiteName = y.SiteName AND x.EventName = y.EventName AND x.StartDate = y.StartDate, y.MyVisit, 0) AS MyVisit FROM for_event AS x , visit_one_event AS y;
+
+
+CREATE VIEW explore_site AS
+SELECT x.UserName, x.SiteName, x.Date, y.TotalVisit, y.CountEvent, y.EveryDay, IF(x.SiteName = y.SiteName, 1, 0) AS MyVisit FROM VisitSite AS x, for_site as y;
