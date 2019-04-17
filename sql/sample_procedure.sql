@@ -67,7 +67,7 @@ BEGIN
     DECLARE first_name varchar(100); 
     DECLARE last_name varchar(100); 
     DECLARE is_visitor int(1); 
-    DECLARE is_employee int(1)
+    DECLARE is_employee int(1);
     DECLARE EXIT HANDLER FOR SQLEXCEPTION BEGIN
         GET DIAGNOSTICS @num = NUMBER;
         GET DIAGNOSTICS condition @num @error = MESSAGE_TEXT;
