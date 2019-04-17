@@ -28,3 +28,13 @@ def db_procedure(procedure_name, args):
         cur.close()
         db.connection.commit()
     return result, error
+
+def process_phone(phone):
+    """
+    Remove all non-numeric characters (including space) from a phone number
+    :param phone: a phone number as a string that needs to be processed
+    :type phone: str
+    :return: the phone number strip of +-() and space
+    :rtype: str
+    """
+    return ''.join(c for c in phone if c not in "+() -")

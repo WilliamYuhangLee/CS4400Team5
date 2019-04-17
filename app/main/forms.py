@@ -3,7 +3,7 @@ from wtforms import StringField, PasswordField, BooleanField, SubmitField, Field
 from wtforms.validators import DataRequired, Email, EqualTo, ValidationError, Regexp, Length
 
 from app.models import Employee
-from app.util import db_procedure, DatabaseError
+from app.util import db_procedure, DatabaseError, process_phone
 
 
 class LoginForm(FlaskForm):
@@ -73,7 +73,7 @@ class EmployeeRegistrationForm(UserRegistrationForm):
                                                                 message="A valid zip code must be 5 digits.")])
 
     def validate_phone(self, phone):
-        result, error = db_procedure("check_phone", (phone,))
+        result, error = db_procedure("check_phone", (process_phone(phone),))
         if error:
             raise DatabaseError("An error occurred when validating phone number with database: " + error)
         if not result:

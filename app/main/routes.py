@@ -2,6 +2,7 @@ from flask import request, redirect, url_for, flash, render_template
 from flask_login import login_user
 from app import bcrypt
 from app.models import User, Employee
+from app.util import process_phone
 from .forms import LoginForm, UserRegistrationForm, EmployeeRegistrationForm
 
 from . import bp
@@ -20,7 +21,7 @@ def register(is_employee, is_visitor):
                     last_name=form.last_name.data,
                     is_visitor=is_visitor)
         if is_employee:
-            phone = ''.join(c for c in form.phone.data if c not in "+() -")
+            phone = process_phone(form.phone.data)
             user = Employee(user, phone, form.address.data, form.city.data, form.state.data, form.zip_code.data, form.title.data)
         user.create()
         login_user(user, remember=True)
