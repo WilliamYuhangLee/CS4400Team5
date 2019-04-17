@@ -1,3 +1,7 @@
+DELIMITER ;
+
+USE atlbeltline;
+
 CALL register_user("james.smith", "jsmith123", "James", "Smith", 0 );
 CALL manage_user("james.smith", "APPROVED" );
 CALL register_user("michael.smith", "msmith456", "Michael", "Smith", 1 );
@@ -21,7 +25,7 @@ CALL register_user("maria.rodriguez", "mrodriguez", "Maria", "Rodriguez", 1 );
 CALL manage_user("maria.rodriguez", "DENIED" );
 CALL register_user("mary.smith", "msmith789", "Mary", "Smith", 1 );
 CALL manage_user("mary.smith", "APPROVED" );
-CALL register_user("maria.hernandez", "mhernandez", "Maria", "Hernandez", 2 );
+CALL register_user("maria.hernandez", "mhernandez", "Maria", "Hernandez", 1 );
 CALL manage_user("maria.hernandez", "APPROVED" );
 CALL register_user("staff1", "staff1234", "Staff", "One", 0 );
 CALL manage_user("staff1", "APPROVED" );

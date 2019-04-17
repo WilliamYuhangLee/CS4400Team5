@@ -33,8 +33,12 @@ BEGIN
 	DECLARE ermsg varchar(100);
 
 	IF (SELECT count(*) FROM Email WHERE UserName LIKE OLD.UserName) = 1 THEN
-		SET ermsg = 'The Only Email Of This User, Connot Delete!!';
-		SIGNAL SQLSTATE '45000' SET message_text = ermsg;
+        IF @force = 'force delete' THEN
+            SET @trigger_warning = "The data has been forced deleted.";
+        ELSE
+            SET ermsg = 'The Only Email Of This User, Connot Delete!!';
+            SIGNAL SQLSTATE '45000' SET message_text = ermsg;
+        END IF;
 	END IF;
 
 END $$
@@ -88,11 +92,15 @@ BEGIN
 
 	IF (SELECT count(*) FROM
              (SELECT Num, SiteName FROM
-                 (SELECT count(*) AS Num, SiteName FROM Connects JOIN Transit USING (TransportType, Route) GROUP BY (TransportType, Route)) AS x
+                 (SELECT count(*) AS Num, SiteName FROM Connects JOIN Transit USING (TransportType, Route) GROUP BY TransportType, Route) AS x
               WHERE Num = 1 AND SiteName LIKE OLD.SiteName) AS y
-         LIMIT 1 ) > 0 THEN
-	 	SET ermsg = 'The Only Site Of Some Transit, Connot Delete!!';
-	 	SIGNAL SQLSTATE '45000' SET message_text = ermsg;
+         LIMIT 1 ) > 0  THEN
+        IF @force = 'force delete' THEN
+            SET @trigger_warning = "The data has been forced deleted.";
+        ELSE
+            SET ermsg = 'The Only Site Of Some Transit, Connot Delete!!';
+            SIGNAL SQLSTATE '45000' SET message_text = ermsg;
+        END IF;
 	 END IF;
 
 END $$
@@ -286,14 +294,19 @@ CREATE TRIGGER tgr15_at3 BEFORE DELETE ON AssignTo FOR EACH ROW
 BEGIN
 	DECLARE ermsg varchar(100);
 
-	IF (SELECT count(*) FROM AssignTo WHERE SiteNeme = OLD.SiteName
+	IF (SELECT count(*) FROM AssignTo WHERE SiteName = OLD.SiteName
 					AND EventName = OLD.EventName
                     AND StartDate = OLD.StartDate) =
-                    (SELECT MinStaffReq FROM EVENTS WHERE SiteNeme = OLD.SiteName
+                    (SELECT MinStaffReq FROM EVENTS WHERE SiteName = OLD.SiteName
                 					AND EventName = OLD.EventName
                                     AND StartDate = OLD.StartDate) THEN
-		SET ermsg = 'Staff Number Of This Site Will Be Less Than The Minimun Required Staff Number, Connot Delete!!';
-		SIGNAL SQLSTATE '45000' SET message_text = ermsg;
+        IF @force = 'force delete' THEN
+            SET @trigger_warning = "The data has been forced deleted.";
+        ELSE
+            SET ermsg = 'Staff Number Of This Site Will Be Less Than The Minimun Required Staff Number, Connot Delete!!';
+            SIGNAL SQLSTATE '45000' SET message_text = ermsg;
+        END IF;
+		
 	END IF;
 
 END $$
@@ -307,8 +320,13 @@ BEGIN
 	IF (SELECT count(*) FROM Connects WHERE Route = OLD.Route
 					AND TransportType = OLD.TransportType) = 1 THEN
         -- IF @@byDeletingSite LIKE 'no' THEN
-		    SET ermsg = 'The Only Site Of This Transit, Connot Delete!!';
+        IF @force = 'force delete' THEN
+            SET @trigger_warning = "The data has been forced deleted.";
+        ELSE
+            SET ermsg = 'The Only Site Of This Transit, Connot Delete!!';
 		    SIGNAL SQLSTATE '45000' SET message_text = ermsg;
+        END IF;
+		    
         -- END IF;
 	END IF;
 END $$
