@@ -1,0 +1,15 @@
+{% extends "home.html" %}
+{% block functions %}
+<a href="{{ url_for('employee.manage_profile')}}">
+    Manage Profile
+</a>
+<a href="{{ url_for('manager.manage_event')}}">
+    Manage User
+</a>
+<a href="{{ url_for('manager.view_staff')}}">
+    View Staff
+</a>
+<a href="{{ url_for('manager.view_site_report')}}">
+    View Site Report
+</a>
+{% endblock functions %}

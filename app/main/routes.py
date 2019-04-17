@@ -42,7 +42,7 @@ def register(is_employee, is_visitor):
     return render_template(template, title="Registration", form=form)
 
 
-# @main.route("/", methods=["GET", "POST"])
+@bp.route("/", methods=["GET", "POST"])
 @bp.route("/login", methods=["GET", "POST"])
 def login():
     form = LoginForm()
@@ -79,6 +79,6 @@ def error_500():
     return "<h1>Internal Error (500)</h1>"
 
 
-@bp.route("/", methods=["GET", "POST"])
+# @bp.route("/", methods=["GET", "POST"])
 def test():
     return redirect(url_for("main.register", is_employee=True, is_visitor=False))
