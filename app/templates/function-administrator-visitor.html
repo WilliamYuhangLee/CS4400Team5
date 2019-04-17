@@ -12,13 +12,5 @@
 <a href="{{ url_for('administrator.manageProfile')}}">
     Manage Site
 </a>
-<a href="{{ url_for('visitor.exploreEvent')}}">
-    Explore Event
-</a>
-<a href="{{ url_for('visitor.exploreSite')}}">
-    Explore Site
-</a>
-<a href="{{ url_for('visitor.viewVisitHistory')}}">
-    View Visit History
-</a>
+{{super()}}
 {% endblock functions %}

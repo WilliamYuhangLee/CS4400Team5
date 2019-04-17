@@ -105,10 +105,10 @@
                         {% block container %}
                         {% endblock container %}
                     </div>
-                    <fieldset class="form-group" id="emaillist">
-                        {% block email %}
+                    <fieldset class="form-group" id="emails">
+                        {% block emails %}
                         <div class="form-group" id="email">
-                            {{ form.email.label(class="form-control-label") }}
+                            {{ form.emails.label(class="form-control-label") }}
                             {% if form.email.errors %}
                             {{ form.email(class="form-control form-control-lg is-invalid") }}
                             <div class="invalid-feedback">
@@ -119,11 +119,11 @@
                             {% else %}
                             {{ form.email(class="form-control form-control-lg") }}
                             {% endif %}
-                            <a role="button" class="btn btn-info btn-lg btn-block" id="addEmail">
-                                Add New Email
+                            <a role="button" class="btn btn-info btn-lg btn-block" id="addemails">
+                                Add New emails
                             </a>
                         </div>
-                        {% endblock email %}
+                        {% endblock emails %}
                     </fieldset>
                 </fieldset>
                 <div class="form-group">
@@ -133,7 +133,7 @@
         </div>
         <div class="border-top pt-2">
             <small class="text-muted">
-                Already have an account? <a class="ml-2" href="{{ url_for('login') }}">Log in</a>
+                Already have an account? <a class="ml-2" href="{{ url_for('main.login') }}">Log in</a>
             </small>
         </div>
         {% endblock content %}
@@ -152,12 +152,12 @@
                     {% endblock sidebar_description %}
                     {% block sidebar_content %}
                         {% block sidebar_botton_1 %}
-                            <button type="button" class="btn btn-outline-info btn-lg btn-block" href="{{ url_for('nav-register') }}">
+                            <button type="button" class="btn btn-outline-info btn-lg btn-block" href="{{ url_for('main.nav_register') }}">
                                 Reset Account Type
                             </button>
                         {% endblock sidebar_botton_1 %}
                         {% block sidebar_botton_2 %}
-                            <a role="button" class="btn btn-info btn-lg btn-block" href="{{ url_for('login') }}">
+                            <a role="button" class="btn btn-info btn-lg btn-block" href="{{ url_for('main.login') }}">
                                 Back to Login Page
                            </a>
                         {% endblock sidebar_botton_2 %}
@@ -169,8 +169,8 @@
     
         {% block scripts %}
         <script>
-                $("#addEmail").click(function () {
-                    $("#emaillist").append('<div id="email">');
+                $("#addemails").click(function () {
+                    $("#emails").append('<div id="email">');
                 });
             </script>
         {% endblock scripts %}
