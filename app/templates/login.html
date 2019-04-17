@@ -59,7 +59,7 @@
                         Don't have an account? <a class="ml-2" href="{{ url_for('nav-register') }}">Sign up now</a>
                     </small>
                 </div>
-                {% endblock %}
+                {% endblock content %}
             </div>
             <div class="col-md-3" id=menu>
                 {% block sidebar %}
@@ -70,5 +70,5 @@
 
     {% block scripts %}
     {{super()}}
-    {% endblock %}
+    {% endblock scripts %}
 </body>

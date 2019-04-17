@@ -136,7 +136,7 @@
                 Already have an account? <a class="ml-2" href="{{ url_for("login") }}">Log in</a>
             </small>
         </div>
-        {% block content %}
+        {% endblock content %}
             </div>
         <div class="col-md-3" id=menu>
                 {% block sidebar %}
@@ -173,5 +173,5 @@
                     $("#emaillist").append('<div id="email">');
                 });
             </script>
-        {% endblock script %}
+        {% endblock scripts %}
     </body>
