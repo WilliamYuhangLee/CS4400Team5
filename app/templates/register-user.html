@@ -1,31 +1,3 @@
 {% extends "register.html" %}
 <!DOCTYPE html>
 <html lang="en">
-    
-        <head>{% block head %}
-                {{super()}}
-                {% endblock head %}
-            </head>
-<body>
-    <header class="site-header">
-        {% block header %}
-        {{super()}}
-        {% endblock header %}
-    </header>
-    <main>
-        <div class="col-md-8" id="content">
-        {% block content %}
-        {{super()}}
-        {% endblock content %}
-        </div>
-        <div class="col-md-3" id=menu>
-                {% block sidebar %}
-                {{super()}}
-                {% endblock sidebar %}
-            </div>
-        </main>
-    
-        {% block scripts %}
-        {{super()}}
-        {% endblock scripts %}
-    </body>

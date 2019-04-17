@@ -2,77 +2,49 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-    {% block head %}
-        {{ super() }}
-    {% endblock head %}
-</head>
-
-<body>
-<header class="site-header">
-    {% block header %}
-        {{ super() }}
-    {% endblock header %}
-</header>
-<main>
-    <div class="row">
-        <div class="col-md-8" id="content">
-            {% block content %}
-                <div class="content-section">
-                    <form method="post" action="" title="Login">
-                        {{ form.hidden_tag() }}
-                        <fieldset class="form-group">
-                            <legend class="border-bottom mb-4">
-                                Sign In
-                            </legend>
-                            <div class="form-group">
-                                {{ form.email.label(class="form-control-label") }}
-                                {% if form.email.errors %}
-                                    {{ form.email(class="form-control form-control-lg is-invalid") }}
-                                    <div class="invalid-feedback">
-                                        {% for error in form.email.errors %}
-                                            <span>{{ error }}</span>
-                                        {% endfor %}
-                                    </div>
-                                {% else %}
-                                    {{ form.email(class="form-control form-control-lg") }}
-                                {% endif %}
-                            </div>
-                            <div class="form-group">
-                                {{ form.password.label(class="form-control-label") }}
-                                {% if form.password.errors %}
-                                    {{ form.password(class="form-control form-control-lg is-invalid") }}
-                                    <div class="invalid-feedback">
-                                        {% for error in form.password.errors %}
-                                            <span>{{ error }}</span>
-                                        {% endfor %}
-                                    </div>
-                                {% else %}
-                                    {{ form.password(class="form-control form-control-lg") }}
-                                {% endif %}
-                            </div>
-                        </fieldset>
-                        <div class="form-group">
-                            {{ form.submit(class="btn btn-outline-info") }}
-                        </div>
-                    </form>
+{% block content %}
+<div class="content-section">
+    <form method="post" action="" title="Login">
+        {{ form.hidden_tag() }}
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4">
+                Sign In
+            </legend>
+            <div class="form-group">
+                {{ form.email.label(class="form-control-label") }}
+                {% if form.email.errors %}
+                {{ form.email(class="form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.email.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
                 </div>
-                <div class="border-top pt-2">
-                    <small class="text-muted">
-                        Don't have an account? <a class="ml-2" href="{{ url_for('main.nav_register') }}">Sign up now</a>
-                    </small>
+                {% else %}
+                {{ form.email(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.password.label(class="form-control-label") }}
+                {% if form.password.errors %}
+                {{ form.password(class="form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.password.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
                 </div>
-            {% endblock content %}
+                {% else %}
+                {{ form.password(class="form-control form-control-lg") }}
+                {% endif %}
+            </div>
+        </fieldset>
+        <div class="form-group">
+            {{ form.submit(class="btn btn-outline-info") }}
         </div>
-        <div class="col-md-3" id=menu>
-            {% block sidebar %}
-                {{ super() }}
-            {% endblock sidebar %}
-        </div>
-    </div>
-</main>
-
-{% block scripts %}
-    {{ super() }}
-{% endblock scripts %}
-</body>
+    </form>
+</div>
+<div class="border-top pt-2">
+    <small class="text-muted">
+        Don't have an account? <a class="ml-2" href="{{ url_for('main.nav_register') }}">Sign up now</a>
+    </small>
+</div>
+{% endblock content %}

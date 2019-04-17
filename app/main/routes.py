@@ -64,9 +64,9 @@ def nav_register():
     return render_template("nav-register.html", title="Registration Options")
 
 
-@bp.app_errorhandler(404)
-def error_404():
-    return "<h1>Page Not Found (404)</h1>"
+# @bp.app_errorhandler(404)
+# def error_404():
+#     return "<h1>Page Not Found (404)</h1>"
 
 
 @bp.app_errorhandler(403)

@@ -1,6 +1,6 @@
 @charset "utf-8";
 /*reset 重置*/
-body,ul,ol,p,h1,h2,h3,h4,h5,dl,dd,form,input,textarea,td,th,button,strong,em,select,video,canvas{margin:0;padding:0;}
+ul,ol,p,h1,h2,h3,h4,h5,dl,dd,input,textarea,td,th,button,strong,em,select,video,canvas{margin:0;padding:0;}
 li{list-style:none;vertical-align:top;}
 table{ border-collapse:collapse;}
 textarea{resize:none;overflow:auto;}
@@ -12,6 +12,8 @@ input{outline:0px;}
 a, img {/* */-webkit-touch-callout: none; }
 html, body {/* *//*-webkit-user-select: none;  user-select: none;*/}
 html { font-size: 62.5%;} 
+label { color:white;}
+legend{ color:white;}
 body { font-size: 14px; font-size: 1.2rem; font-family:"Microsoft YaHei",Helvetica; margin:0; padding:0;background:#2F3143;}
 a{text-decoration: none;}
 

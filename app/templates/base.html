@@ -26,7 +26,7 @@
 <body>
 <header class="site-header">
     {% block header %}
-        <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
+        <!----nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
             <div class="container">
                 <a class="navbar-brand mr-4" href="/">{{ config.APP_NAME }}</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle"
@@ -49,7 +49,7 @@
                     </div>
                 </div>
             </div>
-        </nav>
+        </nav-->
     {% endblock header %}
 </header>
 <main role="main" class="container">
@@ -60,7 +60,7 @@
         <div class="col-md-3" id=menu>
             {% block sidebar %}
                 <!--suppress Annotator -->
-                <div class="content-section">
+                <!----div class="content-section">
                     {% block sidebar_title %}
                         <h3>Trip Advisor</h3>
                     {% endblock sidebar_title %}
@@ -83,7 +83,7 @@
                             </a>
                         {% endblock sidebar_botton_2 %}
                     {% endblock sidebar_content %}
-                </div>
+                </div-->
             {% endblock sidebar %}
         </div>
     </div>
