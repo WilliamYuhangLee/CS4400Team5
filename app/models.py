@@ -17,13 +17,40 @@ class User(UserMixin):
         APPROVED = "APPROVED"
         PENDING = "PENDING"
 
+        def __str__(self):
+            return self.value
+
+        @classmethod
+        def choices(cls):
+            return [(choice, choice.value) for choice in cls if choice is not cls.PENDING]
+
+        @classmethod
+        def coerce(cls, item):
+            return item if isinstance(item, cls) else cls[item]
+
     def __init__(self, username, password, first_name, last_name, is_visitor, status=Status.PENDING):
+        """
+        Construct a User instance with default approval status as PENDING.
+
+        :param username: the username selected by the user
+        :type username: str
+        :param password: a utf-8 sequence hashed from the password entered by the user
+        :type password: str
+        :param first_name: the user's first name
+        :type first_name: str
+        :param last_name: the user's last name
+        :type last_name: str
+        :param is_visitor: if the user is a visitor
+        :type is_visitor: bool
+        :param status: the status for approval of the user's registration
+        :type status: User.Status
+        """
         self.username = username
         self.password = password
         self.first_name = first_name
         self.last_name = last_name
         self.is_visitor = is_visitor
-        self.status = status
+        self.status = User.Status.coerce(status)
 
     def create(self):
         args = (self.username, self.password, self.first_name, self.last_name, self.is_visitor)
@@ -101,40 +128,114 @@ class Employee(User):
         MANAGER = "MANAGER"
         STAFF = "STAFF"
 
-    def __init__(self, user, employee_id, phone, address, city, state, zip_code, title):
+        def __str__(self):
+            return self.value
+
+        @classmethod
+        def choices(cls):
+            return [(choice, choice.value) for choice in cls if choice is not cls.ADMINISTRATOR]
+
+        @classmethod
+        def coerce(cls, item):
+            return item if isinstance(item, cls) else cls[item]
+
+    class State(Enum):
+        AL = 'AL'
+        AK = 'AK'
+        AZ = 'AZ'
+        AR = 'AR'
+        CA = 'CA'
+        CO = 'CO'
+        CT = 'CT'
+        DE = 'DE'
+        FL = 'FL'
+        GA = 'GA'
+        HI = 'HI'
+        ID = 'ID'
+        IL = 'IL'
+        IN = 'IN'
+        IA = 'IA'
+        KS = 'KS'
+        KY = 'KY'
+        LA = 'LA'
+        ME = 'ME'
+        MD = 'MD'
+        MA = 'MA'
+        MI = 'MI'
+        MN = 'MN'
+        MS = 'MS'
+        MO = 'MO'
+        MT = 'MT'
+        NE = 'NE'
+        NV = 'NV'
+        NH = 'NH'
+        NJ = 'NJ'
+        NM = 'NM'
+        NY = 'NY'
+        NC = 'NC'
+        ND = 'ND'
+        OH = 'OH'
+        OK = 'OK'
+        OR = 'OR'
+        PA = 'PA'
+        RI = 'RI'
+        SC = 'SC'
+        SD = 'SD'
+        TN = 'TN'
+        TX = 'TX'
+        UT = 'UT'
+        VT = 'VT'
+        VA = 'VA'
+        WA = 'WA'
+        WV = 'WV'
+        WI = 'WI'
+        WY = 'WY'
+        OTHER = 'OTHER'
+
+        def __str__(self):
+            return self.value
+
+        @classmethod
+        def choices(cls):
+            return [(choice, choice.value) for choice in cls]
+
+        @classmethod
+        def coerce(cls, item):
+            return item if isinstance(item, cls) else cls[item]
+
+    def __init__(self, user, phone, address, city, state, zip_code, title, employee_id=None):
         """
         Construct an Employee object with an existing User object and some additional parameters.
 
-        :param user:
+        :param user: the User object from which this Employee instance is constructed from
         :type user: User
-        :param employee_id:
-        :type employee_id: str
-        :param phone:
+        :param phone: a 10-digit US phone number, without hyphens, brackets or spaces
         :type phone: str
-        :param address:
+        :param address: the employee's home address
         :type address: str
-        :param city:
+        :param city: the employee's city
         :type city: str
-        :param state:
+        :param state: the employee's state, one of the 50 US states
         :type state: str
         :param zip_code:
         :type zip_code: str
         :param title:
         :type title: Employee.Title
+        :param employee_id: generated ID for the employee, may be None if approval status is PENDING or DECLINED
+        :type employee_id: str
         """
         if user is None:
             raise ValueError("Employee must be constructed with a valid User!")
         else:
-            super().__init__(user.username, user.password, user.first_name, user.last_name, user.status,
-                             user.is_visitor)
+            super().__init__(user.username, user.password, user.first_name, user.last_name, user.is_visitor, user.status)
 
-        self.employee_id = employee_id
         self.phone = phone
         self.address = address
         self.city = city
-        self.state = state
+        self.state = Employee.State.coerce(state)
         self.zip_code = zip_code
-        self.title = title
+        self.title = Employee.Title.coerce(title)
+        self.employee_id = employee_id
 
     def create(self):
 

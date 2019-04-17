@@ -13,7 +13,7 @@ login_manager = LoginManager()
 
 
 # Login Manager setup
-login_manager.login_view = "login"  # set view function for login (when login_required is triggered)
+login_manager.login_view = "main.login"  # set view function for login (when login_required is triggered)
 login_manager.login_message_category = "info"  # set login message style
 
 
@@ -36,7 +36,17 @@ def create_app():
     login_manager.init_app(app)
 
     # Register Blueprints
-    from app.user.routes import user
-    app.register_blueprint(user)
+    from .main import bp
+    app.register_blueprint(bp)
+    from .user import bp
+    app.register_blueprint(bp)
+    from .visitor import bp
+    app.register_blueprint(bp)
+    from .administrator import bp
+    app.register_blueprint(bp)
+    from .manager import bp
+    app.register_blueprint(bp)
+    from .staff import bp
+    app.register_blueprint(bp)
 
     return app
