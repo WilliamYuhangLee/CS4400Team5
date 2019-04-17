@@ -479,5 +479,20 @@ BEGIN
 END $$
 
 
+CREATE PROCEDURE check_phone(in phone_ varchar(10))
+-- order of parameter
+-- phone
+BEGIN
+    DECLARE result int;
+    
+    IF EXISTS(SELECT * FROM Employee WHERE Phone = phone_) THEN
+        SET result = 0;
+    ELSE 
+        SET result = 1;
+    END IF;
+    SELECT result, phone_;
+END $$
+
+
 
 DELIMITER ;
