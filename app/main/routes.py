@@ -12,7 +12,7 @@ from . import bp
 def register(is_employee, is_visitor):
     is_employee = is_employee.lower() == "true"
     is_visitor = is_visitor.lower() == "true"
-    form = EmployeeRegistrationForm() if is_employee else UserRegistrationForm
+    form = EmployeeRegistrationForm() if is_employee else UserRegistrationForm()
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode("utf-8")
         user = User(username=form.username.data,

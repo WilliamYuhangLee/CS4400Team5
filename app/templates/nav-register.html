@@ -3,74 +3,74 @@
 <html lang="en">
 
 <head>{% block head %}
-    {{super()}}
-    {% endblock head %}
+    {{ super() }}
+{% endblock head %}
 </head>
 
 <body>
-    <header class="site-header">
-        {% block header %}
-        {{super()}}
-        {% endblock header %}
-    </header>
-    <main>
-            <div class="col-md-8" id="content">
+<header class="site-header">
+    {% block header %}
+    {% endblock header %}
+</header>
+<main>
+    <div class="col-md-8" id="content">
         {% block content %}
-        <div class="content-section">
-            <legend class="border-bottom mb-4">
-                Register Menu
-            </legend>
-            <div id="registerNav_frame">
-                <p id="Title">Register</p>
-                <a href="{{ url_for('main.register', is_employee=False, is_visitor=False)}}">
-                    User Register
-                </a>
-                <a href="{{ url_for('main.register', is_employee=False, is_visitor=True)}}">
-                    Visitor Register
-                </a>
-                <a href="{{ url_for('main.register', is_employee=True, is_visitor=False)}}">
-                    Employee Register
-                </a>
-                <a href="{{ url_for('main.register', is_employee=True, is_visitor=True)}}">
-                    Employee Visitor Register
-                </a>
-                <a href="{{ url_for('main.login')}}">
-                    Back
-                </a>
-            </div>
-        </div>
-        {% endblock content %}
-            </div>
-        <div class="col-md-3" id=menu>
-                {% block sidebar %}
-                <!--suppress Annotator -->
-                <div class="content-section">
-                    {% block sidebar_title %}
-                        <h3>Trip Advisor</h3>
-                    {% endblock sidebar_title %}
-                    {% block sidebar_description %}
-                        <p class='text-muted'>
-                            Welcome!
-                        </p>
-                    {% endblock sidebar_description %}
-                    {% block sidebar_content %}
-                        {% block sidebar_botton_1 %}
-                            <button type="button" class="btn btn-outline-info btn-lg btn-block" href="{{ url_for('main.nav_register') }}">
-                                Refresh Register Navigator
-                            </button>
-                        {% endblock sidebar_botton_1 %}
-                        {% block sidebar_botton_2 %}
-                            <a role="button" class="btn btn-info btn-lg btn-block" href="{{ url_for('main.login') }}">
-                                Back to Login Page
-                           </a>
-                        {% endblock sidebar_botton_2 %}
-                    {% endblock sidebar_content %}
+            <div class="content-section">
+                <legend class="border-bottom mb-4">
+                    Register Menu
+                </legend>
+                <div id="registerNav_frame">
+                    <p id="Title">Register</p>
+                    <a href="{{ url_for('main.register', is_employee=False, is_visitor=False) }}">
+                        User Register
+                    </a>
+                    <a href="{{ url_for('main.register', is_employee=False, is_visitor=True) }}">
+                        Visitor Register
+                    </a>
+                    <a href="{{ url_for('main.register', is_employee=True, is_visitor=False) }}">
+                        Employee Register
+                    </a>
+                    <a href="{{ url_for('main.register', is_employee=True, is_visitor=True) }}">
+                        Employee Visitor Register
+                    </a>
+                    <a href="{{ url_for('main.login') }}">
+                        Back
+                    </a>
                 </div>
-            {% endblock sidebar %}
-        </div>
-    </main>
+            </div>
+        {% endblock content %}
+    </div>
+    <div class="col-md-3" id=menu>
+        {% block sidebar %}
+            <!--suppress Annotator -->
+            <div class="content-section">
+                {% block sidebar_title %}
+                    <h3>Trip Advisor</h3>
+                {% endblock sidebar_title %}
+                {% block sidebar_description %}
+                    <p class='text-muted'>
+                        Welcome!
+                    </p>
+                {% endblock sidebar_description %}
+                {% block sidebar_content %}
+                    {% block sidebar_botton_1 %}
+                        <button type="button" class="btn btn-outline-info btn-lg btn-block"
+                                href="{{ url_for('main.nav_register') }}">
+                            Refresh Register Navigator
+                        </button>
+                    {% endblock sidebar_botton_1 %}
+                    {% block sidebar_botton_2 %}
+                        <a role="button" class="btn btn-info btn-lg btn-block" href="{{ url_for('main.login') }}">
+                            Back to Login Page
+                        </a>
+                    {% endblock sidebar_botton_2 %}
+                {% endblock sidebar_content %}
+            </div>
+        {% endblock sidebar %}
+    </div>
+</main>
 
-    {% block scripts %}
-    {{super()}}
-    {% endblock scripts%}
+{% block scripts %}
+    {{ super() }}
+{% endblock scripts %}
 </body>
