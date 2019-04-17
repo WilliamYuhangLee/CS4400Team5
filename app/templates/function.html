@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="content-section">
+    <legend class="border-bottom mb-4">
+        Function Menu
+    </legend>
+    <div id="function_frame">
+        <p id="Title">Functions</p>
+        <a href="{{ url_for('user.takeTransit')}}">
+            Take Transit
+        </a>
+        <a href="{{ url_for('user.viewTransitHistory')}}">
+            View Transit History
+        </a>
+        {% block functions %}{% endblock functions %}
+        <a href="{{ url_for('main.login')}}">
+            Back
+        </a>
+    </div>
+</div>
+{% endblock content %}

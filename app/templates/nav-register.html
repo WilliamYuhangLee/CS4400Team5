@@ -22,19 +22,19 @@
             </legend>
             <div id="registerNav_frame">
                 <p id="Title">Register</p>
-                <a href="{{ url_for('register-user', usertype=user, isVisitor=false)}}">
+                <a href="{{ url_for('main.register', is_employee=False, is_visitor=False)}}">
                     User Register
                 </a>
-                <a href="{{ url_for('register-visitor', usertype=user, isVisitor=true)}}">
+                <a href="{{ url_for('main.register', is_employee=False, is_visitor=True)}}">
                     Visitor Register
                 </a>
-                <a href="{{ url_for(register-employee', usertype=employee, isVisitor=false)}}">
+                <a href="{{ url_for(main.register', is_employee=True, is_visitor=False)}}">
                     Employee Register
                 </a>
-                <a href="{{ url_for('register-employee-visitor', usertype=employee, isVisitor=true)}}">
+                <a href="{{ url_for('main.register', is_employee=True, is_visitor=True)}}">
                     Employee Visitor Register
                 </a>
-                <a href="{{ url_for('login')}}">
+                <a href="{{ url_for('main.login')}}">
                     Back
                 </a>
             </div>
@@ -56,7 +56,7 @@
                     {% block sidebar_content %}
                         {% block sidebar_botton_1 %}
                             <button type="button" class="btn btn-outline-info btn-lg btn-block" href="{{ url_for('nav-register') }}">
-                                Refresh Register
+                                Refresh Register Navigator
                             </button>
                         {% endblock sidebar_botton_1 %}
                         {% block sidebar_botton_2 %}

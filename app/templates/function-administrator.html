@@ -1,0 +1,15 @@
+{% extends "function.html" %}
+{% block functions %}
+<a href="{{ url_for('administrator.manageProfile')}}">
+    Manage Profile
+</a>
+<a href="{{ url_for('administrator.manageUser')}}">
+    Manage User
+</a>
+<a href="{{ url_for('administrator.manageProfile')}}">
+    Manage Transit
+</a>
+<a href="{{ url_for('administrator.manageProfile')}}">
+    Manage Site
+</a>
+{% endblock functions %}
