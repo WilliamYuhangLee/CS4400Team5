@@ -31,12 +31,12 @@
                 <div class="form-group col-md-6">
                     {{ render_field(form.confirm_password) }}
                 </div>
-                <div class="form-group" id="container">
-                    {% block container %}
-                    {% endblock container %}
-                </div>
-                <div class="form-row">
+            </div>
+            {% block container %}
+            {% endblock container %}
 
+            <div class="form-row">
+                <div class="form-group col-md-6">
                     {% if form.emails.errors %}
                     {{ form.emails(class="form-control form-control-lg is-invalid") }}
                     <div class="invalid-feedback">
@@ -52,9 +52,15 @@
                     {% endfor %}
                     {% endif %}
                 </div>
-                <div class="form-group">
-                    {{ render_field(form.email) }} {{ render_field(form.add) }}
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    {{ render_field(form.email) }}
                 </div>
+                <div class="form-group col-md-4">
+                    {{ render_field(form.add) }}
+                </div>
+            </div>
         </fieldset>
         <div class="form-group">
             {{ form.submit(class="btn btn-outline-info") }}
