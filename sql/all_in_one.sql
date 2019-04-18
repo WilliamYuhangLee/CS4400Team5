@@ -1286,7 +1286,8 @@ CREATE PROCEDURE check_username(in user_name varchar(100))
 -- user name, result
 BEGIN 
     DECLARE result int(1);
-    IF EXISTS(SELECT UserName FROM Users WHERE UserName = user_address LIMIT 1) THEN 
+    IF EXISTS(SELECT UserName FROM Users WHERE UserName = user_name LIMIT 1) THEN 
+    IF EXISTS(SELECT UserName FROM Users WHERE UserName = user_name LIMIT 1) THEN 
         SET result = 0;
     ELSE
         SET result = 1;
@@ -1301,7 +1302,7 @@ CREATE PROCEDURE check_status(in user_name varchar(100))
 BEGIN
     DECLARE result int(1);
      
-    IF (SELECT `Status` FROM Users WHERE UserName = user_address LIMIT 1) = "APPROVED" THEN 
+    IF (SELECT `Status` FROM Users WHERE UserName = user_name LIMIT 1) = "APPROVED" THEN 
         SET result = 1;
     ELSE
         SET result = 0;
