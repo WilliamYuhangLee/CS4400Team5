@@ -332,9 +332,7 @@ BEGIN
     DECLARE is_employee int(1);
      
     SELECT `Password`, `Status`, FirstName, LastName, IsVisitor INTO pass_word, status_, first_name, last_name, is_visitor FROM Users WHERE UserName = user_name LIMIT 1 ;
-    IF is_visitor = 2 THEN 
-        SET is_visitor = 0;
-    END IF;
+    SET is_visitor = is_visitor - 1;
     IF EXISTS(SELECT * FROM Employee WHERE UserName = user_name) THEN
         SET is_employee = 1;
     ELSE 
