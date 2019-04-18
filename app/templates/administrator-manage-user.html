@@ -5,22 +5,19 @@
         {{ form.hidden_tag() }}
         <fieldset class="form-group">
             <legend class="border-bottom mb-4">
-                Take Transit
+                Manage User
             </legend>
             <div class="form-group">
-                {{ render_field(form.contain_site)}}
+                {{ render_field(form.username)}}
             </div>
             <div class="form-group">
-                {{ render_field(form.transport_type)}}
+                {{ render_field(form.type)}}
             </div>
             <div class="form-group">
-                {{ render_field(form.price_range)}}
+                {{ render_field(form.status)}}
             </div>
             <div class="form-group">
-                {{ render_field(form.transits)}}
-            </div>
-            <div class="form-group">
-                    {{ render_field(form.transit_date)}}
+                {{ render_field(form.users)}}
             </div>
         </fieldset>
         <div class="form-group">
@@ -29,6 +26,9 @@
         <div class="form-group">
             {{ form.submit(class="btn btn-outline-info") }}
         </div>
+        <div class="form-group">
+                {{ form.submit(class="btn btn-outline-info") }}
+            </div>
     </form>
     <button type="button" class="btn btn-outline-info" onclick="window.location.href='{{ url_for('main.home') }}';">Back</button>
 </div>

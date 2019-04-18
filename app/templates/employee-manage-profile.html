@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
+
+{% block content %}
+<div class="content-section">
+    <form method="post" action="">
+        {{ form.hidden_tag() }}
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4">
+                Manage Profile
+            </legend>
+            <div class="form-group">
+                    {{ render_field(form.first_name)}}
+            </div>
+            <div class="form-group">
+                    {{ render_field(form.last_name)}}
+            </div>
+            <div class="form-group">
+                    {{ render_field(form.username)}}
+            </div>
+            <div class="form-group">
+                    {{ render_field(form.password)}}
+            </div>
+            <div class="form-group">
+                    {{ render_field(form.confirm_password)}}
+            </div>
+            <div class="form-group" id="container">
+                {% block container %}
+                {% endblock container %}
+            </div>
+            <div class="form-group">
+                {{ form.emails.label(class="form-control-label") }}
+                {% if form.emails.errors %}
+                {{ form.emails(class="form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.emails.errors %}
+                    <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                {% for email in form.emails %}
+                {{ email.form.email() }}
+                <button class="btn btn-outline-info" onclick="{{ form.add_email }}">Add Email</button>
+                {% endfor %}
+                {% endif %}
+            </div>
+            <div class="form-group">
+                    {{ render_field(form.checkbox_visitor_account)}}
+            </div>
+        </fieldset>
+        <div class="form-group">
+            {{ form.submit(class="btn btn-outline-info")}}
+        </div>
+    </form>
+    <button type="button" class="btn btn-outline-info" onclick="window.location.href='{{ url_for('main.home') }}';">Back</button>
+</div>
+<div class="border-top pt-2">
+        <small class="text-muted">
+                Sign out now? <a class="ml-2" href="{{ url_for('maiin.login') }}">Sign out</a>
+            </small>>
+</div>
+{% endblock content %}

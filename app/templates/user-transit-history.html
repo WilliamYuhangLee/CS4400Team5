@@ -5,36 +5,37 @@
         {{ form.hidden_tag() }}
         <fieldset class="form-group">
             <legend class="border-bottom mb-4">
-                Take Transit
+                Transit History
             </legend>
             <div class="form-group">
-                {{ render_field(form.contain_site)}}
+                {{ render_field(form.transport_type)}}
             </div>
             <div class="form-group">
-                {{ render_field(form.transport_type)}}
+                {{ render_field(form.contain_site)}}
             </div>
             <div class="form-group">
                 {{ render_field(form.price_range)}}
             </div>
             <div class="form-group">
-                {{ render_field(form.transits)}}
+                {{ render_field(form.route)}}
             </div>
             <div class="form-group">
-                    {{ render_field(form.transit_date)}}
+                {{ render_field(form.start_date)}}
+            </div>
+            <div class="form-group">
+                {{ render_field(form.end_date)}}
             </div>
         </fieldset>
         <div class="form-group">
             {{ form.submit(class="btn btn-outline-info") }}
         </div>
-        <div class="form-group">
-            {{ form.submit(class="btn btn-outline-info") }}
-        </div>
     </form>
-    <button type="button" class="btn btn-outline-info" onclick="window.location.href='{{ url_for('main.home') }}';">Back</button>
+    <button type="button" class="btn btn-outline-info"
+        onclick="window.location.href='{{ url_for('main.home') }}';">Back</button>
 </div>
 <div class="border-top pt-2">
-        <small class="text-muted">
-                Sign out now? <a class="ml-2" href="{{ url_for('maiin.login') }}">Sign out</a>
-            </small>>
+    <small class="text-muted">
+        Sign out now? <a class="ml-2" href="{{ url_for('maiin.login') }}">Sign out</a>
+    </small>>
 </div>
 {% endblock content %}
