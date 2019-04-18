@@ -1,31 +1,46 @@
 {% extends "home.html" %}
 {% block content %}
 <div class="content-section">
-    <form method="post" action="" title="Transit_History">
+    <form method="post" action="" title="Manage_Site">
         {{ form.hidden_tag() }}
         <fieldset class="form-group">
             <legend class="border-bottom mb-4">
-                Transit History
+                Manage Event
             </legend>
             <div class="form-group">
-                {{ render_field(form.transport_type)}}
+                {{ render_field(form.name)}}
             </div>
             <div class="form-group">
-                {{ render_field(form.contain_site)}}
+                {{ render_field(form.description_keyword)}}
             </div>
             <div class="form-group">
-                {{ render_field(form.price_range)}}
-            </div>
-            <div class="form-group">
-                {{ render_field(form.route)}}
-            </div>
-            <div class="form-group">
-                {{ render_field(form.start_date)}}
+                {{ render_field(form.open_start_date)}}
             </div>
             <div class="form-group">
                 {{ render_field(form.end_date)}}
             </div>
+            <div class="form-group">
+                {{ render_field(form.duration_range)}}
+            </div>
+            <div class="form-group">
+                {{ render_field(form.total_visit_range)}}
+            </div>
+            <div class="form-group">
+                {{ render_field(form.total_revenue_range)}}
+            </div>
+            <div class="form-group">
+                    {{ render_field(form.events)}}
+                </div>
         </fieldset>
+        <div class="form-group">
+            {{ form.submit(class="btn btn-outline-info") }}
+        </div>
+        <div class="form-group">
+            {{ form.submit(class="btn btn-outline-info") }}
+        </div>
+        <div class="form-group">
+            {{ form.submit(class="btn btn-outline-info") }}
+        </div>
         <div class="form-group">
             {{ form.submit(class="btn btn-outline-info") }}
         </div>

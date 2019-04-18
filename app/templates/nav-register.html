@@ -6,7 +6,7 @@
     <legend class="border-bottom mb-4">
         Register Menu
     </legend>
-    <div class="col-md-6 btn-group-vertical" id="registerNav_frame">
+    <div class="col-md-6 btn-group-vertical text-center center-block" id="registerNav_frame">
         <button type="button" class="btn btn-outline-info" onclick="window.location.href='{{ url_for('main.register', is_employee=False, is_visitor=False) }}';">User Register</button>
         <button type="button" class="btn btn-outline-info" onclick="window.location.href='{{ url_for('main.register', is_employee=False, is_visitor=True) }}';">Visitor Register</button>
         <button type="button" class="btn btn-outline-info" onclick="window.location.href='{{ url_for('main.register', is_employee=True, is_visitor=False) }}';">Employee Register</button>

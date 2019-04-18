@@ -1,26 +1,23 @@
 {% extends "home.html" %}
 {% block content %}
 <div class="content-section">
-    <form method="post" action="" title="Take_Transit">
+    <form method="post" action="" title="Manage_Site">
         {{ form.hidden_tag() }}
         <fieldset class="form-group">
             <legend class="border-bottom mb-4">
-                Take Transit
+                Manage Site
             </legend>
             <div class="form-group">
-                {{ render_field(form.contain_site)}}
+                {{ render_field(form.site)}}
             </div>
             <div class="form-group">
-                {{ render_field(form.transport_type)}}
+                {{ render_field(form.manager)}}
             </div>
             <div class="form-group">
-                {{ render_field(form.price_range)}}
+                {{ render_field(form.open_everyday)}}
             </div>
             <div class="form-group">
-                {{ render_field(form.transits)}}
-            </div>
-            <div class="form-group">
-                    {{ render_field(form.transit_date)}}
+                {{ render_field(form.sites)}}
             </div>
         </fieldset>
         <div class="form-group">
@@ -29,6 +26,12 @@
         <div class="form-group">
             {{ form.submit(class="btn btn-outline-info") }}
         </div>
+        <div class="form-group">
+                {{ form.submit(class="btn btn-outline-info") }}
+            </div>
+            <div class="form-group">
+                    {{ form.submit(class="btn btn-outline-info") }}
+                </div>
     </form>
     <button type="button" class="btn btn-outline-info" href="javascript:history.back()">Back</button>
 </div>

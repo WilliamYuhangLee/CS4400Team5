@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "home.html" %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -53,11 +53,11 @@
             {{ form.submit(class="btn btn-outline-info")}}
         </div>
     </form>
-    <button type="button" class="btn btn-outline-info" onclick="window.location.href='{{ url_for('main.home') }}';">Back</button>
+    <button type="button" class="btn btn-outline-info" href="javascript:history.back()">Back</button>
 </div>
 <div class="border-top pt-2">
         <small class="text-muted">
-                Sign out now? <a class="ml-2" href="{{ url_for('maiin.login') }}">Sign out</a>
+                Sign out now? <a class="ml-2" href="{{ url_for('main.login') }}">Sign out</a>
             </small>>
 </div>
 {% endblock content %}

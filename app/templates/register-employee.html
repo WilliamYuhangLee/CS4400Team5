@@ -1,20 +1,32 @@
 {% extends "register.html" %}
 <!DOCTYPE html>
 <html lang="en">
-{% block container %}
-<div class="form-group">
+
+{% block employee_register %}
+<div class="form-group col-md-6">
         {{ render_field(form.title)}}
 </div>
-<div class="form-group">
-        {{ render_field(form.phone)}}
+{% endblock %}
+
+{% block container %}
+<div class="form-row">
+        <div class="form-group col-md-6">
+                {{ render_field(form.phone)}}
+        </div>
+        <div class="form-group col-md-6">
+                {{ render_field(form.address)}}
+        </div>
 </div>
-<div class="form-group">
-        {{ render_field(form.address)}}
+<div class="form-row">
+        <div class="form-group col-md-4">
+                {{ render_field(form.city)}}
+        </div>
+        <div class="form-group col-md-4">
+                {{ render_field(form.state)}}
+        </div>
+        <div class="form-group col-md-4">
+                {{ render_field(form.zip_code)}}
+        </div>
 </div>
-<div class="form-group">
-    {{ render_field(form.state)}}
-</div>
-<div class="form-group">
-        {{ render_field(form.zip_code)}}
-</div>
+
 {% endblock container %}

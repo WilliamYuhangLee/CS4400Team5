@@ -1,29 +1,28 @@
 {% extends "home.html" %}
 {% block content %}
 <div class="content-section">
-    <form method="post" action="" title="Transit_History">
+    <form method="post" action="" title="Edit_Site">
         {{ form.hidden_tag() }}
         <fieldset class="form-group">
             <legend class="border-bottom mb-4">
-                Transit History
+                {% block title %}
+                Edit Site
+                {% endblock %}
             </legend>
             <div class="form-group">
-                {{ render_field(form.transport_type)}}
+                {{ render_field(form.name)}}
             </div>
             <div class="form-group">
-                {{ render_field(form.contain_site)}}
+                {{ render_field(form.zip_code)}}
             </div>
             <div class="form-group">
-                {{ render_field(form.price_range)}}
+                {{ render_field(form.address)}}
             </div>
             <div class="form-group">
-                {{ render_field(form.route)}}
+                {{ render_field(form.manager)}}
             </div>
             <div class="form-group">
-                {{ render_field(form.start_date)}}
-            </div>
-            <div class="form-group">
-                {{ render_field(form.end_date)}}
+                {{ render_field(form.open_everyday)}}
             </div>
         </fieldset>
         <div class="form-group">
