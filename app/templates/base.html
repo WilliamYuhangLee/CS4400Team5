@@ -1,31 +1,46 @@
 <!DOCTYPE html>
 <!--suppress ALL -->
 <html lang="en">
+
+<!-- Macros -->
+{% macro render_field(field) %}
+{{ field.label(class="form-control-label") }}
+{% if field.errors %}
+{{ field(class="form-control form-control-lg is-invalid") }}
+<div class="invalid-feedback">
+    {% for error in field.errors %}
+    <span>{{ error }}</span>
+    {% endfor %}
+</div>
+{% else %}
+{{ field(class="form-control form-control-lg") }}
+{% endif %}
+{% endmacro %}
+
 <head>
     {% block head %}
-        <!-- Meta -->
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Meta -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-        <!-- Bootstrap CSS -->
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
-              integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
-              crossorigin="anonymous">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+        integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <!-- Custom CSS -->
+    <!----link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}"-->
 
-        <!-- Custom CSS -->
-        <!----link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}"-->
-
-        <!-- Page Title -->
-        {% if title %}
-            <title>{{ config.APP_NAME }} - {{ title }}</title>
-        {% else %}
-            <title>{{ config.APP_NAME }}</title>
-        {% endif %}
+    <!-- Page Title -->
+    {% if title %}
+    <title>{{ config.APP_NAME }} - {{ title }}</title>
+    {% else %}
+    <title>{{ config.APP_NAME }}</title>
+    {% endif %}
     {% endblock head %}
 </head>
+
 <body>
-<header class="site-header">
-    {% block header %}
+    <header class="site-header">
+        {% block header %}
         <!----nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
             <div class="container">
                 <a class="navbar-brand mr-4" href="/">{{ config.APP_NAME }}</a>
@@ -50,15 +65,15 @@
                 </div>
             </div>
         </nav-->
-    {% endblock header %}
-</header>
-<main role="main" class="container">
-    <div class="row">
-        <div class="col-md-12" id="content">
-            {% block content %}{% endblock content %}
-        </div>
-        <div class="col-md-3" id=menu>
-            {% block sidebar %}
+        {% endblock header %}
+    </header>
+    <main role="main" class="container">
+        <div class="row">
+            <div class="col-md-12" id="content">
+                {% block content %}{% endblock content %}
+            </div>
+            <div class="col-md-3" id=menu>
+                {% block sidebar %}
                 <!--suppress Annotator -->
                 <!----div class="content-section">
                     {% block sidebar_title %}
@@ -84,27 +99,30 @@
                         {% endblock sidebar_botton_2 %}
                     {% endblock sidebar_content %}
                 </div-->
-            {% endblock sidebar %}
+                {% endblock sidebar %}
+            </div>
         </div>
-    </div>
-</main>
+    </main>
 
-<!-- Bootstrap scripts -->
-{% block scripts %}
+    <!-- Bootstrap scripts -->
+    {% block scripts %}
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-            crossorigin="anonymous"></script>
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous">
+    </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
-            integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
-            crossorigin="anonymous"></script>
+        integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous">
+    </script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
-            integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
-            crossorigin="anonymous"></script>
-{% endblock scripts %}
+        integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous">
+    </script>
+    {% endblock scripts %}
 </body>
+
 </html>
 
-<style>#menu {
-    position: absolute;
-    text-align: center;
-}</style>
+<style>
+    #menu {
+        position: absolute;
+        text-align: center;
+    }
+</style>

@@ -8,43 +8,13 @@
                 Take Transit
             </legend>
             <div class="form-group">
-                {{ form.sites.label(class="form-control-label") }}
-                {% if form.sites.errors %}
-                {{ form.state(class="form-control form-control-lg is-invalid") }}
-                <div class="invalid-feedback">
-                    {% for error in form.state.errors %}
-                    <span>{{ error }}</span>
-                    {% endfor %}
-                </div>
-                {% else %}
-                {{ form.state(class="form-control form-control-lg") }}
-                {% endif %}
+                    {{ render_field(filter_form.sites)}}
             </div>
             <div class="form-group">
-                {{ form.sites.label(class="form-control-label") }}
-                {% if form.sites.errors %}
-                {{ form.state(class="form-control form-control-lg is-invalid") }}
-                <div class="invalid-feedback">
-                    {% for error in form.state.errors %}
-                    <span>{{ error }}</span>
-                    {% endfor %}
-                </div>
-                {% else %}
-                {{ form.state(class="form-control form-control-lg") }}
-                {% endif %}
+                    {{ render_field(filter_form.transport_type)}}
             </div>
             <div class="form-group">
-                {{ form.transit_type.label(class="form-control-label") }}
-                {% if form.transit_type.errors %}
-                {{ form.transit_type(class="form-control form-control-lg is-invalid") }}
-                <div class="invalid-feedback">
-                    {% for error in form.transit_type.errors %}
-                    <span>{{ error }}</span>
-                    {% endfor %}
-                </div>
-                {% else %}
-                {{ form.transit_type(class="form-control form-control-lg") }}
-                {% endif %}
+                    {{ render_field(filter_form.price_range)}}
             </div>
         </fieldset>
             <div class="form-group">
