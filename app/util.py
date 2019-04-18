@@ -29,6 +29,7 @@ def db_procedure(procedure_name, args):
         db.connection.commit()
     return result, error
 
+
 def process_phone(phone):
     """
     Remove all non-numeric characters (including space) from a phone number

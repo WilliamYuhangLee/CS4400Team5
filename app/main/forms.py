@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, FieldList, FormField, SelectField
-from wtforms.validators import DataRequired, Email, EqualTo, ValidationError, Regexp, Length
+from wtforms.widgets import PasswordInput
+from wtforms.validators import DataRequired, Email, EqualTo, ValidationError, Regexp, Length, StopValidation
 
 from app.models import Employee
 from app.util import db_procedure, DatabaseError, process_phone
@@ -14,15 +15,24 @@ class LoginForm(FlaskForm):
 
 
 class EmailEntryForm(FlaskForm):
-    email = StringField(validators=[DataRequired(), Email(message="The email has been registered!")])
+    email = StringField(render_kw={'readonly': True})
+    remove = SubmitField(label="Remove")
 
-    def validate_email(self, email_field):
-        args = (email_field.data,)
-        result, error = db_procedure("check_email", args)  # return True if valid, False otherwise
-        if error:
-            raise DatabaseError("An error occurred when validating email with database: " + error)
-        if not result:
-            raise ValidationError("This email has been taken.")
+
+class RequiredIf(object):
+    """
+    a validator which makes a field required if another field is set and has a truthy value
+    """
+    def __init__(self, required_field_name, message=None):
+        self.required_field_name = required_field_name
+        self.message = message
+
+    def __call__(self, form, field):
+        required_field = form._fields.get(self.required_field_name)
+        if required_field is None:
+            raise Exception('No field named "%s" in form' % self.required_field_name)
+        if bool(required_field.data):
+            DataRequired(message=self.message)(form, field)
 
 
 class UserRegistrationForm(FlaskForm):
@@ -30,23 +40,16 @@ class UserRegistrationForm(FlaskForm):
     last_name = StringField(label="Last Name", validators=[DataRequired("Please enter your last name.")])
     username = StringField(label="Username", validators=[DataRequired()],
                            description="A valid username must be unique and not more than 50 characters long.")
-    password = PasswordField(label="Password",
+    password = PasswordField(label="Password", widget=PasswordInput(hide_value=False),
                              validators=[DataRequired(),
                                          Length(min=8, message="A valid password must be at least 8 characters long.")])
-    confirm_password = PasswordField(label="Confirm Password",
+    confirm_password = PasswordField(label="Confirm Password", widget=PasswordInput(hide_value=False),
                                      validators=[DataRequired(),
                                                  EqualTo("password", "The passwords you entered do not match!")])
-    emails = FieldList(FormField(EmailEntryForm), label="Email", min_entries=1)
-    submit = SubmitField("Sign up")
-
-    def add_email(self):
-        """
-        Add a FormField to the emails FieldList.
-
-        :return: the added field
-        :rtype: FormField
-        """
-        return self.emails.append_entry()
+    emails = FieldList(FormField(EmailEntryForm))
+    email = StringField(label="Email", validators=[RequiredIf(required_field_name="add")])
+    add = SubmitField(label="Add")
+    submit = SubmitField(label="Sign up")
 
     def validate_username(self, username_field):
         args = (username_field.data,)
@@ -55,6 +58,32 @@ class UserRegistrationForm(FlaskForm):
             raise DatabaseError("An error occurred when validating username with database: " + error)
         if not result:
             raise ValidationError("This username has been taken. Please enter another one.")
+
+    def validate_email(self, email_field):
+        if self.add.data:
+            args = (email_field.data,)
+            result, error = db_procedure("check_email", args)  # return True if valid, False otherwise
+            if error:
+                raise DatabaseError("An error occurred when validating email with database: " + error)
+            if not result:
+                raise ValidationError("This email has been taken.")
+
+    def validate_emails(self, emails_field):
+        if self.submit.data:
+            if len(emails_field.entries) == 0:
+                raise ValidationError("You must enter at least one email!")
+
+    def add_email(self):
+        form = EmailEntryForm()
+        form.email = self.email.data
+        self.email.data = None
+        self.emails.append_entry(form)
+
+    def delete_email(self):
+        for form in self.emails:
+            if form.remove.data:
+                self.emails.entries.remove(form)
+                break
 
 
 class EmployeeRegistrationForm(UserRegistrationForm):
@@ -72,8 +101,8 @@ class EmployeeRegistrationForm(UserRegistrationForm):
                                                          Length(min=5, max=5,
                                                                 message="A valid zip code must be 5 digits.")])
 
-    def validate_phone(self, phone):
-        result, error = db_procedure("check_phone", (process_phone(phone),))
+    def validate_phone(self, phone_field):
+        result, error = db_procedure("check_phone", (process_phone(phone_field.data),))
         if error:
             raise DatabaseError("An error occurred when validating phone number with database: " + error)
         if not result:
