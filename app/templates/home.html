@@ -6,16 +6,17 @@
     </legend>
     <div id="functionlist_frame">
         <p id="Title">Functions</p>
-        <a href="{{ url_for('user.takeTransit')}}">
-            Take Transit
-        </a>
-        <a href="{{ url_for('user.viewTransitHistory')}}">
-            View Transit History
-        </a>
+        <button type="button" class="btn btn-outline-info" onclick="window.location.href='{{ url_for('user.take_transit') }}';">Take Transit</button>
+        <button type="button" class="btn btn-outline-info" onclick="window.location.href='{{ url_for('user.view_transit_history') }}';">Take Transit</button>
         {% block functions %}{% endblock functions %}
+        <button type="button" class="btn btn-outline-info" onclick="window.location.href='{{ url_for('main.home') }}';">Take Transit</button>
+       
         <a href="{{ url_for('main.home')}}">
             Back
         </a>
     </div>
 </div>
+<small class="text-muted">
+    Sign out now? <a class="ml-2" href="{{ url_for('maiin.login') }}">Sign out</a>
+</small>
 {% endblock content %}

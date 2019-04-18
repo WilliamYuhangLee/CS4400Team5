@@ -1,12 +1,6 @@
 {% extends "home.html" %}
 {% block functions %}
-<a href="{{ url_for('visitor.exploreEvent')}}">
-    Explore Event
-</a>
-<a href="{{ url_for('visitor.exploreSite')}}">
-    Explore Site
-</a>
-<a href="{{ url_for('visitor.viewVisitHistory')}}">
-    View Visit History
-</a>
+<button type="button" class="btn btn-outline-info" onclick="window.location.href='{{ url_for('visitor.explore_event') }}';">Explore Event</button>
+<button type="button" class="btn btn-outline-info" onclick="window.location.href='{{ url_for('visitor.explore_site') }}';">Explore Site</button>
+<button type="button" class="btn btn-outline-info" onclick="window.location.href='{{ url_for('visitor.view_visit_history') }}';">View Visit History</button>
 {% endblock functions %}

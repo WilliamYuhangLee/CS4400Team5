@@ -91,7 +91,7 @@
                 {% else %}
                 {% for email in form.emails %}
                 {{ email.form.email() }}
-                <button onclick="{{ form.add_email }}">Add Email</button>
+                <button class="btn btn-outline-info" onclick="{{ form.add_email }}">Add Email</button>
                 {% endfor %}
                 {% endif %}
             </div>

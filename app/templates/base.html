@@ -13,7 +13,7 @@
               crossorigin="anonymous">
 
         <!-- Custom CSS -->
-        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
+        <!----link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}"-->
 
         <!-- Page Title -->
         {% if title %}
@@ -54,7 +54,7 @@
 </header>
 <main role="main" class="container">
     <div class="row">
-        <div class="col-md-8" id="content">
+        <div class="col-md-12" id="content">
             {% block content %}{% endblock content %}
         </div>
         <div class="col-md-3" id=menu>

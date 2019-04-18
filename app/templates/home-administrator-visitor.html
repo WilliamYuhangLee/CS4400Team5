@@ -1,15 +1,7 @@
 {% extends "home-visitor.html" %}
 {% block functions %}
-<a href="{{ url_for('employee.manage_profile')}}">
-    Manage Profile
-</a>
-<a href="{{ url_for('administrator.manage_user')}}">
-    Manage User
-</a>
-<a href="{{ url_for('administrator.manage_transit')}}">
-    Manage Transit
-</a>
-<a href="{{ url_for('administrator.manage_site')}}">
-    Manage Site
-</a>
+<button type="button" class="btn btn-outline-info" onclick="window.location.href='{{ url_for('employee.manage_profile') }}';">Manage Profile</button>
+<button type="button" class="btn btn-outline-info" onclick="window.location.href='{{ url_for('administrator.manage_user') }}';">Manage User</button>
+<button type="button" class="btn btn-outline-info" onclick="window.location.href='{{ url_for('administrator.manage_transit') }}';">Manage Transit</button>
+<button type="button" class="btn btn-outline-info" onclick="window.location.href='{{ url_for('administrator.manage_site') }}';">Manage Site</button>
 {% endblock functions %}

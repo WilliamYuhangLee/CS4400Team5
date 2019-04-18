@@ -1,9 +1,5 @@
 {% extends "home-visitor.html" %}
 {% block functions %}
-<a href="{{ url_for('employee.manage_profile')}}">
-    Manage Profile
-</a>
-<a href="{{ url_for('staff.view_schedule')}}">
-    View Schedule
-</a>
+<button type="button" class="btn btn-outline-info" onclick="window.location.href='{{ url_for('employee.manage_profile') }}';">Manage Profile</button>
+<button type="button" class="btn btn-outline-info" onclick="window.location.href='{{ url_for('staff.view_schedule') }}';">View Schedule</button>
 {% endblock functions %}
