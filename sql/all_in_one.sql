@@ -1232,7 +1232,7 @@ BEGIN
     DECLARE city_ varchar(100); 
     DECLARE state_ varchar(100); 
     DECLARE zip_code varchar(10); 
-    DECLARE title_ varchar(10);
+    DECLARE title_ varchar(20);
      
     IF EXISTS(SELECT * FROM Employee WHERE UserName = user_name) THEN
         SELECT EmployeeID, Phone, Address, City, State, ZipCode, Title 
@@ -1259,7 +1259,7 @@ BEGIN
     DECLARE city_ varchar(100); 
     DECLARE state_ varchar(100); 
     DECLARE zip_code varchar(10); 
-    DECLARE title_ varchar(10);
+    DECLARE title_ varchar(20);
     SELECT UserName INTO user_name FROM Email WHERE EmailAddress = email_address;
     IF length(user_name) > 0 THEN 
         CALL query_employee_by_user(user_name, employee_id, phone_, address_, city_, state_, zip_code, title_);
