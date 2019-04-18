@@ -56,7 +56,7 @@ class UserRegistrationForm(FlaskForm):
         result, error = db_procedure("check_username", args)  # return True if valid, False otherwise
         if error:
             raise DatabaseError("An error occurred when validating username with database: " + error)
-        if not result:
+        if not result[0][0]:
             raise ValidationError("This username has been taken. Please enter another one.")
 
     def validate_email(self, email_field):
@@ -65,12 +65,10 @@ class UserRegistrationForm(FlaskForm):
             result, error = db_procedure("check_email", args)  # return True if valid, False otherwise
             if error:
                 raise DatabaseError("An error occurred when validating email with database: " + error)
-            if not result:
+            if not result[0][0]:
                 raise ValidationError("This email has been taken.")
-
-    def validate_emails(self, emails_field):
         if self.submit.data:
-            if len(emails_field.entries) == 0:
+            if len(self.emails.entries) == 0:
                 raise ValidationError("You must enter at least one email!")
 
     def add_email(self):
@@ -105,5 +103,5 @@ class EmployeeRegistrationForm(UserRegistrationForm):
         result, error = db_procedure("check_phone", (process_phone(phone_field.data),))
         if error:
             raise DatabaseError("An error occurred when validating phone number with database: " + error)
-        if not result:
+        if not result[0][0]:
             raise ValidationError("This phone number has been claimed by another user.")

@@ -25,8 +25,9 @@ def register():
                 phone = process_phone(form.phone.data)
                 user = Employee(user, phone, form.address.data, form.city.data, form.state.data, form.zip_code.data, form.title.data)
             user.create()
-            login_user(user, remember=True)
-            flash("Your account has been created! You are now logged in.", category="success")
+            for email_form in form.emails.entries:
+                user.add_email(email_form.email.data)
+            flash("Your have submitted your registration. Please wait for the administrator to approve your request.", category="success")
             return redirect(url_for(".login"))
         elif form.add.data:
             form.add_email()
@@ -55,8 +56,8 @@ def login():
         user = User.get_by_email(form.email.data)
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             if user.status is User.Status.PENDING:
-                return """<h1>Your registration has not been approved.</h1>
-                Your registration has not been approved by an administrator. Please wait or contact support if needed."""
+                flash("Your registration has not been approved. Please wait for an administrator to approve your "
+                      "request and contact support if needed.", category="warning")
             else:
                 login_user(user, remember=form.remember_me.data)
                 next_page = request.args.get("next")
@@ -68,7 +69,7 @@ def login():
                     return redirect(url_for("user.home", is_visitor=user.is_visitor))
         else:
             flash("Login failed. Please check your email and password.", category="danger")
-    return render_template("login.html", title="Login", form=form)  # TODO: make sure login.html is implemented
+    return render_template("login.html", title="Login", form=form)
 
 
 @bp.route("/register-options/", methods=["GET"])

@@ -93,7 +93,7 @@ class User(UserMixin):
         if error:
             print("Query user by email failed: " + error)
             return None
-        username, *params, is_employee = result
+        username, *params, is_employee = result[0]
         user = User(username, *params)
         if is_employee:
             args = (username,)
@@ -101,7 +101,7 @@ class User(UserMixin):
             if error:
                 print("Query employee by username failed: " + error)
                 return None
-            user = Employee(user, *result)
+            user = Employee(user, *result[0])
         return user
 
     @staticmethod
@@ -111,14 +111,15 @@ class User(UserMixin):
         if error:
             print("Query user by username failed: " + error)
             return None
-        *params, is_employee = result
+        if result[0][0] is None: return None  # TODO: makeshift solution for bug, delete this line
+        *params, is_employee = result[0]
         user = User(username, *params)
         if is_employee:
             result, error = db_procedure("query_employee_by_username", args)
             if error:
                 print("Query employee by username failed: " + error)
                 return None
-            user = Employee(user, *result)
+            user = Employee(user, *result[0])
         return user
 
 
