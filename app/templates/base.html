@@ -33,71 +33,81 @@
 </head>
 
 <body>
-        <header class="site-header">
-            {% block header %}
-            <nav class="navbar navbar-expand-lg navbar-light bg-light">
-                <a class="navbar-brand">Atlanta Beltline</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
-                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav">
-                        {% block navbar_item1 %}
-                        <li class="nav-item active">
-                            <a class="nav-link" href="{{ url_for('main.login') }}">Login<span
-                                    class="sr-only">(current)</span></a>
-                        </li>
-                        {% endblock %}
-                        {% block navbar_item2 %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('main.nav_register') }}">Register</a>
-                        </li>
-                        {% endblock %}
-                        {% block navbar_item3 %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="javascript:history.back()">Back</a>
-                        </li>
-                        {% endblock %}
-                        {% block navbar_item4 %}
-                        {% endblock %}
-                    </ul>
-                </div>
-            </nav>
-            {% endblock header %}
-        </header>
-        <main role="main" class="container">
-            <div class="row">
-                <div class="col-md-12" id="content">
-                    {% block content %}{% endblock content %}
-                </div>
+    <header class="site-header">
+        {% block header %}
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand">Atlanta Beltline</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    {% block navbar_item1 %}
+                    <li class="nav-item active">
+                        <a class="nav-link" href="{{ url_for('main.login') }}">Login<span
+                                class="sr-only">(current)</span></a>
+                    </li>
+                    {% endblock %}
+                    {% block navbar_item2 %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('main.nav_register') }}">Register</a>
+                    </li>
+                    {% endblock %}
+                    {% block navbar_item3 %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="javascript:history.back()">Back</a>
+                    </li>
+                    {% endblock %}
+                    {% block navbar_item4 %}
+                    {% endblock %}
+                </ul>
             </div>
-            <div>
-        </main>
-        {% block sidebar %}
-        {% endblock sidebar %}
-        <!-- Bootstrap scripts -->
-        <script>
-            function openNav() {
-                document.getElementById("mySidenav").style.width = "250px";
-            }
+        </nav>
+        {% endblock header %}
+    </header>
+    <main role="main" class="container">
+        <div class="row">
+            <div class="col-md-12" id="content">
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                <ul class=flashes>
+                    {% for message in messages %}
+                    <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                {% endwith %}
+                {% block content %}{% endblock content %}
+            </div>
+        </div>
+        <div>
+    </main>
+    {% block sidebar %}
+    {% endblock sidebar %}
+    <!-- Bootstrap scripts -->
+    <script>
+        function openNav() {
+            document.getElementById("mySidenav").style.width = "250px";
+        }
 
-            function closeNav() {
-                document.getElementById("mySidenav").style.width = "0";
-            }
-        </script>
-        {% block scripts %}
-        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous">
-        </script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
-            integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous">
-        </script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
-            integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous">
-        </script>
-        {% endblock scripts %}
+        function closeNav() {
+            document.getElementById("mySidenav").style.width = "0";
+        }
+    </script>
+    {% block scripts %}
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+        integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous">
+    </script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+        integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous">
+    </script>
+    {% endblock scripts %}
 </body>
+
 </html>
 
 <style>
