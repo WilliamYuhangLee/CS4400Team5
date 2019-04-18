@@ -76,6 +76,9 @@ class User(UserMixin):
         if error:
             raise DatabaseError("Fail to delete email of user from database: " + error)
 
+    def is_employee(self) -> bool:
+        return isinstance(self, Employee)
+
     def get_id(self):
         return self.username
 
@@ -111,7 +114,6 @@ class User(UserMixin):
         if error:
             print("Query user by username failed: " + error)
             return None
-        if result[0][0] is None: return None  # TODO: makeshift solution for bug, delete this line
         *params, is_employee = result[0]
         user = User(username, *params)
         if is_employee:

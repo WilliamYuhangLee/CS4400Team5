@@ -1,5 +1,5 @@
-from flask import request, redirect, url_for, flash, render_template, session
-from flask_login import login_user
+from flask import request, redirect, url_for, flash, render_template
+from flask_login import login_user, login_required, logout_user, current_user
 from app import bcrypt
 from app.models import User, Employee
 from app.util import process_phone
@@ -48,9 +48,28 @@ def register():
     return render_template(template, title="Registration", form=form)
 
 
+def redirect_authenticated_user(user):
+    """
+    Redirect an authenticated user to their homepage.
+    :type user: User
+    :return the response object corresponding to the redirected page
+    :rtype werkzeug.wrappers.response.Response
+    """
+    next_page = request.args.get("next")
+    if next_page:
+        return redirect(next_page)
+    if user.is_employee():
+        user: Employee
+        return redirect(url_for(user.title.value.lower() + ".home", is_visitor=user.is_visitor))
+    else:
+        return redirect(url_for("user.home", is_visitor=user.is_visitor))
+
+
 @bp.route("/", methods=["GET", "POST"])
 @bp.route("/login", methods=["GET", "POST"])
 def login():
+    if current_user.is_authenticated:
+        return redirect_authenticated_user(current_user)
     form = LoginForm()
     if form.validate_on_submit():
         user = User.get_by_email(form.email.data)
@@ -60,16 +79,17 @@ def login():
                       "request and contact support if needed.", category="warning")
             else:
                 login_user(user, remember=form.remember_me.data)
-                next_page = request.args.get("next")
-                if next_page:
-                    return redirect(next_page)
-                if isinstance(user, Employee):
-                    return redirect(url_for(user.title.value.lower() + ".home", is_visitor=user.is_visitor))
-                else:
-                    return redirect(url_for("user.home", is_visitor=user.is_visitor))
+                return redirect_authenticated_user(user)
         else:
             flash("Login failed. Please check your email and password.", category="danger")
     return render_template("login.html", title="Login", form=form)
+
+
+@bp.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for(".login"))
 
 
 @bp.route("/register-options/", methods=["GET"])

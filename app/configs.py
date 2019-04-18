@@ -18,7 +18,6 @@ class DevelopmentConfig(Config):
 
     # App
     APP_NAME = os.getenv("APP_NAME") or "Atlanta Beltline"
-    SECRET_KEY = os.getenv("SECRET_KEY") or os.urandom(32)
 
     # Database
     MYSQL_HOST = os.getenv("MYSQL_HOST") or "localhost"
