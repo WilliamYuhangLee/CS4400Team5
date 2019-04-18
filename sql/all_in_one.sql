@@ -1181,11 +1181,12 @@ BEGIN
         ELSE 
             SET is_employee = 0;
         END IF;
+        SELECT user_name, pass_word, first_name, last_name, is_visitor, status_, is_employee;
     ELSE 
         SET @error = "Email Address does not exist.";
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     END IF;
-    SELECT user_name, pass_word, first_name, last_name, is_visitor, status_, is_employee;
+    
 END $$
 
 
@@ -1210,7 +1211,13 @@ BEGIN
     ELSE 
         SET is_employee = 0;
     END IF;
-    SELECT pass_word, first_name, last_name, is_visitor, status_, is_employee;
+    IF length(pass_word) > 1 THEN 
+        SELECT pass_word, first_name, last_name, is_visitor, status_, is_employee;
+    ELSE 
+        SET @error = concat(user_name, " does not exist.");
+        SIGNAL SQLSTATE '45000' SET message_text = @error;
+    END IF;
+    
 END $$
 
 
@@ -1254,8 +1261,13 @@ BEGIN
     DECLARE zip_code varchar(10); 
     DECLARE title_ varchar(10);
     SELECT UserName INTO user_name FROM Email WHERE EmailAddress = email_address;
-    CALL query_employee_by_user(user_name, employee_id, phone_, address_, city_, state_, zip_code, title_, @error);
-    SELECT user_name, phone_, address_, city_, state_, zip_code, title_, employee_id;
+    IF length(user_name) > 0 THEN 
+        CALL query_employee_by_user(user_name, employee_id, phone_, address_, city_, state_, zip_code, title_);
+        SELECT user_name, phone_, address_, city_, state_, zip_code, title_, employee_id;
+    ELSE 
+        SET @error = "This user does not exist.";
+        SIGNAL SQLSTATE '45000' SET message_text = @error;
+    END IF;
 END $$
 
 
@@ -1286,7 +1298,6 @@ CREATE PROCEDURE check_username(in user_name varchar(100))
 -- user name, result
 BEGIN 
     DECLARE result int(1);
-    IF EXISTS(SELECT UserName FROM Users WHERE UserName = user_name LIMIT 1) THEN 
     IF EXISTS(SELECT UserName FROM Users WHERE UserName = user_name LIMIT 1) THEN 
         SET result = 0;
     ELSE
@@ -1322,7 +1333,12 @@ BEGIN
      
     IF length(site_name) > 0 THEN
         SELECT ZipCode, Address, ManagerName INTO zip_code, address_, manager_name FROM Site WHERE SiteName = site_name;
-        SELECT zip_code, address_, manager_name;
+        IF length(ZipCode) > 1 THEN 
+            SELECT zip_code, address_, manager_name;
+        ELSE 
+            SET @error = concat(site_name, " does not exist.");
+            SIGNAL SQLSTATE '45000' SET message_text = @error;
+        END IF;
     ELSE 
         SET @error = "Site name cannot be null.";
         SIGNAL SQLSTATE '45000' SET message_text = @error;
@@ -1341,13 +1357,33 @@ BEGIN
     DECLARE description_ text;
      
     IF length(site_name) > 0 AND length(event_name) > 0 AND start_date != "0000-00-00" THEN
-        SELECT EndDate, MinSraffReq, Capacity, Description INTO end_date, min_staff_req, capacity_, description_ FROM Events WHERE SiteName = site_name AND EventName = event_date AND StartDate = start_date LIMIT 1;
-        SELECT end_date, min_staff_req, capacity_, description_;
+        SELECT EndDate, MinSraffReq, Capacity, Description INTO end_date, min_staff_req, capacity_, description_ FROM Events WHERE SiteName = site_name AND EventName = event_date AND StartDate = start_date LIMIT 1;        
+        IF length(description_) > 1 THEN 
+            SELECT end_date, min_staff_req, capacity_, description_;
+        ELSE 
+            SET @error = concat(event_name, " does not exist.");
+            SIGNAL SQLSTATE '45000' SET message_text = @error;
+        END IF;
     ELSE 
         SET @error = "Primary key cannot have null value.";
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     END IF;
     
+END $$
+
+
+CREATE PROCEDURE check_phone(in phone_ varchar(10))
+-- order of parameter
+-- phone
+BEGIN
+    DECLARE result int;
+    
+    IF EXISTS(SELECT * FROM Employee WHERE Phone = phone_) THEN
+        SET result = 0;
+    ELSE 
+        SET result = 1;
+    END IF;
+    SELECT result, phone_;
 END $$
 
 
@@ -1919,21 +1955,6 @@ BEGIN
         SET @error = "Site name cannot be null.";
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     END IF;
-END $$
-
-
-CREATE PROCEDURE check_phone(in phone_ varchar(10))
--- order of parameter
--- phone
-BEGIN
-    DECLARE result int;
-    
-    IF EXISTS(SELECT * FROM Employee WHERE Phone = phone_) THEN
-        SET result = 0;
-    ELSE 
-        SET result = 1;
-    END IF;
-    SELECT result, phone_;
 END $$
 
 DELIMITER ;
