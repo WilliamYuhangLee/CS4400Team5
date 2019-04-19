@@ -20,7 +20,7 @@ def register():
                         password=hashed_password,
                         first_name=form.first_name.data,
                         last_name=form.last_name.data,
-                        is_visitor=is_visitor)
+                        is_visitor=is_visitor or form.visitor.data)
             if is_employee:
                 phone = process_phone(form.phone.data)
                 user = Employee(user, phone, form.address.data, form.city.data, form.state.data, form.zip_code.data, form.title.data)
