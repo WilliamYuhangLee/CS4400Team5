@@ -1,7 +1,18 @@
 {% extends "home.html" %}
 {% block functions %}
-<button type="button" class="btn btn-outline-info" onclick="window.location.href='{{ url_for('employee.manage_profile') }}';">Manage Profile</button>
-<button type="button" class="btn btn-outline-info" onclick="window.location.href='{{ url_for('manager.manage_event') }}';">Manage Event</button>
-<button type="button" class="btn btn-outline-info" onclick="window.location.href='{{ url_for('manager.view_staff') }}';">View Staff</button>
-<button type="button" class="btn btn-outline-info" onclick="window.location.href='{{ url_for('manager.view_site_report') }}';">View Site Report</button>
+    <button type="button" class="btn btn-outline-info"
+            onclick="window.location.href='{{ url_for('user.manage_profile') }}';">Manage Profile
+    </button>
+    <button type="button" class="btn btn-outline-info"
+            onclick="window.location.href='{{ url_for('manager.manage_event') }}';">Manage Event
+    </button>
+    <button type="button" class="btn btn-outline-info"
+            onclick="window.location.href='{{ url_for('manager.manage_staff') }}';">View Staff
+    </button>
+    <button type="button" class="btn btn-outline-info"
+            onclick="window.location.href='{{ url_for('manager.site_report') }}';">View Site Report
+    </button>
+    {% if current_user.is_visitor %}
+        {% include "home-visitor.html" %}
+    {% endif %}
 {% endblock functions %}

@@ -60,9 +60,9 @@ def redirect_authenticated_user(user):
         return redirect(next_page)
     if user.is_employee():
         user: Employee
-        return redirect(url_for(user.title.value.lower() + ".home", is_visitor=user.is_visitor))
+        return redirect(url_for(user.title.value.lower() + ".home"))
     else:
-        return redirect(url_for("user.home", is_visitor=user.is_visitor))
+        return redirect(url_for("user.home"))
 
 
 @bp.route("/", methods=["GET", "POST"])
@@ -114,4 +114,4 @@ def error_500(e):
 
 # @bp.route("/", methods=["GET", "POST"])
 def test():
-    return redirect(url_for("main.register", is_employee=True, is_visitor=False))
+    return redirect(url_for("administrator.home"))

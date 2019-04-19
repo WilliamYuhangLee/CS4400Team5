@@ -1,6 +1,11 @@
-{% extends "home.html" %}
-{% block functions %}
-<button type="button" class="btn btn-outline-info" onclick="window.location.href='{{ url_for('visitor.explore_event') }}';">Explore Event</button>
-<button type="button" class="btn btn-outline-info" onclick="window.location.href='{{ url_for('visitor.explore_site') }}';">Explore Site</button>
-<button type="button" class="btn btn-outline-info" onclick="window.location.href='{{ url_for('visitor.view_visit_history') }}';">View Visit History</button>
-{% endblock functions %}
+{% block visitor_functions %}
+    <button type="button" class="btn btn-outline-info"
+            onclick="window.location.href='{{ url_for('visitor.explore_event') }}';">Explore Event
+    </button>
+    <button type="button" class="btn btn-outline-info"
+            onclick="window.location.href='{{ url_for('visitor.explore_site') }}';">Explore Site
+    </button>
+    <button type="button" class="btn btn-outline-info"
+            onclick="window.location.href='{{ url_for('visitor.visit_history') }}';">View Visit History
+    </button>
+{% endblock visitor_functions %}

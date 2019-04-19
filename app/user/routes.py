@@ -7,10 +7,7 @@ from . import bp
 @bp.route("/home")
 @login_required
 def home():
-    if current_user.is_visitor:
-        return render_template("home-user-visitor.html", title="Home")
-    else:
-        return render_template("home-user.html", title="Home")
+    return render_template("home-user.html", title="Home")
 
 
 @bp.route("/take-transit")

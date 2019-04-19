@@ -1,40 +1,43 @@
 {% extends "base.html" %}
 {% block navbar_item2 %}
-<li class="nav-item active">
-    <a class="nav-link" href="{{ url_for('user.take_transit') }}">Take Transit</a>
-</li>
+    <li class="nav-item active">
+        <a class="nav-link" href="{{ url_for('user.take_transit') }}">Take Transit</a>
+    </li>
 {% endblock %}
 {% block navbar_item3 %}
-<li class="nav-item">
-    <a class="nav-link" href="{{ url_for('user.view_transit_history') }}">View Transit History</a>
-</li>
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('user.transit_history') }}">View Transit History</a>
+    </li>
 {% endblock %}
 {% block navbar_item1 %}
-<li class="nav-item">
-    <a class="nav-link" href="{{ url_for('main.home') }}">Account</a>
-</li>
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('user.manage_profile') }}">Account</a>
+    </li>
 {% endblock %}
 {% block navbar_item4 %}
-<li class="nav-item">
-        <a class="nav-link" href="{{ url_for('main.login') }}">Sign out</a>
+    <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('main.logout') }}">Sign out</a>
     </li>
 {% endblock %}
 {% block content %}
-<div class="content-section">
-    <legend class="border-bottom mb-4">
-        Function Menu
-    </legend>
-    <div class="col-md-6 btn-group-vertical" id="functionlist_frame">
-        <button type="button" class="btn btn-outline-info"
-            onclick="window.location.href='{{ url_for('user.take_transit') }}';">Take Transit</button>
-        <button type="button" class="btn btn-outline-info"
-            onclick="window.location.href='{{ url_for('user.view_transit_history') }}';">View Transit History</button>
-        {% block functions %}{% endblock functions %}
+    <div class="content-section">
+        <legend class="border-bottom mb-4">
+            Function Menu
+        </legend>
+        <div class="col-md-6 btn-group-vertical" id="functionlist_frame">
+            <button type="button" class="btn btn-outline-info"
+                    onclick="window.location.href='{{ url_for('user.take_transit') }}';">Take Transit
+            </button>
+            <button type="button" class="btn btn-outline-info"
+                    onclick="window.location.href='{{ url_for('user.transit_history') }}';">View Transit History
+            </button>
+            {% block functions %}{% endblock functions %}
+        </div>
     </div>
-</div>
-<div class="border-top pt-2">
-    <small class="text-muted">
-        Sign out now? <a class="ml-2" href="{{ url_for('maiin.login') }}">Sign out</a>
-    </small>>
-</div>
+    <div class="border-top pt-2">
+        <small class="text-muted">
+            Sign out now? <a class="ml-2" href="{{ url_for('main.logout') }}">Sign out</a>
+        </small>
+        >
+    </div>
 {% endblock content %}

@@ -1,7 +1,0 @@
-{% extends "home-visitor.html" %}
-{% block functions %}
-<button type="button" class="btn btn-outline-info" onclick="window.location.href='{{ url_for('employee.manage_profile') }}';">Manage Profile</button>
-<button type="button" class="btn btn-outline-info" onclick="window.location.href='{{ url_for('administrator.manage_user') }}';">Manage User</button>
-<button type="button" class="btn btn-outline-info" onclick="window.location.href='{{ url_for('administrator.manage_transit') }}';">Manage Transit</button>
-<button type="button" class="btn btn-outline-info" onclick="window.location.href='{{ url_for('administrator.manage_site') }}';">Manage Site</button>
-{% endblock functions %}
