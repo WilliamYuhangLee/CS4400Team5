@@ -1,9 +1,24 @@
 {% extends "home.html" %}
-
 {% block scripts %}
 {{super()}}
-{% endblock scripts %}
+<script>
+    $.fn.dataTable.ext.search.push(
+        function (settings, data, dataIndex) {
+            var min = parseInt($('#min').val(), 10);
+            var max = parseInt($('#max').val(), 10);
+            var price = parseFloat(data[2]) || 0;
 
+            if ((isNaN(min) && isNaN(max)) ||
+                (isNaN(min) && age <= max) ||
+                (min <= price && isNaN(max)) ||
+                (min <= price && price <= max)) {
+                return true;
+            }
+            return false;
+        }
+    );
+</script>
+{% endblock %}
 
 {% block content %}
 <div class="row">
@@ -53,22 +68,3 @@
 </div>
 {% endblock content %}
 
-{% block scripts %}
-<script>
-    $.fn.dataTable.ext.search.push(
-        function (settings, data, dataIndex) {
-            var min = parseInt($('#min').val(), 10);
-            var max = parseInt($('#max').val(), 10);
-            var price = parseFloat(data[2]) || 0;
-
-            if ((isNaN(min) && isNaN(max)) ||
-                (isNaN(min) && age <= max) ||
-                (min <= price && isNaN(max)) ||
-                (min <= price && price <= max)) {
-                return true;
-            }
-            return false;
-        }
-    );
-</script>
-{% endblock %}
