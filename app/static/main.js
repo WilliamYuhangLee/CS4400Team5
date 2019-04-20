@@ -88,32 +88,32 @@ $(document).ready(function () {
     });
     $('#filter_take_transit').on('click', function () {
         var site = $( "#contain_site option:selected" ).text();
-        $.getJSON('Flask.url_for("user.take_transit_send_data")', (site), function() {
+        $.getJSON('Flask.url_for("user.take_transit_get_table_data")', (site), function() {
             console.log(site);
         });
     });
     $('#filter_transit_history').on('click', function () {
         var site = $( "#contain_site option:selected" ).text();
-        $.getJSON('Flask.url_for("user.transit_history_send_data")', (site), function() {
+        $.getJSON('Flask.url_for("user.transit_history_get_table_data")', (site), function() {
             console.log(site);
         });
     });
     $('#filter_site').on('click', function () {
         var site = $( "#contain_site option:selected" ).text();
-        $.getJSON('Flask.url_for("administrator.manage_site_send_data")', (site), function() {
+        $.getJSON('Flask.url_for("administrator.manage_site_get_table_data")', (site), function() {
             console.log(site);
         });
     });
     $('#filter_manager').on('click', function () {
         var manager = $( "#contain_manager option:selected" ).text();
-        $.getJSON('Flask.url_for("administrator.manage_site_send_data")', (site), function() {
+        $.getJSON('Flask.url_for("administrator.manage_site_get_table_data")', (site), function() {
             console.log(site);
         });
     });
     $('#filter_manage_site').on('click', function () {
         var manager = $( "#contain_manager option:selected" ).text();
         var site = $( "#contain_site option:selected" ).text();
-        $.getJSON('Flask.url_for("administrator.manage_user_send_data")', (site), function() {
+        $.getJSON('Flask.url_for("administrator.manage_user_get_table_data")', (site), function() {
             console.log(site , manager);
         });
     });
