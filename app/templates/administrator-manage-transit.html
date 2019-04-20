@@ -1,43 +1,45 @@
 {% extends "home.html" %}
 {% block content %}
-<div class="content-section">
-    <form method="post" action="" title="Manage-Transit">
-        {{ form.hidden_tag() }}
-        <fieldset class="form-group">
-            <legend class="border-bottom mb-4">
-                Manage Transit
-            </legend>
-            <div class="form-group">
-                {{ render_field(form.transport_type)}}
-            </div>
-            <div class="form-group">
-                {{ render_field(form.route)}}
-            </div>
-            <div class="form-group">
-                {{ render_field(form.contain_site)}}
-            </div>
-            <div class="form-group">
-                {{ render_field(form.price_range)}}
-            </div>
-        </fieldset>
-        <div class="form-group">
-            {{ form.submit(class="btn btn-outline-info") }}
-        </div>
-        <div class="form-group">
-            {{ form.submit(class="btn btn-outline-info") }}
-        </div>
-        <div class="form-group">
-            {{ form.submit(class="btn btn-outline-info") }}
-        </div>
-        <div class="form-group">
-            {{ form.submit(class="btn btn-outline-info") }}
-        </div>
-    </form>
-    <button type="button" class="btn btn-outline-info" href="javascript:history.back()">Back</button>
+<div class="row">
+        <label>Site<select id="contain_site" name="contain_site">
+                {% for site in sites %}
+                <option value="{{ site.name}}">{{site.name}}</option>
+                {% endfor %}
+                <button type="button" class="btn btn-outline-info" id="filter_site">Filter for Site</button>
+        </label>
+        <label>Manager<select id="contain_manager" name="contain_manager">
+                {% for manager in managers %}
+                <option value="{{ manager.name}}">{{ manager.name }}</option>
+                {% endfor %}
+                <button type="button" class="btn btn-outline-info" id="filter_manager">Filter for Manager</button>
+        </label>
+        <button type="button" class="btn btn-outline-info" id="filter_manage_site">Filter for Both</button>
 </div>
-<div class="border-top pt-2">
-    <small class="text-muted">
-        Sign out now? <a class="ml-2" href="{{ url_for('main.logout') }}">Sign out</a>
-    </small>>
+<div class="row">
+        <label>Open Everyday<select id="open_everyday" name="open_everyday">
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+            </select>
+        </label>
+</div>
+<div class="row">
+    <!--Script for admin needed-->
+    <button type="button" class="btn btn-outline-info" id="admin_manage_user_approve">Approve</button>
+    <button type="button" class="btn btn-outline-info" id="admin_manage_user_decline">Approve</button>
+</div>
+<div class="row">
+<table id="user_list" class="display" cellspacing="0" width="100%">
+    <thead>
+        <tr>
+            <th>Username</th>
+            <th>Email Count</th>
+            <th>User Type</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+</table>
+</div>
+<div class="row">
+<button type="button" class="btn btn-outline-info" href="javascript:history.back()">Back</button>
 </div>
 {% endblock content %}
