@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, FieldList, BooleanField
+from wtforms import StringField, SubmitField, FieldList, BooleanField, FormField
 from wtforms.validators import InputRequired, Regexp, ValidationError
 
 from app.util import db_procedure, DatabaseError
@@ -18,7 +18,7 @@ class ManageProfileForm(FlaskForm):
                         Regexp(regex=r"^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$",
                                message="Please enter a valid US 10-digit phone number.")])
     address = StringField(render_kw={'readonly': True})
-    emails = FieldList(EmailEntryForm)
+    emails = FieldList(FormField(EmailEntryForm))
     email = StringField(label="Email", validators=[RequiredIf(required_field_name="add")])
     add = SubmitField(label="Add")
     visitor = BooleanField(label="Visitor Account")
@@ -64,9 +64,12 @@ class ManageProfileForm(FlaskForm):
 
         args = (user.username,)
         result, error = db_procedure("query_employee_sitename", args)
-        if error:
-            raise DatabaseError("An error occurred when query user's site: " + error)
-        self.site_name.data = result[0][0]
+        # if error:
+        #     raise DatabaseError("An error occurred when query user's site: " + error)  #TODO: fix error handling logic
+        if error or len(result) == 0:
+            self.site_name.data = "No site assigned."
+        else:
+            self.site_name.data = result[0][0]
 
         result, error = db_procedure("query_email_by_username", args)
         if error:
