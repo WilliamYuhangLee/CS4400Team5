@@ -26,7 +26,7 @@ def register():
             user.create()
             for email_form in form.emails.entries:
                 user.add_email(email_form.email.data)
-            flash("Your have submitted your registration. Please wait for the administrator to approve your request.", category="success")
+            flash("Your have submitted your registration. Please wait for an administrator to approve your request.", category="success")
             return redirect(url_for(".login"))
         elif form.add.data:
             form.add_email()
@@ -58,8 +58,6 @@ def redirect_authenticated_user(user):
 
 @bp.route("/", methods=["GET", "POST"])
 @bp.route("/login", methods=["GET", "POST"])
-@login_manager.needs_refresh_handler
-@login_manager.unauthorized_handler
 def login():
     if current_user.is_authenticated:
         return redirect_authenticated_user(current_user)
@@ -69,7 +67,9 @@ def login():
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             if user.status is User.Status.PENDING:
                 flash("Your registration has not been approved. Please wait for an administrator to approve your "
-                      "request and contact support if needed.", category="warning")
+                      "request or contact support if needed.", category="warning")
+            elif user.Status is User.Status.DECLINED:
+                flash("Your registration has been declined. Please contact administrator for support.", category="error")
             else:
                 login_user(user, remember=form.remember_me.data)
                 return redirect_authenticated_user(user)
@@ -107,4 +107,4 @@ def error_500(e):
 
 # @bp.route("/", methods=["GET", "POST"])
 def test():
-    return redirect(url_for("administrator.home"))
+    return ""
