@@ -10,34 +10,60 @@
             <legend class="border-bottom mb-4">
                 Manage Profile
             </legend>
-            <div class="form-group">
-                {{ render_field(form.first_name)}}
-            </div>
-            <div class="form-group">
-                {{ render_field(form.last_name)}}
-            </div>
-            <div class="form-group">
-                {{ render_field(form.username)}}
-            </div>
-            <div class="form-group" id="container">
-                {% block container %}
-                {% endblock container %}
-            </div>
-            <div class="form-group">
-                {{ form.emails.label(class="form-control-label") }}
-                {% if form.emails.errors %}
-                {{ form.emails(class="form-control form-control-lg is-invalid") }}
-                <div class="invalid-feedback">
-                    {% for error in form.emails.errors %}
-                    <span>{{ error }}</span>
-                    {% endfor %}
+            <div class="form-row">
+                <div class="form-group">
+                    {{ render_field(form.first_name)}}
                 </div>
-                {% else %}
-                {% for email in form.emails %}
-                {{ email.form.email() }}
-                <button class="btn btn-outline-info" onclick="{{ form.add_email }}">Add Email</button>
-                {% endfor %}
-                {% endif %}
+                <div class="form-group">
+                    {{ render_field(form.last_name)}}
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    {{ render_field(form.username)}}
+                </div>
+                <div class="form-group">
+                    {{ render_field(form.site_name)}}
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    {{ render_field(form.employee_id)}}
+                </div>
+                <div class="form-group">
+                    {{ render_field(form.phone)}}
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    {{ render_field(form.address)}}
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    {% if form.emails.errors %}
+                    {{ form.emails(class="form-control form-control-lg is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.emails.errors %}
+                        <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    {% for subform in form.emails %}
+                    {{ subform.hidden_tag() }}
+                    {{ render_field(subform.email) }}
+                    {{ render_field(subform.remove) }}
+                    {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    {{ render_field(form.email) }}
+                </div>
+                <div class="form-group col-md-4">
+                    {{ render_field(form.add) }}
+                </div>
             </div>
             <div class="form-group">
                 {{ render_field(form.visitor)}}
