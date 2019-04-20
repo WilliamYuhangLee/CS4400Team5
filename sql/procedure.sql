@@ -366,6 +366,23 @@ BEGIN
 END $$
 
 
+CREATE PROCEDURE query_employee_sitename(in user_name varchar(100))
+-- order of parameter
+-- user name
+-- site name
+BEGIN 
+    DECLARE site_name varchar(50);
+     
+    IF EXISTS(SELECT * FROM Site WHERE ManagerName = user_name) THEN
+        SELECT SiteName INTO site_name FROM Site WHERE ManagerName = user_name;
+        SELECT site_name;
+    ELSE 
+        SET @error = "This user is not an employee.";
+        SIGNAL SQLSTATE '45000' SET message_text = @error;
+    END IF;    
+END $$
+
+
 CREATE PROCEDURE query_employee_by_username(in user_name varchar(100) )
 -- order of parameter
 -- user name
@@ -405,9 +422,12 @@ BEGIN
     DECLARE state_ varchar(100); 
     DECLARE zip_code varchar(10); 
     DECLARE title_ varchar(20);
+    
     SELECT UserName INTO user_name FROM Email WHERE EmailAddress = email_address;
     IF length(user_name) > 0 THEN 
-        CALL query_employee_by_user(user_name, employee_id, phone_, address_, city_, state_, zip_code, title_);
+        SELECT EmployeeID, Phone, Address, City, State, ZipCode, Title 
+        INTO employee_id, phone_, address_, city_, state_, zip_code, title_ 
+        FROM Employee WHERE UserName = user_name;
         SELECT user_name, phone_, address_, city_, state_, zip_code, title_, employee_id;
     ELSE 
         SET @error = "This user does not exist.";
