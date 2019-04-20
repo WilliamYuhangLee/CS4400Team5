@@ -25,7 +25,12 @@ $(document).ready(function () {
     });
 
     $('#transit_history').DataTable({
-        "ajax": 'data.json',
+        "ajax": {
+            "url": "{{url_for('transit_history_get_table_data')}}",
+            "dataType": "json",
+            "dataSrc": "data",
+            "contentType": "application/json"
+        },
         columns: [
             { data: "Date" },
             { data: "Route" },
@@ -77,38 +82,38 @@ $(document).ready(function () {
         var route = table.cell('.selected', 0).data();
         var type = table.cell('.selected', 1).data();
         var date = $('#transit_date').val();
-        $.getJSON('Flask.url_for("user.take_transit")', (route,type,date), function() {
+        $.getJSON('Flask.url_for("user.take_transit_send_data")', (route,type,date), function() {
             console.log(route,type,date);
         });
     });
     $('#filter_take_transit').on('click', function () {
         var site = $( "#contain_site option:selected" ).text();
-        $.getJSON('Flask.url_for("user.take_transit")', (site), function() {
+        $.getJSON('Flask.url_for("user.take_transit_send_data")', (site), function() {
             console.log(site);
         });
     });
     $('#filter_transit_history').on('click', function () {
         var site = $( "#contain_site option:selected" ).text();
-        $.getJSON('Flask.url_for("user.transit_history")', (site), function() {
+        $.getJSON('Flask.url_for("user.transit_history_send_data")', (site), function() {
             console.log(site);
         });
     });
     $('#filter_site').on('click', function () {
         var site = $( "#contain_site option:selected" ).text();
-        $.getJSON('Flask.url_for("administrator.manage_site")', (site), function() {
+        $.getJSON('Flask.url_for("administrator.manage_site_send_data")', (site), function() {
             console.log(site);
         });
     });
     $('#filter_manager').on('click', function () {
         var manager = $( "#contain_manager option:selected" ).text();
-        $.getJSON('Flask.url_for("administrator.manage_site")', (site), function() {
+        $.getJSON('Flask.url_for("administrator.manage_site_send_data")', (site), function() {
             console.log(site);
         });
     });
     $('#filter_manage_site').on('click', function () {
         var manager = $( "#contain_manager option:selected" ).text();
         var site = $( "#contain_site option:selected" ).text();
-        $.getJSON('Flask.url_for("administrator.manage_user")', (site), function() {
+        $.getJSON('Flask.url_for("administrator.manage_user_send_data")', (site), function() {
             console.log(site , manager);
         });
     });
@@ -116,7 +121,7 @@ $(document).ready(function () {
         var username = table.cell('.selected', 0).data();
         var usertype = table.cell('.selected', 1).data();
         var status = "Declined";
-        $.getJSON('Flask.url_for("administrator.manage_user")', (username,usertype,status), function() {
+        $.getJSON('Flask.url_for("administrator.manage_user_send_data")', (username,usertype,status), function() {
             console.log(username,usertype,status);
         });
     });
@@ -124,7 +129,7 @@ $(document).ready(function () {
         var user = table.cell('.selected', 0).data();
         var usertype = table.cell('.selected', 2).data();
         var status = "Approved";
-        $.getJSON('Flask.url_for("administrator.manage_user")', (username,usertype,status), function() {
+        $.getJSON('Flask.url_for("administrator.manage_user_send_data")', (username,usertype,status), function() {
             console.log(username,usertype,status);
         });
     });
