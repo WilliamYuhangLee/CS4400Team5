@@ -3,7 +3,10 @@
 <div class="row">
 <div class="unselected-field" id="select_site">
     <label>Contain Site<select id="contain_site" name="contain_site">
-            <option>contain_site</option></select>
+            {% for site in sites %}
+            <option value="{{ site.name }}">{{site.name}}</option>
+            {% endfor %}
+            <button type="button" class="btn btn-outline-info" id="filter_take_transit">Filter for sites</button>
     </label>
     <label>Transport Type<select id="transport_type" name="transport_type">
             <option value="MARTA">MARTA</option>
@@ -13,9 +16,6 @@
 </div>​
 </div>
 <div class="row">
-
-    </div>
-    <div class="row">
 <table>
     <tbody>
         <tr>
@@ -27,6 +27,7 @@
         </tr>
     </tbody>
 </table>
+    </div>
 <table id="take_transit" class="display" cellspacing="0" width="100%">
     <thead>
         <tr>
@@ -37,7 +38,6 @@
         </tr>
     </thead>
 </table>
-</div>
 <div class="row">
 <input type="text" id="transit_date" name="transit_date">
 <button type="button" class="btn btn-outline-info" href="javascript:history.back()">Back</button>

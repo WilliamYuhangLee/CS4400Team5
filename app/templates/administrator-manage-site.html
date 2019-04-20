@@ -1,18 +1,26 @@
 {% extends "home.html" %}
 {% block content %}
 <div class="row">
-        <div class="unselected-field row" id="select">
-            <label>Site<select id="site_list" name="site_list">
-                    <option>Site</option>
-                </select>
-            </label>
-            <label>Manager<select id="manager_list" name="manager_list">
-                    <option value="Approved">Approved</option>
-                    <option value="Pending">Pending</option>
-                    <option value="Decline">Decline</option>
-                </select>
-            </label>
-        </div>​
+        <label>Site<select id="contain_site" name="contain_site">
+                {% for site in sites %}
+                <option value="{{ site.name}}">{{site.name}}</option>
+                {% endfor %}
+                <button type="button" class="btn btn-outline-info" id="filter_site">Filter for Site</button>
+        </label>
+        <label>Manager<select id="contain_manager" name="contain_manager">
+                {% for manager in managers %}
+                <option value="{{ manager.name}}">{{ manager.name }}</option>
+                {% endfor %}
+                <button type="button" class="btn btn-outline-info" id="filter_manager">Filter for Manager</button>
+        </label>
+        <button type="button" class="btn btn-outline-info" id="filter_manage_site">Filter for Both</button>
+</div>
+<div class="row">
+        <label>Open Everyday<select id="open_everyday" name="open_everyday">
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+            </select>
+        </label>
 </div>
 <div class="row">
     <!--Script for admin needed-->
