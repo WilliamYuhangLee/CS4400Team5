@@ -26,7 +26,7 @@ class User(UserMixin):
 
         @classmethod
         def coerce(cls, item):
-            return item if isinstance(item, cls) else cls[item]
+            return item if isinstance(item, cls) else cls[item.upper()]
 
     def __init__(self, username, password, first_name, last_name, is_visitor, status=Status.PENDING):
         """
@@ -140,7 +140,7 @@ class Employee(User):
 
         @classmethod
         def coerce(cls, item):
-            return item if isinstance(item, cls) else cls[item]
+            return item if isinstance(item, cls) else cls[item.upper()]
 
     class State(Enum):
         AL = 'AL'
@@ -204,7 +204,7 @@ class Employee(User):
 
         @classmethod
         def coerce(cls, item):
-            return item if isinstance(item, cls) else cls[item]
+            return item if isinstance(item, cls) else cls[item.upper()]
 
     def __init__(self, user, phone, address, city, state, zip_code, title, employee_id=None):
         """

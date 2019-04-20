@@ -40,7 +40,6 @@ class UserRegistrationForm(FlaskForm):
     last_name = StringField(label="Last Name", validators=[DataRequired("Please enter your last name.")])
     username = StringField(label="Username", validators=[DataRequired()],
                            description="A valid username must be unique and not more than 50 characters long.")
-    visitor = BooleanField(label="Create visitor account")
     password = PasswordField(label="Password", widget=PasswordInput(hide_value=False),
                              validators=[DataRequired(),
                                          Length(min=8, message="A valid password must be at least 8 characters long.")])
@@ -50,6 +49,7 @@ class UserRegistrationForm(FlaskForm):
     emails = FieldList(FormField(EmailEntryForm))
     email = StringField(label="Email", validators=[RequiredIf(required_field_name="add")])
     add = SubmitField(label="Add")
+    visitor = BooleanField(label="Create Visitor Account")
     submit = SubmitField(label="Sign up")
 
     def validate_username(self, username_field):

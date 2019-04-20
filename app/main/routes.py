@@ -1,6 +1,6 @@
 from flask import request, redirect, url_for, flash, render_template
 from flask_login import login_user, login_required, logout_user, current_user
-from app import bcrypt
+from app import bcrypt, login_manager
 from app.models import User, Employee
 from app.util import process_phone
 from .forms import LoginForm, UserRegistrationForm, EmployeeRegistrationForm
@@ -11,7 +11,6 @@ from . import bp
 @bp.route("/register/", methods=["GET", "POST"])
 def register():
     is_employee = request.args.get("is_employee", False, lambda x: x if isinstance(x, bool) else x.lower() == "true")
-    is_visitor = request.args.get("is_visitor", False, lambda x: x if isinstance(x, bool) else x.lower() == "true")
     form = EmployeeRegistrationForm() if is_employee else UserRegistrationForm()
     if form.validate_on_submit():
         if form.submit.data:
@@ -20,7 +19,7 @@ def register():
                         password=hashed_password,
                         first_name=form.first_name.data,
                         last_name=form.last_name.data,
-                        is_visitor=is_visitor or form.visitor.data)
+                        is_visitor=form.visitor.data)
             if is_employee:
                 phone = process_phone(form.phone.data)
                 user = Employee(user, phone, form.address.data, form.city.data, form.state.data, form.zip_code.data, form.title.data)
@@ -34,17 +33,9 @@ def register():
         else:
             form.delete_email()
     if is_employee:
-        # TODO: merge these two templates if possible
-        if is_visitor:
-            template = "register-employee-visitor.html"
-        else:
-            template = "register-employee.html"
+        template = "register-employee.html"
     else:
-        # TODO: merge these two templates if possible
-        if is_visitor:
-            template = "register-visitor.html"
-        else:
-            template = "register-user.html"
+        template = "register-user.html"
     return render_template(template, title="Registration", form=form)
 
 
@@ -67,6 +58,8 @@ def redirect_authenticated_user(user):
 
 @bp.route("/", methods=["GET", "POST"])
 @bp.route("/login", methods=["GET", "POST"])
+@login_manager.needs_refresh_handler
+@login_manager.unauthorized_handler
 def login():
     if current_user.is_authenticated:
         return redirect_authenticated_user(current_user)
