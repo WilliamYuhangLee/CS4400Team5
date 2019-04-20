@@ -46,8 +46,8 @@ def create_app():
 
     # Login Manager setup
     login_manager.login_view = "main.login"  # set view function for login (when login_required is triggered)
-    login_manager.login_message = "You are now logged in."
-    login_manager.login_message_category = "info"  # set login message style
+    login_manager.login_message = "Please log in to view this page."
+    login_manager.login_message_category = "warning"  # set login message style
     from models import User
     login_manager.user_callback = User.get_by_username
 
