@@ -1,29 +1,4 @@
 $(document).ready(function () {
-    $('#take_transit').DataTable({
-        "ajax": {
-            "url": "{{url_for('take_transit_get_table_data')}}",
-            "dataType": "json",
-            "dataSrc": "data",
-            "contentType": "application/json"
-        },
-        columns: [
-            { data: "Route" },
-            { data: "Transport Type" },
-            { data: "Price" },
-            { data: "#Connected Sites" }
-        ],
-        columnDefs: [{
-            orderable: false,
-            className: 'select-checkbox',
-            targets: 0
-        }],
-        select: {
-            style: 'os',
-            selector: 'td:first-child'
-        },
-        order: [[1, 'asc']]
-    });
-
     $('#transit_history').DataTable({
         "ajax": {
             "url": "{{url_for('transit_history_get_table_data')}}",
@@ -90,8 +65,33 @@ $(document).ready(function () {
         var site = $( "#contain_site option:selected" ).text();
         $.getJSON('Flask.url_for("user.take_transit_get_table_data")', (site), function() {
             console.log(site);
+            $('#take_transit').DataTable({
+                "ajax": {
+                    "url": "{{url_for('take_transit_get_table_data')}}",
+                    "dataType": "json",
+                    "dataSrc": "data",
+                    "contentType": "application/json"
+                },
+                columns: [
+                    { data: "Route" },
+                    { data: "Transport Type" },
+                    { data: "Price" },
+                    { data: "#Connected Sites" }
+                ],
+                columnDefs: [{
+                    orderable: false,
+                    className: 'select-checkbox',
+                    targets: 0
+                }],
+                select: {
+                    style: 'os',
+                    selector: 'td:first-child'
+                },
+                order: [[1, 'asc']]
+            });
         });
     });
+    
     $('#filter_transit_history').on('click', function () {
         var site = $( "#contain_site option:selected" ).text();
         $.getJSON('Flask.url_for("user.transit_history_get_table_data")', (site), function() {
