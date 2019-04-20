@@ -2,9 +2,9 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, FieldList, BooleanField
 from wtforms.validators import InputRequired, Regexp, ValidationError
 
-from main.forms import EmailEntryForm, RequiredIf
 from app.util import db_procedure, DatabaseError
 from app.models import Employee
+from app.main.forms import EmailEntryForm, RequiredIf
 
 
 class ManageProfileForm(FlaskForm):
