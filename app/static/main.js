@@ -1,6 +1,11 @@
 $(document).ready(function () {
     $('#take_transit').DataTable({
-        "ajax": 'data.json',
+        "ajax": {
+            "url": "{{url_for('take_transit_get_table_data')}}",
+            "dataType": "json",
+            "dataSrc": "data",
+            "contentType": "application/json"
+        },
         columns: [
             { data: "Route" },
             { data: "Transport Type" },
