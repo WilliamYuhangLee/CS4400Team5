@@ -52,8 +52,8 @@ BEGIN
         ELSE 
             SET new_end_date = end_date;
         END IF;
-        IF start_date = "1000-01-01" THEN
-            SET new_start_date = "9999-12-31";
+        IF start_date = "0000-00-00" THEN
+            SET new_start_date = "1000-01-01";
         ELSE 
             SET new_start_date = start_date;
         END IF;
@@ -156,8 +156,8 @@ BEGIN
     ELSE 
         SET new_end_date = end_date;
     END IF;
-    IF start_date = "1000-01-01" THEN
-        SET new_start_date = "9999-12-31";
+    IF start_date = "0000-00-00" THEN
+            SET new_start_date = "1000-01-01";
     ELSE 
         SET new_start_date = start_date;
     END IF;
@@ -246,7 +246,7 @@ BEGIN
     ELSE 
         SET new_end_date = end_date;
     END IF;
-    IF start_date = "1000-01-01" THEN
+    IF start_date = "0000-00-00" THEN
         SET new_start_date = "1000-01-01";
     ELSE 
         SET new_start_date = start_date;
@@ -280,8 +280,8 @@ BEGIN
         ELSE 
             SET new_end_date = end_date;
         END IF;
-        IF start_date = "1000-01-01" THEN
-            SET new_start_date = "9999-12-31";
+        IF start_date = "0000-00-00" THEN
+            SET new_start_date = "1000-01-01";
         ELSE 
             SET new_start_date = start_date;
         END IF;
@@ -461,8 +461,8 @@ BEGIN
     ELSE 
         SET new_end_date = end_date;
     END IF;
-    IF start_date = "1000-01-01" THEN
-        SET new_start_date = "1000-01-01";
+    IF start_date = "0000-00-00" THEN
+            SET new_start_date = "1000-01-01";
     ELSE 
         SET new_start_date = start_date;
     END IF;
@@ -564,3 +564,8 @@ BEGIN
     END IF;
 END $$
 
+
+CREATE PROCEDURE get_all_transit()
+BEGIN
+    SELECT * FROM Transit JOIN Connects USING(Route, TransportType);
+END $$
