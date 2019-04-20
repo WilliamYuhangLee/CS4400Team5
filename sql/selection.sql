@@ -13,12 +13,12 @@ BEGIN
     IF length(site_name) > 0 THEN
         SET new_site_name = site_name;
     ELSE 
-        SET new_site_name = "%";
+        SET new_site_name = '%';
     END IF;
     IF length(route_) > 0 THEN
         SET new_route_ = route_;
     ELSE 
-        SET new_route_ = "%";
+        SET new_route_ = '%';
     END IF;
     IF high_price = 0 THEN
         SET new_high_price = 1000.00;
@@ -45,15 +45,15 @@ BEGIN
         IF length(site_name) > 0 THEN
             SET new_site_name = site_name;
         ELSE 
-            SET new_site_name = "%";
+            SET new_site_name = '%';
         END IF;
-        IF end_date = "0000-00-00" THEN
-            SET new_end_date = "9999-12-31";
+        IF end_date = '0000-00-00' THEN
+            SET new_end_date = '9999-12-31';
         ELSE 
             SET new_end_date = end_date;
         END IF;
-        IF start_date = "0000-00-00" THEN
-            SET new_start_date = "1000-01-01";
+        IF start_date = '0000-00-00' THEN
+            SET new_start_date = '1000-01-01';
         ELSE 
             SET new_start_date = start_date;
         END IF;
@@ -63,7 +63,7 @@ BEGIN
             SELECT DISTINCT Route, TransportType, Price, `Date` FROM Take JOIN Transit USING(Route, TransportType) JOIN Connects USING(Route, TransportType) WHERE UserName = user_name AND SiteName LIKE new_site_name AND `Date` >= new_start_date AND `Date` <= new_end_date;
         END IF;
     ELSE 
-        SET @error = "Username cannot be null.";
+        SET @error = 'Username cannot be null.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     END IF;  
     
@@ -84,12 +84,12 @@ BEGIN
     IF length(user_name) > 0 THEN 
         SET new_user_name = user_name;
     ELSE 
-        SET new_user_name = "%";
+        SET new_user_name = '%';
     END IF;
     IF length(type_) > 0 THEN 
         SET new_type_ = type_;
     ELSE 
-        SET new_type_ = "%";
+        SET new_type_ = '%';
     END IF;
     IF length(status_) > 0 THEN 
         SELECT UserName, NumEmailCount, Type, `Status`, NumLogged FROM for_users WHERE UserName LIKE new_user_name AND Type LIKE new_type_ AND `Status` = status_;
@@ -113,12 +113,12 @@ BEGIN
     IF length(site_name) > 0 THEN 
         SET new_site_name = site_name;
     ELSE 
-        SET new_site_name = "%";
+        SET new_site_name = '%';
     END IF;
     IF length(manager_name) > 0 THEN 
         SET new_manager_name = manager_name;
     ELSE 
-        SET new_manager_name = "%";
+        SET new_manager_name = '%';
     END IF;
     SET new_open_everyday = open_everyday + 1;
     
@@ -144,20 +144,20 @@ BEGIN
     IF length(event_name) > 0 THEN 
         SET new_event_name = event_name;
     ELSE 
-        SET new_event_name = "%";
+        SET new_event_name = '%';
     END IF;
     IF length(key_word) > 0 THEN 
-        SET new_key_word = concat("%", concat(key_word, "%"));
+        SET new_key_word = concat('%', concat(key_word, '%'));
     ELSE 
-        SET new_key_word = "%";
+        SET new_key_word = '%';
     END IF;
-    IF end_date = "0000-00-00" THEN
-        SET new_end_date = "9999-12-31";
+    IF end_date = '0000-00-00' THEN
+        SET new_end_date = '9999-12-31';
     ELSE 
         SET new_end_date = end_date;
     END IF;
-    IF start_date = "0000-00-00" THEN
-            SET new_start_date = "1000-01-01";
+    IF start_date = '0000-00-00' THEN
+            SET new_start_date = '1000-01-01';
     ELSE 
         SET new_start_date = start_date;
     END IF;
@@ -204,10 +204,10 @@ BEGIN
         SET new_high_revenue = high_revenue;
     END IF;  
     
-    IF length(site_name) > 0 AND length(event_name) > 0 AND start_date != "0000-00-00" THEN
+    IF length(site_name) > 0 AND length(event_name) > 0 AND start_date != '0000-00-00' THEN
         SELECT `Date`, DailyVisit, DailyRevenue FROM daily_event WHERE SiteName = site_name AND EventName = event_date AND StartDate = start_date AND DailyVisit >= low_price AND DailyVisit <= new_high_price AND DailyRevenue >= low_revenue AND DailyRevenue <= new_high_revenue;
     ELSE 
-        SET @error = "Primary key cannot have null value.";
+        SET @error = 'Primary key cannot have null value.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     END IF;
 END $$
@@ -229,25 +229,25 @@ BEGIN
     IF length(site_name) > 0 THEN 
         SET new_site_name = site_name;
     ELSE 
-        SET new_site_name = "%";
+        SET new_site_name = '%';
     END IF;
     IF length(first_name) > 0 THEN 
         SET new_first_name = first_name;
     ELSE 
-        SET new_first_name = "%";
+        SET new_first_name = '%';
     END IF;
     IF length(last_name) > 0 THEN 
         SET new_last_name = last_name;
     ELSE 
-        SET new_last_name = "%";
+        SET new_last_name = '%';
     END IF;
-    IF end_date = "0000-00-00" THEN
-        SET new_end_date = "9999-12-31";
+    IF end_date = '0000-00-00' THEN
+        SET new_end_date = '9999-12-31';
     ELSE 
         SET new_end_date = end_date;
     END IF;
-    IF start_date = "0000-00-00" THEN
-        SET new_start_date = "1000-01-01";
+    IF start_date = '0000-00-00' THEN
+        SET new_start_date = '1000-01-01';
     ELSE 
         SET new_start_date = start_date;
     END IF;
@@ -272,16 +272,16 @@ BEGIN
      
     
     IF length(site_name) = 0 THEN 
-        SET @error = "Site name cannot be null.";
+        SET @error = 'Site name cannot be null.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     ELSE
-        IF end_date = "0000-00-00" THEN
-            SET new_end_date = "9999-12-31";
+        IF end_date = '0000-00-00' THEN
+            SET new_end_date = '9999-12-31';
         ELSE 
             SET new_end_date = end_date;
         END IF;
-        IF start_date = "0000-00-00" THEN
-            SET new_start_date = "1000-01-01";
+        IF start_date = '0000-00-00' THEN
+            SET new_start_date = '1000-01-01';
         ELSE 
             SET new_start_date = start_date;
         END IF;
@@ -319,8 +319,8 @@ BEGIN
      
      
     
-    IF length(site_name) = 0 OR date_ = "0000-00-00" THEN 
-        SET @error = "Site name or date cannot be null.";
+    IF length(site_name) = 0 OR date_ = '0000-00-00' THEN 
+        SET @error = 'Site name or date cannot be null.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     ELSE 
         SELECT EventName, SiteName, StartDate, DailyVisit, DailyRevenue FROM daily_event WHERE SiteNeme = site_name AND `Date` = date_;
@@ -341,16 +341,16 @@ BEGIN
     IF length(event_name) > 0 THEN 
         SET new_event_name = event_name;
     ELSE 
-        SET new_event_name = "%";
+        SET new_event_name = '%';
     END IF;
     IF length(key_word) > 0 THEN 
-        SET new_key_word = concat("%", concat(key_word, "%"));
+        SET new_key_word = concat('%', concat(key_word, '%'));
     ELSE 
-        SET new_key_word = "%";
+        SET new_key_word = '%';
     END IF;
     
-    IF start_date = "0000-00-00" THEN 
-        IF end_date = "0000-00-00" THEN
+    IF start_date = '0000-00-00' THEN 
+        IF end_date = '0000-00-00' THEN
             SELECT EventName, SiteName, StartDate, EndDate, CountStaff FROM for_schedule 
             WHERE StaffName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key_word;
         ELSE 
@@ -358,7 +358,7 @@ BEGIN
             WHERE StaffName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key_word AND EndDate = end_date;
         END IF;
     ELSE 
-        IF end_date = "0000-00-00" THEN
+        IF end_date = '0000-00-00' THEN
             SELECT EventName, SiteName, StartDate, EndDate, CountStaff FROM for_schedule 
             WHERE StaffName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key_word AND StartDate = start_date;
         ELSE 
@@ -384,12 +384,12 @@ BEGIN
      
      
     
-    SET new_event_name = concat("%", concat(event_name, "%"));
-    SET new_key = concat("%", concat(key_word, "%"));
+    SET new_event_name = concat('%', concat(event_name, '%'));
+    SET new_key = concat('%', concat(key_word, '%'));
     IF length(site_name) > 0 THEN
         SET new_site_name = site_name;
     ELSE 
-        SET new_site_name = "%";
+        SET new_site_name = '%';
     END IF;    
     IF high_visit > 0 THEN
         SET new_high_visit = high_visit;
@@ -413,8 +413,8 @@ BEGIN
     END IF;
     
     IF length(user_name) > 0 THEN
-        IF start_date = "0000-00-00" THEN 
-            IF end_date = "0000-00-00" THEN
+        IF start_date = '0000-00-00' THEN 
+            IF end_date = '0000-00-00' THEN
                 SELECT EventName, SiteName, Price, TicketRem, TotalVisit, MyVisit FROM explore _event
                 WHERE UserName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key AND TotalVisit <= new_high_visit AND TotalVisit >= low_visit AND Price >= low_price AND Price <= new_high_price AND MyVisit < new_visited AND TicketRem >= new_sold ;
             ELSE 
@@ -422,7 +422,7 @@ BEGIN
                 WHERE UserName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key AND TotalVisit <= new_high_visit AND TotalVisit >= low_visit AND Price >= low_price AND Price <= new_high_price AND MyVisit < new_visited AND TicketRem >= new_sold AND EndDate = end_date;
             END IF;
         ELSE 
-            IF end_date = "0000-00-00" THEN
+            IF end_date = '0000-00-00' THEN
                 SELECT EventName, SiteName, Price, TicketRem, TotalVisit, MyVisit FROM explore _event
                 WHERE UserName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key AND TotalVisit <= new_high_visit AND TotalVisit >= low_visit AND Price >= low_price AND Price <= new_high_price AND MyVisit < new_visited AND TicketRem >= new_sold AND StartDate = start_date;
             ELSE 
@@ -431,7 +431,7 @@ BEGIN
             END IF;
         END IF;     
     ELSE
-        SET @error = "Username cannot be null.";
+        SET @error = 'Username cannot be null.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     END IF;
     
@@ -454,15 +454,15 @@ BEGIN
     IF length(site_name) > 0 THEN
         SET new_site_name = site_name;
     ELSE 
-        SET new_site_name = "%";
+        SET new_site_name = '%';
     END IF; 
-    IF end_date = "0000-00-00" THEN
-        SET new_end_date = "9999-12-31";
+    IF end_date = '0000-00-00' THEN
+        SET new_end_date = '9999-12-31';
     ELSE 
         SET new_end_date = end_date;
     END IF;
-    IF start_date = "0000-00-00" THEN
-            SET new_start_date = "1000-01-01";
+    IF start_date = '0000-00-00' THEN
+            SET new_start_date = '1000-01-01';
     ELSE 
         SET new_start_date = start_date;
     END IF;
@@ -494,7 +494,7 @@ BEGIN
             EveryDay = open_everyday;
         END IF;
     ELSE 
-        SET @error = "Username cannot be null.";
+        SET @error = 'Username cannot be null.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     END IF;
 END $$
@@ -515,7 +515,7 @@ BEGIN
     IF length(user_name) > 0 THEN
         SELECT EmailAddress, UserName FROM Email WHERE UserName = user_name;
     ELSE 
-        SET @error = "Username cannot be null.";
+        SET @error = 'Username cannot be null.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     END IF;
 END $$
@@ -530,7 +530,7 @@ BEGIN
     IF length(route_) > 0  AND length(transport_type) > 0 THEN
         SELECT  Route, TransportType, Price, SiteName FROM Connects JOIN Transit USING(Route, TransportType) WHERE Route = route_ AND TransportType = transport_type;
     ELSE 
-        SET @error = "Username cannot be null.";
+        SET @error = 'Username cannot be null.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     END IF;
 END $$
@@ -543,10 +543,10 @@ CREATE PROCEDURE query_staff_by_event (in site_name varchar(50), in event_name v
 BEGIN
      
      
-    IF length(site_name) > 0 AND length(event_name) > 0 AND start_date != "0000-00-00" THEN
+    IF length(site_name) > 0 AND length(event_name) > 0 AND start_date != '0000-00-00' THEN
         SELECT StaffName, SiteName FROM AssignTo WHERE SiteName = site_name AND EventName = event_date AND StartDate = start_date;
     ELSE 
-        SET @error = "Primary key cannot have null value.";
+        SET @error = 'Primary key cannot have null value.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     END IF;
 END $$
@@ -559,7 +559,7 @@ BEGIN
     IF length(site_name) > 0 THEN 
         SELECT Route, TransportType, Price FROM Transit JOIN Connects USING(Route, TransportType) WHERE SiteName = site_name;
     ELSE 
-        SET @error = "Site name cannot be null.";
+        SET @error = 'Site name cannot be null.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     END IF;
 END $$

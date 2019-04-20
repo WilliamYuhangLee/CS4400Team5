@@ -1404,7 +1404,7 @@ BEGIN
     DECLARE description_ text;
      
     IF length(site_name) > 0 AND length(event_name) > 0 AND start_date != "0000-00-00" THEN
-        SELECT EndDate, MinSraffReq, Capacity, Description INTO end_date, min_staff_req, capacity_, description_ FROM Events WHERE SiteName = site_name AND EventName = event_date AND StartDate = start_date LIMIT 1;        
+        SELECT EndDate, MinSraffReq, Capacity, Description INTO end_date, min_staff_req, capacity_, description_ FROM Events WHERE SiteName = site_name AND EventName = event_name AND StartDate = start_date LIMIT 1;        
         IF length(description_) > 1 THEN 
             SELECT end_date, min_staff_req, capacity_, description_;
         ELSE 
@@ -2008,6 +2008,13 @@ END $$
 CREATE PROCEDURE get_all_transit()
 BEGIN
     SELECT Route, TransportType, Price, count(*) AS CountSite FROM Transit JOIN Connects USING(TransportType, Route) Group BY TransportType, Route;
+END $$
+
+
+
+CREATE PROCEDURE get_all_sites() 
+BEGIN
+    SELECT SiteName, ZipCode, Address, (EveryDay - 1) AS OpenEveryDay, ManagerName FROM Site;
 END $$
 
 DELIMITER ;

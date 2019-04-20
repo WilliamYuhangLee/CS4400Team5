@@ -6,18 +6,18 @@ DELIMITER $$
 CREATE FUNCTION get_type(em_title int, is_visitor int) RETURNS varchar(20) DETERMINISTIC 
 BEGIN
     IF em_title = 1 THEN
-            RETURN "Administrator";
+            RETURN 'Administrator';
     ELSE 
         IF em_title = 2 THEN 
-            RETURN "Manager";
+            RETURN 'Manager';
         ELSE
             IF em_title = 3 THEN 
-                RETURN "Staff";
+                RETURN 'Staff';
             ELSE
                 IF is_visitor = 1 THEN 
-                    RETURN "Visitor";
+                    RETURN 'Visitor';
                 ELSE 
-                    RETURN "User";
+                    RETURN 'User';
                 END IF;
             END IF;
         END IF;
@@ -35,12 +35,12 @@ GROUP BY Users.UserName;
 CREATE VIEW site_visit_num AS 
 SELECT UserName, FirstName, LastName, count(*) AS NumMySiteVisit, IsVisitor 
 FROM Users LEFT JOIN VisitSite USING(UserName) 
-GROUP BY UserName HAVING IsVisitor = "Yes";
+GROUP BY UserName HAVING IsVisitor = 'Yes';
 
 CREATE VIEW event_visit_num AS 
 SELECT UserName, FirstName, LastName, count(*) AS NumMyEventVisit, IsVisitor 
 FROM VisitEvent LEFT JOIN Users USING(UserName) 
-GROUP BY UserName HAVING IsVisitor = "Yes";
+GROUP BY UserName HAVING IsVisitor = 'Yes';
 
 CREATE VIEW for_visitor AS 
 SELECT UserName, FirstName, LastName, NumMySiteVisit, NumMyEventVisit 
@@ -49,7 +49,7 @@ FROM site_visit_num LEFT JOIN event_visit_num USING(UserName, FirstName, LastNam
 CREATE VIEW for_staff_pre AS 
 SELECT UserName, EmployeeID, count(*) AS NumEventShifts, Title 
 FROM Employee LEFT JOIN AssignTo ON Employee.UserName = AssignTo.StaffName 
-GROUP BY UserName HAVING Title = "Staff";
+GROUP BY UserName HAVING Title = 'Staff';
 
 CREATE VIEW for_staff AS
 SELECT * FROM for_staff_pre JOIN AssignTO ON for_staff_pre.UserName = AssignTo.StaffName INNER JOIN Users USING (UserName) LEFT JOIN Events USING(SiteName, EventName, StartDate); 

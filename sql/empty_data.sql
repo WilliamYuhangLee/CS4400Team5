@@ -2,7 +2,7 @@ DELIMITER ;
 
 USE atlbeltline;
 
-SET @force = "force delete";
+SET @force = 'force delete';
 
 DELETE FROM VisitEvent;
 DELETE FROM VisitSite;
@@ -16,4 +16,4 @@ DELETE FROM Employee;
 DELETE FROM Email;
 DELETE FROM Users;
 
-SET @force = "not forece delete";
+SET @force = 'not force delete';
