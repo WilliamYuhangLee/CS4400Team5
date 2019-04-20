@@ -8,8 +8,10 @@
         </select>
     </label>
     <label>Contain Site<select id="contain_site" name="contain_site">
-            <option>contain_site</option>
-        </select>
+            {% for site in sites %}
+            <option value="{{ site.name}}">{{site.name}}</option>
+            {% endfor %}
+            <button type="button" class="btn btn-outline-info" id="filter_transit_history">Filter for sites</button>
     </label>
 </div>​
 <div class="row">

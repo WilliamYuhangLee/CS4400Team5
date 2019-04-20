@@ -85,18 +85,15 @@
     <main role="main" class="container">
         <div class="row">
             <div class="col-md-12" id="content">
-                {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                <ul class=flashes>
-                    {% for message in messages %}
-                    <li>{{ message }}</li>
-                    {% endfor %}
-                </ul>
-                {% endif %}
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
                 {% endwith %}
-                {% block content %}
-                {% block table %} {% include 'table.html' %}{% endblock table %}
-                {% endblock content %}
             </div>
         </div>
         <div>

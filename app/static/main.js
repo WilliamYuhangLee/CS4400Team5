@@ -50,9 +50,9 @@ $(document).ready(function () {
     });
 
 
-    // $('#contain_site').on('change', function () {
-    //     table.columns(1).search( this.value ).draw();
-    // } );
+    $('#contain_site').on('change', function () {
+        table.columns(1).search( this.value ).draw();
+    } );
     $('#transport_type').on('change', function () {
         table.columns(2).search(this.value).draw();
     });
@@ -65,27 +65,61 @@ $(document).ready(function () {
     $('#username_search').on('change', function () {
         table.columns(0).search(this.value).draw();
     });
-    $('#log_transit').on('click', {site_name:""}, function () {//missing trigger for site
+    $('#open_everyday').on('change', function () {
+        table.columns(2).search(this.value).draw();
+    });
+    $('#log_transit').on('click', function () {
         var route = table.cell('.selected', 0).data();
         var type = table.cell('.selected', 1).data();
         var date = $('#transit_date').val();
-        $.getJSON('Flask.url_for("take_transit")', (route,type,date), function() {
+        $.getJSON('Flask.url_for("user.take_transit")', (route,type,date), function() {
             console.log(route,type,date);
         });
     });
-    $('#admin_manage_user_decline').on('click', {site_name:""}, function () {//missing trigger for site
+    $('#filter_take_transit').on('click', function () {
+        var site = $( "#contain_site option:selected" ).text();
+        $.getJSON('Flask.url_for("user.take_transit")', (site), function() {
+            console.log(site);
+        });
+    });
+    $('#filter_transit_history').on('click', function () {
+        var site = $( "#contain_site option:selected" ).text();
+        $.getJSON('Flask.url_for("user.transit_history")', (site), function() {
+            console.log(site);
+        });
+    });
+    $('#filter_site').on('click', function () {
+        var site = $( "#contain_site option:selected" ).text();
+        $.getJSON('Flask.url_for("administrator.manage_site")', (site), function() {
+            console.log(site);
+        });
+    });
+    $('#filter_manager').on('click', function () {
+        var manager = $( "#contain_manager option:selected" ).text();
+        $.getJSON('Flask.url_for("administrator.manage_site")', (site), function() {
+            console.log(site);
+        });
+    });
+    $('#filter_manage_site').on('click', function () {
+        var manager = $( "#contain_manager option:selected" ).text();
+        var site = $( "#contain_site option:selected" ).text();
+        $.getJSON('Flask.url_for("administrator.manage_user")', (site), function() {
+            console.log(site , manager);
+        });
+    });
+    $('#administrator_manage_user_decline').on('click', function () {
         var username = table.cell('.selected', 0).data();
         var usertype = table.cell('.selected', 1).data();
-        var status = "Declined"
-        $.getJSON('Flask.url_for("admin_manage_user")', (username,usertype,status), function() {
+        var status = "Declined";
+        $.getJSON('Flask.url_for("administrator.manage_user")', (username,usertype,status), function() {
             console.log(username,usertype,status);
         });
     });
-    $('#admin_manage_user_approve').on('click', {site_name:""}, function () {//missing trigger for site
+    $('#administrator_manage_user_approve').on('click', function () {
         var user = table.cell('.selected', 0).data();
         var usertype = table.cell('.selected', 2).data();
         var status = "Approved";
-        $.getJSON('Flask.url_for("admin_manage_user")', (username,usertype,status), function() {
+        $.getJSON('Flask.url_for("administrator.manage_user")', (username,usertype,status), function() {
             console.log(username,usertype,status);
         });
     });
