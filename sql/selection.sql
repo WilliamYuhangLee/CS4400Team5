@@ -567,5 +567,5 @@ END $$
 
 CREATE PROCEDURE get_all_transit()
 BEGIN
-    SELECT * FROM Transit JOIN Connects USING(Route, TransportType);
+    SELECT TransportType, Route, Price, count(*) AS CountSite FROM Transit JOIN Connects USING(TransportType, Route) Group BY TransportType, Route;
 END $$
