@@ -3,6 +3,24 @@ USE atlbeltline;
 DELIMITER $$
 
 
+CREATE PROCEDURE switch_visitor(in user_name varchar(100), in new_visitor int)
+-- order of parameter
+-- username, new state of if the user is visitor
+BEGIN
+    IF new_visitor != 0 AND new_visitor != 1 THEN 
+        SET @error = "New_visitor is out of range.";
+        SIGNAL SQLSTATE '45000' SET message_text = @error;
+    END IF;
+    IF EXISTS(SELECT * FROM Users WHERE UserName = user_name) THEN
+        SET new_visitor = new_visitor + 1;
+        UPDATE Users SET IsVisitor = new_visitor WHERE UserName = user_name;
+    ELSE 
+        SET @error = "User does not exist.";
+        SIGNAL SQLSTATE '45000' SET message_text = @error;
+    END IF;
+END $$
+
+
 CREATE PROCEDURE login(in email_address varchar(100) )
 -- order of parameter
 -- email address
