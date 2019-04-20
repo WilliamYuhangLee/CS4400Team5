@@ -92,9 +92,9 @@ BEGIN
         SET new_type_ = '%';
     END IF;
     IF length(status_) > 0 THEN 
-        SELECT UserName, NumEmailCount, Type, `Status`, NumLogged FROM for_users WHERE UserName LIKE new_user_name AND Type LIKE new_type_ AND `Status` = status_;
+        SELECT UserName, NumEmailCount, Type, `Status`, NumEmailCount FROM for_users WHERE UserName LIKE new_user_name AND Type LIKE new_type_ AND `Status` = status_;
     ELSE 
-        SELECT UserName, NumEmailCount, Type, `Status`, NumLogged FROM for_users WHERE UserName LIKE new_user_name AND Type LIKE new_type_;
+        SELECT UserName, NumEmailCount, Type, `Status`, NumEmailCount  FROM for_users WHERE UserName LIKE new_user_name AND Type LIKE new_type_;
     END IF;
 END $$
 
@@ -106,9 +106,6 @@ BEGIN
     DECLARE new_site_name varchar(50);
     DECLARE new_manager_name varchar(100);
     DECLARE new_open_everyday int;
-    
-     
-     
     
     IF length(site_name) > 0 THEN 
         SET new_site_name = site_name;
@@ -122,7 +119,7 @@ BEGIN
     END IF;
     SET new_open_everyday = open_everyday + 1;
     
-    SELECT SiteName, ManagerName, EveryDay FROM for_site WHERE SiteName LIKE new_siter_name AND ManagerName LIKE new_manager_name AND EveryDay = new_open_everyday;
+    SELECT SiteName, ManagerName, EveryDay FROM for_site WHERE SiteName LIKE new_site_name AND ManagerName LIKE new_manager_name AND EveryDay = new_open_everyday;
 END $$
 
 
@@ -137,9 +134,6 @@ BEGIN
     DECLARE new_long_duration int;
     DECLARE new_high_visit int;
     DECLARE new_high_revenue float;
-    
-     
-     
     
     IF length(event_name) > 0 THEN 
         SET new_event_name = event_name;
@@ -190,9 +184,6 @@ BEGIN
     DECLARE new_high_visit int;
     DECLARE new_high_revenue float;
     
-     
-     
-    
     IF high_visit = 0 THEN
         SET new_high_visit = ~0;
     ELSE
@@ -205,7 +196,7 @@ BEGIN
     END IF;  
     
     IF length(site_name) > 0 AND length(event_name) > 0 AND start_date != '0000-00-00' THEN
-        SELECT `Date`, DailyVisit, DailyRevenue FROM daily_event WHERE SiteName = site_name AND EventName = event_date AND StartDate = start_date AND DailyVisit >= low_price AND DailyVisit <= new_high_price AND DailyRevenue >= low_revenue AND DailyRevenue <= new_high_revenue;
+        SELECT `Date`, DailyVisit, DailyRevenue FROM daily_event WHERE SiteName = site_name AND EventName = event_name AND StartDate = start_date AND DailyVisit >= low_price AND DailyVisit <= new_high_price AND DailyRevenue >= low_revenue AND DailyRevenue <= new_high_revenue;
     ELSE 
         SET @error = 'Primary key cannot have null value.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
@@ -222,9 +213,6 @@ BEGIN
     DECLARE new_last_name varchar(50);
     DECLARE new_start_date date;
     DECLARE new_end_date date;
-    
-     
-     
     
     IF length(site_name) > 0 THEN 
         SET new_site_name = site_name;
@@ -253,7 +241,7 @@ BEGIN
     END IF;
     
     SELECT concat(FirstName, LastName) AS `Staff Name`, NumEventShifts FROM for_staff 
-    WHERE SiteName LIKE new_site_name AND FistName LIKE new_first_name AND LastName LIKE new_last_name AND StartDate >= new_start_date AND EndDate <= new_end_date;
+    WHERE SiteName LIKE new_site_name AND FirstName LIKE new_first_name AND LastName LIKE new_last_name AND StartDate >= new_start_date AND EndDate <= new_end_date;
 
 END $$
 
@@ -305,7 +293,7 @@ BEGIN
         ELSE
             SET new_high_event = high_event;
         END IF;
-        SELECT `Date`, EventCount, CountStaff, DailyVisit, DailyReveneu FROM full_daily_size 
+        SELECT `Date`, EventCount, CountStaff, DailyVisit, DailyReveneu FROM full_daily_site 
         WHERE SiteName = site_name AND `Date` >= new_start_date AND `Date` <= new_end_date AND EventCount >= low_event AND EventCount <= new_high_event AND CountStaff >= low_staff AND CountStaff <= new_high_staff AND DailyVisit >= low_visit AND DailyVisit <= low_new_high_visit AND DailyRevenue >= low_revenue AND DailyRevenue <= new_high_revenue;
     END IF;
 END $$
@@ -317,13 +305,11 @@ CREATE PROCEDURE filter_daily_event(in site_name varchar(50), in date_ date )
 -- site name, date
 BEGIN
      
-     
-    
     IF length(site_name) = 0 OR date_ = '0000-00-00' THEN 
         SET @error = 'Site name or date cannot be null.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     ELSE 
-        SELECT EventName, SiteName, StartDate, DailyVisit, DailyRevenue FROM daily_event WHERE SiteNeme = site_name AND `Date` = date_;
+        SELECT EventName, SiteName, StartDate, DailyVisit, DailyRevenue FROM daily_event WHERE SiteName = site_name AND `Date` = date_;
     END IF;
 END $$
 
@@ -334,9 +320,6 @@ CREATE PROCEDURE filter_schedule(in user_name varchar(100), in event_name varcha
 BEGIN
     DECLARE new_event_name varchar(50);
     DECLARE new_key_word varchar(200);
-    
-     
-     
     
     IF length(event_name) > 0 THEN 
         SET new_event_name = event_name;
@@ -380,9 +363,6 @@ BEGIN
     DECLARE new_high_price float;
     DECLARE new_visited int;
     DECLARE new_sold int;
-    
-     
-     
     
     SET new_event_name = concat('%', concat(event_name, '%'));
     SET new_key = concat('%', concat(key_word, '%'));
@@ -511,7 +491,6 @@ CREATE PROCEDURE query_email_by_username(in user_name varchar(100) )
 -- username
 BEGIN   
      
-     
     IF length(user_name) > 0 THEN
         SELECT EmailAddress, UserName FROM Email WHERE UserName = user_name;
     ELSE 
@@ -525,7 +504,6 @@ CREATE PROCEDURE query_transit_by_pk(in route_ varchar(20), in transport_type va
 -- order of parameter
 -- route, transport type
 BEGIN   
-     
      
     IF length(route_) > 0  AND length(transport_type) > 0 THEN
         SELECT  Route, TransportType, Price, SiteName FROM Connects JOIN Transit USING(Route, TransportType) WHERE Route = route_ AND TransportType = transport_type;
@@ -542,9 +520,8 @@ CREATE PROCEDURE query_staff_by_event (in site_name varchar(50), in event_name v
 -- site name, event name, start date
 BEGIN
      
-     
     IF length(site_name) > 0 AND length(event_name) > 0 AND start_date != '0000-00-00' THEN
-        SELECT StaffName, SiteName FROM AssignTo WHERE SiteName = site_name AND EventName = event_date AND StartDate = start_date;
+        SELECT StaffName, SiteName FROM AssignTo WHERE SiteName = site_name AND EventName = event_name AND StartDate = start_date;
     ELSE 
         SET @error = 'Primary key cannot have null value.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
@@ -554,7 +531,6 @@ END $$
 
 CREATE PROCEDURE query_transit_by_site(in site_name varchar(50) )
 BEGIN
-     
      
     IF length(site_name) > 0 THEN 
         SELECT Route, TransportType, Price FROM Transit JOIN Connects USING(Route, TransportType) WHERE SiteName = site_name;
@@ -569,3 +545,5 @@ CREATE PROCEDURE get_all_transit()
 BEGIN
     SELECT Route, TransportType, Price, count(*) AS CountSite FROM Transit JOIN Connects USING(TransportType, Route) Group BY TransportType, Route;
 END $$
+
+DELIMITER ;

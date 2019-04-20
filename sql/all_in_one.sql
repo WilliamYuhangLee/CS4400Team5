@@ -306,46 +306,45 @@ CREATE TABLE IF NOT EXISTS AssignTo (
 
 ) ENGINE INNODB CHARACTER SET utf8 COLLATE utf8_general_ci;
 
-
 USE atlbeltline;
--- SET @@byDeletingSite := "no";
 DELIMITER $$
 
+-- Make sure the email address is formated correctly.
 CREATE TRIGGER tgr1_email1 BEFORE INSERT ON Email FOR EACH ROW
 BEGIN
 	DECLARE ermsg varchar(100);
 
-	IF NEW.EmailAddress NOT RLIKE '[0-9A-Za-z]+@[0-9A-Za-z]+\.[0-9A-Za-z]+' THEN
-		SET ermsg = 'Invalid Email Address!!';
+	IF NEW.EmailAddress NOT RLIKE '^[0-9A-Za-z]+@[0-9A-Za-z]+\.[0-9A-Za-z]+$' THEN
+		SET ermsg = 'Invalid email address.';
 		SIGNAL SQLSTATE '45000' SET message_text = ermsg;
 	END IF;
 
 END $$
 
 
-
+-- Make sure the email address is formated correctly.
 CREATE TRIGGER tgr2_email2 BEFORE UPDATE ON Email FOR EACH ROW
 BEGIN
 	DECLARE ermsg varchar(100);
 
-	IF NEW.EmailAddress NOT RLIKE '[0-9A-Za-z]+@[0-9A-Za-z]+\.[0-9A-Za-z]+' THEN
-		SET ermsg = 'Invalid Email Address!!';
+	IF NEW.EmailAddress NOT RLIKE '^[0-9A-Za-z]+@[0-9A-Za-z]+\.[0-9A-Za-z]+$' THEN
+		SET ermsg = 'Invalid email address.';
 		SIGNAL SQLSTATE '45000' SET message_text = ermsg;
 	END IF;
 
 END $$
 
 
-
+-- Prohibit the deletion on email when that email is the only email of its owner.
 CREATE TRIGGER tgr3_email3 BEFORE DELETE ON Email FOR EACH ROW
 BEGIN
 	DECLARE ermsg varchar(100);
 
 	IF (SELECT count(*) FROM Email WHERE UserName LIKE OLD.UserName) = 1 THEN
         IF @force = 'force delete' THEN
-            SET @trigger_warning = "The data has been forced deleted.";
+            SET @trigger_warning = 'The data has been forced deleted.';
         ELSE
-            SET ermsg = 'The Only Email Of This User, Connot Delete!!';
+            SET ermsg = 'The only email of this user, connot delete.';
             SIGNAL SQLSTATE '45000' SET message_text = ermsg;
         END IF;
 	END IF;
@@ -353,51 +352,40 @@ BEGIN
 END $$
 
 
-
-CREATE TRIGGER tgr4_site1 AFTER INSERT ON Site FOR EACH ROW
+-- Make sure the manager of a site has the title of manager.
+CREATE TRIGGER tgr4_site1 BEFORE INSERT ON Site FOR EACH ROW
 BEGIN
 	DECLARE ermsg varchar(100);
 	DECLARE holder varchar(50);
 
-	SET holder = (SELECT title FROM employee WHERE UserName LIKE NEW.ManagerName LIMIT 1);
+	SET holder = (SELECT Title FROM Employee WHERE UserName LIKE NEW.ManagerName LIMIT 1);
 	IF holder NOT LIKE 'Manager' THEN
-		SET ermsg = 'Invalid Manager Assignment!!';
+		SET ermsg = 'Invalid manager assignment.';
 		SIGNAL SQLSTATE '45000' SET message_text = ermsg;
 	END IF;
 END $$
 
 
-
+-- Make sure the manager of a site has the title of manager.
 CREATE TRIGGER tgr5_site2 AFTER UPDATE ON Site FOR EACH ROW
 BEGIN
 	DECLARE ermsg varchar(100);
 	DECLARE holder varchar(20);
 
-	SET holder = (SELECT title FROM employee WHERE UserName LIKE NEW.ManagerName LIMIT 1);
+	SET holder = (SELECT Title FROM Employee WHERE UserName LIKE NEW.ManagerName LIMIT 1);
 	IF holder NOT LIKE 'Manager' THEN
-		SET ermsg = 'Invalid Manager Assignment!!';
+		SET ermsg = 'Invalid manager assignment.';
 		SIGNAL SQLSTATE '45000' SET message_text = ermsg;
 	END IF;
 END $$
 
 
-
+-- Prohibit the deletion on site if that is the only site connected with some transit.
 CREATE TRIGGER tgr6_site3 BEFORE DELETE ON Site FOR EACH ROW
 BEGIN
 	DECLARE ermsg varchar(100);
     DECLARE rout varchar(20);
     DECLARE tt varchar(20);
-
-    -- SET @@byDeletingSite := "yes";
-
-    -- WHILE (SELECT Num FROM
-    --     (SELECT count(*) AS Num FROM Connects WHERE SiteName LIKE OLD.SiteName) AS x
-    --     LIMIT 1 > 0) DO
-    --     SELECT Route, TransportType FROM Connects WHERE SiteName LIKE OLD.SiteName LIMIT 1 INTO rout, tt;
-    --     DELETE FROM Transit WHERE Route LIKE rout AND TransportType LIKE tt;
-    -- END WHILE;
-
-    -- SET @@byDeletingSite := "no";
 
 	IF (SELECT count(*) FROM
              (SELECT Num, SiteName FROM
@@ -405,9 +393,9 @@ BEGIN
               WHERE Num = 1 AND SiteName LIKE OLD.SiteName) AS y
          LIMIT 1 ) > 0  THEN
         IF @force = 'force delete' THEN
-            SET @trigger_warning = "The data has been forced deleted.";
+            SET @trigger_warning = 'The data has been forced deleted.';
         ELSE
-            SET ermsg = 'The Only Site Of Some Transit, Connot Delete!!';
+            SET ermsg = 'The only site of some transit, connot delete.';
             SIGNAL SQLSTATE '45000' SET message_text = ermsg;
         END IF;
 	 END IF;
@@ -415,14 +403,14 @@ BEGIN
 END $$
 
 
-
+-- Check if all information about the event is correct
 CREATE TRIGGER tgr7_event1 BEFORE INSERT ON Events FOR EACH ROW
 BEGIN
 	DECLARE ermsg varchar(100);
-	SET ermsg = "Invalid Event, Having Time Overlapping!!";
+	SET ermsg = 'Invalid event, having time overlapping.';
 
 	IF NEW.EndDate < NEW.StartDate THEN
-		SIGNAL SQLSTATE '45000' SET message_text = "Invalid Date, Ending Is Earlier Than Beginning!!";
+		SIGNAL SQLSTATE '45000' SET message_text = 'Invalid date, ending is earlier than beginning.';
 	END IF;
 
 	IF NEW.EndDate >= ANY (SELECT StartDate FROM Events WHERE SiteName LIKE NEW.SiteNAme
@@ -438,27 +426,27 @@ BEGIN
 	END IF;
 
 	IF NEW.MinStaffReq < 1 THEN
-		SIGNAL SQLSTATE '45000' SET message_text = "Minimun Number of Required Staffs Cannot Be Less Than One!!";
+		SIGNAL SQLSTATE '45000' SET message_text = 'Minimun number of required staffs cannot be less than one.';
 	END IF;
 
 	IF NEW.Price < 0 Then
-		SIGNAL SQLSTATE '45000' SET message_text = "Price Cannot Be Negative!!";
+		SIGNAL SQLSTATE '45000' SET message_text = 'Price cannot be negative.';
 	END IF;
 
 	IF NEW.Capacity < 1 THEN
-		SIGNAL SQLSTATE '45000' SET message_text = "Capacity Cannot Be Less Than One!!";
+		SIGNAL SQLSTATE '45000' SET message_text = 'Capacity cannot be less than one.';
 	END IF;
 END $$
 
 
-
+-- Check if all information about the event is correct
 CREATE TRIGGER tgr8_event2 BEFORE UPDATE ON Events FOR EACH ROW
 BEGIN
 	DECLARE ermsg varchar(100);
-	SET ermsg = "Invalid Event, Having Time Overlapping!!";
+	SET ermsg = 'Invalid event, having time overlapping.';
 
 	IF NEW.EndDate < NEW.StartDate THEN
-		SIGNAL SQLSTATE '45000' SET message_text = "Invalid Date, Ending Is Earlier Than Beginning!!";
+		SIGNAL SQLSTATE '45000' SET message_text = 'Invalid date, ending is earlier than beginning.';
 	END IF;
 
 	IF NEW.EndDate >= ANY (SELECT StartDate FROM Events WHERE SiteName LIKE NEW.SiteNAme
@@ -474,131 +462,140 @@ BEGIN
 	END IF;
 
 	IF NEW.MinStaffReq < 1 THEN
-		SIGNAL SQLSTATE '45000' SET message_text = "Minimun Number of Required Staffs Cannot Be Less Than One!!";
+		SIGNAL SQLSTATE '45000' SET message_text = 'Minimun number of required staffs cannot be less than one.';
 	END IF;
 
 	IF NEW.Price < 0 Then
-		SIGNAL SQLSTATE '45000' SET message_text = "Price Cannot Be Negative!!";
+		SIGNAL SQLSTATE '45000' SET message_text = 'Price cannot be negative.';
 	END IF;
 
 	IF NEW.Capacity < 1 THEN
-		SIGNAL SQLSTATE '45000' SET message_text = "Capacity Cannot Be Less Than One!!";
+		SIGNAL SQLSTATE '45000' SET message_text = 'Capacity cannot be less than one.';
 	END IF;
 END $$
 
 
-
-CREATE TRIGGER tgr9_vs1 AFTER INSERT ON VisitSite FOR EACH ROW
+-- -- If new username not belong to a visitor, error is vocated
+CREATE TRIGGER tgr9_vs1 BEFORE INSERT ON VisitSite FOR EACH ROW
 BEGIN
-	IF (SELECT IsVisitor FROM Users WHERE UserName LIKE NEW.UserName LIMIT 1) LIKE "No" THEN
-		SIGNAL SQLSTATE '45000' SET message_text = "The User Is Not A Visitor!!";
+	IF (SELECT IsVisitor FROM Users WHERE UserName LIKE NEW.UserName LIMIT 1) LIKE 'No' THEN
+		SIGNAL SQLSTATE '45000' SET message_text = 'The user is not a visitor.';
 	END IF;
 END $$
 
 
-
-CREATE TRIGGER tgr10_vs2 AFTER UPDATE ON VisitSite FOR EACH ROW
+-- If new username not belong to a visitor, error is vocated
+CREATE TRIGGER tgr10_vs2 BEFORE UPDATE ON VisitSite FOR EACH ROW
 BEGIN
-	IF (SELECT IsVisitor FROM Users WHERE UserName LIKE NEW.UserName LIMIT 1) LIKE "No" THEN
-		SIGNAL SQLSTATE '45000' SET message_text = "The User Is Not A Visitor!!";
+	IF (SELECT IsVisitor FROM Users WHERE UserName LIKE NEW.UserName LIMIT 1) LIKE 'No' THEN
+		SIGNAL SQLSTATE '45000' SET message_text = 'This user is not a visitor.';
 	END IF;
 END $$
 
 
-
+-- Making sure that new visit date is between start and end date
 CREATE TRIGGER tgr11_ve1 BEFORE INSERT ON VisitEvent FOR EACH ROW
 BEGIN
 	IF NEW.Date < NEW.StartDate THEN
-		SIGNAL SQLSTATE '45000' SET message_text = "Visiting Before Start Date!!!";
+		SIGNAL SQLSTATE '45000' SET message_text = 'Visiting before start date.';
 	END IF;
 
 	IF NEW.Date > (SELECT EndDate FROM Events WHERE SiteName LIKE NEW.SiteName
 						AND EventName LIKE NEW.EventName
 						AND StartDate = NEW.StartDate LIMIT 1) THEN
-		SIGNAL SQLSTATE '45000' SET message_text = "Visiting After End Date!!!";
+		SIGNAL SQLSTATE '45000' SET message_text = 'Visiting after end date.';
 	END IF;
 END $$
 
 
-
+-- Making sure that new visit date is between start and end date
+-- Automatically drop row from VisitSite with the old user and old date, and add new row with new user and new date
 CREATE TRIGGER tgr12_ve2 BEFORE UPDATE ON VisitEvent FOR EACH ROW
 BEGIN
 	IF NEW.Date < NEW.StartDate THEN
-		SIGNAL SQLSTATE '45000' SET message_text = "Visiting Before Start Date!!!";
+		SIGNAL SQLSTATE '45000' SET message_text = 'Visiting before start date.';
 	END IF;
 
 	IF NEW.Date > (SELECT EndDate FROM Events WHERE SiteName LIKE NEW.SiteName
 						AND EventName LIKE NEW.EventName
 						AND StartDate = NEW.StartDate) THEN
-		SIGNAL SQLSTATE '45000' SET message_text = "Visiting After End Date!!!";
+		SIGNAL SQLSTATE '45000' SET message_text = 'Visiting after end date.';
 	END IF;
+END $$
 
-	DELETE FROM VisitSite WHERE UserName LIKE OLD.UserName AND SiteName LIKE OLD.SiteName AND Date = OLD.Date;
 
-    IF EXISTS (SELECT * FROM VisitSite WHERE UserName LIKE NEW.UserName AND SiteName LIKE NEW.SiteName AND 'Date' = NEW.Date) THEN
-	   INSERT INTO VisitSite VALUES (NEW.UserName, NEW.SiteName, NEW.Date);
+-- Make user the employee is a staff, and make sure there is no time conflict
+CREATE TRIGGER tgr13_at1 BEFORE INSERT ON AssignTo FOR EACH ROW
+BEGIN
+	DECLARE hold varchar(50);
+    DECLARE end_date date;
+
+	SET hold = (SELECT Title FROM EMPLOYEE WHERE UserName LIKE NEW.StaffName LIMIT 1);
+
+	IF hold NOT LIKE 'Staff' THEN
+		SIGNAL SQLSTATE '45000' SET message_text = 'Not a staff, cannot assign to event.';
+	END IF;
+    
+    SET end_date = (SELECT EndDate 
+                    FROM `Events` 
+                    WHERE SiteName = NEW.SiteName 
+                    AND EventName = NEW.EventName 
+                    AND StartDate = NEW.StartDate LIMIT 1);
+
+	IF end_date >= ANY (SELECT StartDate 
+                         FROM AssignTo 
+                         WHERE StaffName = New.StaffName)  THEN 
+        IF NEW.StartDate <= ANY (SELECT EndDate 
+                                  FROM `Events`
+                                  JOIN AssignTo 
+                                  USING (SiteName, EventName, StartDate) 
+                                  WHERE StaffName = NEW.StaffName 
+                                  AND (SiteName, EventName, StartDate) IN
+                                  (SELECT SiteName, EventName, StartDate FROM AssignTo WHERE StartDate <= end_date AND StaffName = NEW.StaffName)) 
+        THEN
+            SIGNAL SQLSTATE '45000' SET message_text = 'Time conflict, cannot assign to event.';
+        END IF;
     END IF;
 END $$
 
 
 
-CREATE TRIGGER tgr13_at1 AFTER INSERT ON AssignTo FOR EACH ROW
+-- Make user the employee is a staff, and make sure there is no time conflict
+CREATE TRIGGER tgr14_at2 BEFORE UPDATE ON AssignTo FOR EACH ROW
 BEGIN
 	DECLARE hold varchar(50);
+    DECLARE end_date date;
 
 	SET hold = (SELECT Title FROM EMPLOYEE WHERE UserName LIKE NEW.StaffName LIMIT 1);
 
 	IF hold NOT LIKE 'Staff' THEN
-		SIGNAL SQLSTATE '45000' SET message_text = "Not A Staff, Cannot Assign To Event!!";
+		SIGNAL SQLSTATE '45000' SET message_text = 'Not a staff, cannot assign to event.';
 	END IF;
+    
+    SET end_date = (SELECT EndDate 
+                    FROM `Events` 
+                    WHERE SiteName = NEW.SiteName 
+                    AND EventName = NEW.EventName 
+                    AND StartDate = NEW.StartDate LIMIT 1);
 
-	IF (SELECT EndDate FROM Events WHERE SiteName LIKE NEW.SiteName
-					AND EventName LIKE NEW.EventName
-					AND StartDate = NEW.StartDate LIMIT 1)
-	>= ANY (SELECT StartDate FROM Events
-			JOIN AssignTo USING (SiteName, EventName, StartDate)
-			WHERE StaffName LIKE NEW.StaffName AND StartDate > NEW.StartDate) THEN
-		SIGNAL SQLSTATE '45000' SET message_text = "Time Conflict, Cannot Assign To Event!! Type1";
-	END IF;
-
-	IF NEW.StartDate <= ANY (SELECT EndDate FROM Events
-			JOIN AssignTo USING (SiteName, EventName, StartDate)
-			WHERE StaffName LIKE NEW.StaffName AND StartDate < NEW.StartDate) THEN
-		SIGNAL SQLSTATE '45000' SET message_text = "Time Conflict, Cannot Assign To Event!! Type2";
-	END IF;
+	IF end_date >= ANY (SELECT StartDate 
+                         FROM AssignTo 
+                         WHERE StaffName = New.StaffName)  THEN 
+        IF NEW.StartDate <= ANY (SELECT EndDate 
+                                  FROM `Events`
+                                  JOIN AssignTo 
+                                  USING (SiteName, EventName, StartDate) 
+                                  WHERE StaffName = NEW.StaffName 
+                                  AND (SiteName, EventName, StartDate) IN
+                                  (SELECT SiteName, EventName, StartDate FROM AssignTo WHERE StartDate <= end_date AND StaffName = NEW.StaffName)) 
+        THEN
+            SIGNAL SQLSTATE '45000' SET message_text = 'Time conflict, cannot assign to event.';
+        END IF;
+    END IF;
 END $$
 
 
-
-
-CREATE TRIGGER tgr14_at2 AFTER UPDATE ON AssignTo FOR EACH ROW
-BEGIN
-	DECLARE hold varchar(50);
-
-	SET hold = (SELECT Title FROM EMPLOYEE WHERE UserName LIKE NEW.StaffName LIMIT 1);
-
-	IF hold NOT LIKE 'Staff' THEN
-		SIGNAL SQLSTATE '45000' SET message_text = "Not A Staff, Cannot Assign To Event!!";
-	END IF;
-
-	IF (SELECT EndDate FROM Events WHERE SiteName LIKE NEW.SiteName
-					AND EventName LIKE NEW.EventName
-					AND StartDate = NEW.StartDate LIMIT 1)
-	<= ANY (SELECT StartDate FROM Events
-			JOIN AssignTo USING (SiteName, EventName, StartDate)
-			WHERE StaffName LIKE NEW.StaffName AND StartDate > NEW.StartDate) THEN
-		SIGNAL SQLSTATE '45000' SET message_text = "Time Conflict, Cannot Assign To Event!!";
-	END IF;
-
-	IF NEW.StartDate <= ANY (SELECT EndDate FROM Events
-			JOIN AssignTo USING (SiteName, EventName, StartDate)
-			WHERE StaffName LIKE NEW.StaffName AND StartDate < NEW.StartDate) THEN
-		SIGNAL SQLSTATE '45000' SET message_text = "Time Conflict, Cannot Assign To Event!!";
-	END IF;
-END $$
-
-
-
+-- Make sure the number of staff that serves in an event is not lower than the minimun requirement of staff
 CREATE TRIGGER tgr15_at3 BEFORE DELETE ON AssignTo FOR EACH ROW
 BEGIN
 	DECLARE ermsg varchar(100);
@@ -610,9 +607,9 @@ BEGIN
                 					AND EventName = OLD.EventName
                                     AND StartDate = OLD.StartDate) THEN
         IF @force = 'force delete' THEN
-            SET @trigger_warning = "The data has been forced deleted.";
+            SET @trigger_warning = 'The data has been forced deleted.';
         ELSE
-            SET ermsg = 'Staff Number Of This Site Will Be Less Than The Minimun Required Staff Number, Connot Delete!!';
+            SET ermsg = 'Staff number of this site will be less than the minimun required staff number, connot delete.';
             SIGNAL SQLSTATE '45000' SET message_text = ermsg;
         END IF;
 		
@@ -621,97 +618,81 @@ BEGIN
 END $$
 
 
-
+-- Make sure that each transit connect to at least one site
 CREATE TRIGGER tgr16_connect1 BEFORE DELETE ON Connects FOR EACH ROW
 BEGIN
 	DECLARE ermsg varchar(100);
 
 	IF (SELECT count(*) FROM Connects WHERE Route = OLD.Route
-					AND TransportType = OLD.TransportType) = 1 THEN
-        -- IF @@byDeletingSite LIKE 'no' THEN
+					AND TransportType = OLD.TransportType) = 1 THEN 
         IF @force = 'force delete' THEN
-            SET @trigger_warning = "The data has been forced deleted.";
+            SET @trigger_warning = 'The data has been forced deleted.';
         ELSE
-            SET ermsg = 'The Only Site Of This Transit, Connot Delete!!';
+            SET ermsg = 'The only site of this transit, connot delete.';
 		    SIGNAL SQLSTATE '45000' SET message_text = ermsg;
         END IF;
-		    
-        -- END IF;
 	END IF;
 END $$
 
 
-
+-- Make sure that all information about a new transit are correct
 CREATE TRIGGER tgr17_transit1 BEFORE INSERT ON Transit FOR EACH ROW
 BEGIN
     DECLARE ermsg varchar(100);
-	IF NEW.Route NOT RLIKE '[0-9]+' THEN
-        IF NEW.Route NOT RLIKE '[a-zA-z]+' THEN
-		    SET ermsg = 'Invalid Route of The Transit!!';
+	IF NEW.Route NOT RLIKE '^[0-9]+$' THEN
+        IF NEW.Route NOT RLIKE '^[a-zA-z]+$' THEN
+		    SET ermsg = 'Invalid route of the transit.';
 		    SIGNAL SQLSTATE '45000' SET message_text = ermsg;
         END IF;
 	END IF;
 
 	IF NEW.Price < 0 THEN
-		SET ermsg = 'Price Cannot Be Negative!!';
+		SET ermsg = 'Price cannot be negative.';
 		SIGNAL SQLSTATE '45000' SET message_text = ermsg;
 	END IF;
 END $$
 
 
-
+-- Make sure that all information about a new transit are correct
 CREATE TRIGGER tgr18_transit2 BEFORE UPDATE ON Transit FOR EACH ROW
 BEGIN
     DECLARE ermsg varchar(100);
-	IF NEW.Route NOT RLIKE '[0-9]+' THEN
-        IF NEW.Route NOT RLIKE '[a-zA-z]+' THEN
-		    SET ermsg = 'Invalid Route of The Transit!!';
+	IF NEW.Route NOT RLIKE '^[0-9]+$' THEN
+        IF NEW.Route NOT RLIKE '^[a-zA-z]+$' THEN
+		    SET ermsg = 'Invalid Route of The Transit.';
 		    SIGNAL SQLSTATE '45000' SET message_text = ermsg;
         END IF;
 	END IF;
 
 	IF NEW.Price < 0 THEN
-		SET ermsg = 'Price Cannot Be Negative!!';
+		SET ermsg = 'Price Cannot Be Negative.';
 		SIGNAL SQLSTATE '45000' SET message_text = ermsg;
 	END IF;
 END $$
 
 
-
--- CREATE TRIGGER tgr19_employee1 BEFORE DELETE ON Employee FOR EACH ROW
--- BEGIN
---     IF OLD.Title = 'Staff' THEN
---         IF SELECT count(*) FROM
---             (SELECT Num, StaffName FROM
---                 (SELECT count(*) AS Num, StaffName FROM AssignTo GROUP BY (SiteName, EventName, StartDate)) AS x
---                 WHERE Num = 1 AND StaffName = OLD.StaffName) AS y
---                 > 0 THEN
---             SIGNAL SQLSTATE '45000' SET message_text = 'The Only Staff For Some Event, Cannot Delete!!';
---         END IF;
---     END IF;
--- END $$
-
-
-
+-- Prohibit the changing on the title of an employee.
 CREATE TRIGGER tgr19_employee1 BEFORE UPDATE ON Employee FOR EACH ROW
 BEGIN
     IF OLD.Title != NEW.Title THEN
-        SIGNAL SQLSTATE '45000' SET message_text = 'Cannot Change The Title Of The Employee!!';
+        SIGNAL SQLSTATE '45000' SET message_text = 'Cannot change the title of the employee.';
     END IF;
+    WHILE length(NEW.EmployeeID) < 9 DO
+        SET NEW.EmployeeID = concat('0', NEW.EmployeeID);
+    END WHILE;
 END $$
 
 
+-- Delete all records about one's visiting when a user is no longer a visitor.
 CREATE TRIGGER tgr20_visitor1 BEFORE UPDATE ON Users FOR EACH ROW
 BEGIN
-    IF OLD.IsVisitor = "Yes" AND NEW.IsVisitor = "No" THEN
+    IF OLD.IsVisitor = 'Yes' AND NEW.IsVisitor = 'No' THEN
         DELETE FROM VisitEvent WHERE UserName = OLD.UserName;
         DELETE FROM VisitSite WHERE UserName = OLD.UserName;
     END IF;
 END $$
 
 DELIMITER ;
-
-
 
 
 USE atlbeltline;
@@ -722,18 +703,18 @@ DELIMITER $$
 CREATE FUNCTION get_type(em_title int, is_visitor int) RETURNS varchar(20) DETERMINISTIC 
 BEGIN
     IF em_title = 1 THEN
-            RETURN "Administrator";
+            RETURN 'Administrator';
     ELSE 
         IF em_title = 2 THEN 
-            RETURN "Manager";
+            RETURN 'Manager';
         ELSE
             IF em_title = 3 THEN 
-                RETURN "Staff";
+                RETURN 'Staff';
             ELSE
                 IF is_visitor = 1 THEN 
-                    RETURN "Visitor";
+                    RETURN 'Visitor';
                 ELSE 
-                    RETURN "User";
+                    RETURN 'User';
                 END IF;
             END IF;
         END IF;
@@ -751,12 +732,12 @@ GROUP BY Users.UserName;
 CREATE VIEW site_visit_num AS 
 SELECT UserName, FirstName, LastName, count(*) AS NumMySiteVisit, IsVisitor 
 FROM Users LEFT JOIN VisitSite USING(UserName) 
-GROUP BY UserName HAVING IsVisitor = "Yes";
+GROUP BY UserName HAVING IsVisitor = 'Yes';
 
 CREATE VIEW event_visit_num AS 
 SELECT UserName, FirstName, LastName, count(*) AS NumMyEventVisit, IsVisitor 
 FROM VisitEvent LEFT JOIN Users USING(UserName) 
-GROUP BY UserName HAVING IsVisitor = "Yes";
+GROUP BY UserName HAVING IsVisitor = 'Yes';
 
 CREATE VIEW for_visitor AS 
 SELECT UserName, FirstName, LastName, NumMySiteVisit, NumMyEventVisit 
@@ -765,7 +746,7 @@ FROM site_visit_num LEFT JOIN event_visit_num USING(UserName, FirstName, LastNam
 CREATE VIEW for_staff_pre AS 
 SELECT UserName, EmployeeID, count(*) AS NumEventShifts, Title 
 FROM Employee LEFT JOIN AssignTo ON Employee.UserName = AssignTo.StaffName 
-GROUP BY UserName HAVING Title = "Staff";
+GROUP BY UserName HAVING Title = 'Staff';
 
 CREATE VIEW for_staff AS
 SELECT * FROM for_staff_pre JOIN AssignTO ON for_staff_pre.UserName = AssignTo.StaffName INNER JOIN Users USING (UserName) LEFT JOIN Events USING(SiteName, EventName, StartDate); 
@@ -803,7 +784,7 @@ SELECT SiteName, EventName, StartDate, count(*) AS CountStaff
 FROM AssignTo GROUP BY SiteName, EventName, StartDate;
 
 CREATE VIEW for_event AS 
-SELECT SiteName, EventName, StartDate, Events.Price, sum(DailyVisit) AS TotalVisit, sum(DailyRevenue) AS TotalRevenue, (Capacity - sum(DailyVisit)) AS TicketRem, (Events.EndDate - StartDate) AS Duration, Description, CountStaff, daily_event.EndDate   
+SELECT SiteName, EventName, StartDate, Events.Price, sum(DailyVisit) AS TotalVisit, sum(DailyRevenue) AS TotalRevenue, (Capacity - sum(DailyVisit)) AS TicketRem, (Events.EndDate - StartDate + 1) AS Duration, Description, CountStaff, daily_event.EndDate   
 FROM daily_event INNER JOIN Events USING(SiteName, EventName, StartDate) INNER JOIN for_event_pre USING (SiteName, EventName, StartDate)
 GROUP BY SiteName, EventName, StartDate;
 
@@ -866,7 +847,7 @@ SELECT `Date`, EventName, SiteName, Price, UserName
 FROM VisitEvent FULL JOIN visit_hisotry_pre USING(`Date`, SiteName, UserName) LEFT JOIN `EVENTS` USING(SiteName, EventName, StartDate);
 
 CREATE VIEW for_schedule AS
-SELECT EventName, SiteName, StartDate, (StartDate + Duration) AS EndDate, CountStaff, StaffName, Description 
+SELECT EventName, SiteName, StartDate, (StartDate + Duration - 1) AS EndDate, CountStaff, StaffName, Description 
 FROM AssignTo JOIN for_event USING(EventName, SiteName, StartDate);
 
 CREATE VIEW explore_event AS 
@@ -876,32 +857,30 @@ SELECT x.SiteName AS Site, x.SiteName, x.StartDate, x.EndDate, x.TicketRem, x.Pr
 CREATE VIEW explore_site AS
 SELECT x.UserName, x.SiteName, x.Date, y.TotalVisit, y.CountEvent, y.EveryDay, IF(x.SiteName = y.SiteName, 1, 0) AS MyVisit FROM VisitSite AS x, for_site as y;
 
-
-
 USE atlbeltline;
-
 DELIMITER $$
 
 
+-- change if the user is or not a visitor
 CREATE PROCEDURE switch_visitor(in user_name varchar(100), in new_visitor int)
 -- order of parameter
 -- username, new state of if the user is visitor
 BEGIN
     IF new_visitor != 0 AND new_visitor != 1 THEN 
-        SET @error = "New_visitor is out of range.";
+        SET @error = 'New_visitor is out of range.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     END IF;
     IF EXISTS(SELECT * FROM Users WHERE UserName = user_name) THEN
         SET new_visitor = new_visitor + 1;
         UPDATE Users SET IsVisitor = new_visitor WHERE UserName = user_name;
     ELSE 
-        SET @error = "User does not exist.";
+        SET @error = 'User does not exist.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     END IF;
 END $$
 
 
-CREATE PROCEDURE login(in email_address varchar(100) )
+CREATE PROCEDURE login(in email_address varchar(100))
 -- order of parameter
 -- email address
 -- password
@@ -910,43 +889,27 @@ BEGIN
     DECLARE result varchar(100);     
 	
 	SET user_name = (SELECT UserName FROM Email WHERE EmailAddress LIKE email_address LIMIT 1);
-	IF length(user_name) <= 0 THEN 
-		SET @error = "Email address does not exist.";
+	IF NOT EXISTS(SELECT UserName FROM Email WHERE EmailAddress LIKE email_address LIMIT 1) THEN 
+		SET @error = 'Email address does not exist.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
 	ELSE
         SET result = (SELECT Password FROM Users WHERE UserName = user_name LIMIT 1);
         SELECT result, email_address;
 	END IF;
 END $$
--- Correct way to call it
-
--- SET @a = "/*email address*/";
--- SET @b = "/*password after hashing*/";
--- CALL login(@a, @b);
-
--- Or
-
--- CALL login("/*email address*/", "/*password after hashing*/");
-
--- Then it will return the information about login
--- For the following procedures, if there is no need for further explanation,
--- there will not be a documentation.
-
 
 
 CREATE PROCEDURE register_user(in user_name varchar(50), in pass_word varchar(100), in first_name varchar(50), in last_name varchar(50), in is_visitor int ) 
 -- order of parameter
 -- username, password, firstname, lastname, is_visitor
--- is_visitor's value shall be 0 or 1 (0 for "Yes", 1 for "No")
-BEGIN
-     
-     
+-- is_visitor's value shall be 0 or 1 (0 for 'Yes', 1 for 'No')
+BEGIN    
     IF EXISTS(SELECT * FROM USERS WHERE UserName = user_name) THEN 
-        SET @error = "Username already exists.";
+        SET @error = 'Username already exists.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     ELSE
         IF is_visitor != 1 AND is_visitor != 0 THEN
-            SET @error = "IsVisitor is out of range.";
+            SET @error = 'IsVisitor is out of range.';
             SIGNAL SQLSTATE '45000' SET message_text = @error;
         ELSE 
             SET is_visitor = is_visitor + 1;
@@ -963,11 +926,9 @@ CREATE PROCEDURE register_employee(in user_name varchar(50), in phone_ char(10),
 -- username, phone, city, address, state, zipcode, employee type
 -- state's value shall be the abbreviation of states in uppercase or be 'other'
 -- this procedure require a register_user() to be called before it
-BEGIN
-     
-         
-    IF title_ = "ADMINISTRATOR" THEN 
-        SET @error = "Cannot create administrator.";
+BEGIN  
+    IF title_ = 'ADMINISTRATOR' THEN 
+        SET @error = 'Cannot create administrator.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     ELSE 
         INSERT INTO Employee(Username, Phone, Address, City, State, ZipCode, Title) VALUES(user_name, phone_, address_, city_, state_, zip_code, title_);
@@ -980,11 +941,10 @@ CREATE PROCEDURE register_employee_aft(in user_name varchar(50), in employee_id 
 -- username, employee id, phone, address, city, state, zipcode, employee type
 -- state's value shall be the abbreviation of states in uppercase or be 'other'
 -- this procedure require a register_user() to be called before it
-BEGIN
+BEGIN    
      
-     
-    IF title_ = "ADMINISTRATOR" THEN 
-        SET @error = "Cannot create administrator.";
+    IF title_ = 'ADMINISTRATOR' THEN 
+        SET @error = 'Cannot create administrator.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     ELSE 
         INSERT INTO Employee(Username, Phone, Address, City, State, ZipCode, Title, EmployeeID) VALUES(user_name, phone_, address_, city_, state_, zip_code, title_, employee_id);
@@ -1007,7 +967,6 @@ CREATE PROCEDURE delete_email(in email_address varchar(100) )
 BEGIN 
     DELETE FROM Email WHERE EmailAddress LIKE email_address;
 END $$
-
 
 
 CREATE PROCEDURE take_transit(in user_name varchar(50), in route_ varchar(20), in transport_type varchar(10), in take_date date )
@@ -1039,12 +998,12 @@ BEGIN
     DECLARE status_ varchar(10);
     DECLARE em_id int(9);
     SET status_ = new_status;
-    IF ("APPROVED" IN (SELECT `Status` FROM Users WHERE UserName = user_name)) AND (new_status = "DENIED") THEN 
-        SET @error = "Cannot deny an approved user.";
+    IF ('APPROVED' IN (SELECT `Status` FROM Users WHERE UserName = user_name)) AND (new_status = 'DENIED') THEN 
+        SET @error = 'Cannot deny an approved user.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     ELSE
         UPDATE Users SET Status = status_ WHERE UserName = user_name;
-        IF EXISTS(SELECT * FROM Employee WHERE UserName = user_name) AND (SELECT EmployeeID FROM Employee WHERE UserName = user_name = null) AND status_ = "APPROVED" THEN                
+        IF EXISTS(SELECT * FROM Employee WHERE UserName = user_name) AND status_ = 'APPROVED' THEN                
             SET em_id = 000000001;
             WHILE EXISTS(SELECT * FROM Employee WHERE EmployeeID = em_id) DO
                 SET em_id = em_id + 1;
@@ -1071,9 +1030,7 @@ CREATE PROCEDURE create_site(in site_name varchar(50), in zip_code varchar(5), i
 -- order of parameter
 -- site name, zipcode, address, manager name, if open everyday
 -- open_every_day's value shall be 0 or 1 (1 for yes, 0 for no)
-BEGIN
-     
-     
+BEGIN   
     SET open_every_day = open_every_day + 1;    
     INSERT INTO Site VALUES(site_name, zip_code, address_, open_every_day, manager_name);
 END $$
@@ -1105,7 +1062,7 @@ BEGIN
     IF ! EXISTS(SELECT * FROM Connects WHERE TransportType = transport_type AND Route = route_ AND SiteName = site_name) THEN 
         INSERT INTO Connects VALUES(route_, transport_type, site_name);
     ELSE 
-        SET @error = "This site has been connected.";
+        SET @error = 'This site has been connected.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     END IF;
 END $$
@@ -1118,7 +1075,7 @@ BEGIN
     IF EXISTS(SELECT * FROM Connects WHERE TransportType = transport_type AND Route = route_ AND SiteName = site_name) THEN 
         DELETE FROM Connects WHERE TransportType = transport_type AND Route = route_ AND SiteName = site_name;
     ELSE 
-        SET @error = "This site has been disconnected.";
+        SET @error = 'This site has been disconnected.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     END IF;
     
@@ -1129,6 +1086,10 @@ CREATE PROCEDURE edit_eventt(in site_name varchar(50), in event_name varchar(50)
 -- order of parameter
 -- site name, event name, start date, new discription
 BEGIN 
+    IF NOT EXISTS(SELECT * FROM Events WHERE SiteName = site_name AND EventName = event_name AND StartDate = start_date) THEN 
+        SET @error = 'This event does not exist.';
+    END IF;
+        SIGNAL SQLSTATE '45000' SET message_text = @error;
     UPDATE `Events` 
     SET Description = description_ 
     WHERE SiteName = site_name AND EventName = event_name AND StartDate = start_date;
@@ -1150,7 +1111,7 @@ BEGIN
     IF ! EXISTS(SELECT * FROM AssignTo WHERE SiteName = site_name AND EventName = event_name AND StartDate = start_date AND StaffName = staff_name) THEN 
         INSERT INTO AssignTo VALUES(staff_name, site_name, event_name, start_date);
     ELSE 
-        SET @error = "This staff has been assigned.";
+        SET @error = 'This staff has been assigned.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     END IF;
     
@@ -1164,7 +1125,7 @@ BEGIN
     IF EXISTS(SELECT * FROM AssignTo WHERE SiteName = site_name AND EventName = event_name AND StartDate = start_date AND StaffName = staff_name) THEN 
         DELETE FROM AssignTo WHERE SiteName = site_name AND EventName = event_name AND StartDate = start_date AND StaffName = staff_name;
     ELSE 
-        SET @error = "This staff has been unassigned.";
+        SET @error = 'This staff has been unassigned.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     END IF;
 END $$
@@ -1210,7 +1171,7 @@ BEGIN
         END IF;
         SELECT user_name, pass_word, first_name, last_name, is_visitor, status_, is_employee;
     ELSE 
-        SET @error = "Email Address does not exist.";
+        SET @error = 'Email Address does not exist.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     END IF;
     
@@ -1239,7 +1200,7 @@ BEGIN
     IF length(pass_word) > 1 THEN 
         SELECT pass_word, first_name, last_name, is_visitor, status_, is_employee;
     ELSE 
-        SET @error = concat(user_name, " does not exist.");
+        SET @error = concat(user_name, ' does not exist.');
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     END IF;
     
@@ -1257,11 +1218,9 @@ BEGIN
         SELECT SiteName INTO site_name FROM Site WHERE ManagerName = user_name;
         SELECT site_name;
     ELSE 
-        SET @error = "This user is not an employee.";
-        SIGNAL SQLSTATE '45000' SET message_text = @error;
+        SELECT "";
     END IF;    
 END $$
-
 
 
 CREATE PROCEDURE query_employee_by_username(in user_name varchar(100) )
@@ -1281,10 +1240,9 @@ BEGIN
         SELECT EmployeeID, Phone, Address, City, State, ZipCode, Title 
         INTO employee_id, phone_, address_, city_, state_, zip_code, title_ 
         FROM Employee WHERE UserName = user_name;
-        SELECT SiteName INTO site_name FROM Site WHERE ManagerName = user_name;
         SELECT  phone_, address_, city_, state_, zip_code, title_, employee_id;
     ELSE 
-        SET @error = "This user is not an employee.";
+        SET @error = 'This user is not an employee.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     END IF;    
 END $$
@@ -1307,12 +1265,17 @@ BEGIN
     
     SELECT UserName INTO user_name FROM Email WHERE EmailAddress = email_address;
     IF length(user_name) > 0 THEN 
-        SELECT EmployeeID, Phone, Address, City, State, ZipCode, Title 
-        INTO employee_id, phone_, address_, city_, state_, zip_code, title_ 
-        FROM Employee WHERE UserName = user_name;
-        SELECT user_name, phone_, address_, city_, state_, zip_code, title_, employee_id;
+        IF EXISTS(SELECT * FROM Employee WHERE UserName = user_name) THEN
+            SELECT EmployeeID, Phone, Address, City, State, ZipCode, Title 
+            INTO employee_id, phone_, address_, city_, state_, zip_code, title_ 
+            FROM Employee WHERE UserName = user_name;
+            SELECT user_name, phone_, address_, city_, state_, zip_code, title_, employee_id;
+        ELSE 
+            SET @error = 'This user is not an employee.';
+            SIGNAL SQLSTATE '45000' SET message_text = @error;
+        END IF;  
     ELSE 
-        SET @error = "This user does not exist.";
+        SET @error = 'This user does not exist.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     END IF;
 END $$
@@ -1329,6 +1292,7 @@ END $$
 CREATE PROCEDURE check_email(in email_address varchar(100))
 -- order of parameter
 -- email address, result
+-- 1 for you can insert, 0 for not
 BEGIN 
     DECLARE result int(1);
     IF EXISTS(SELECT UserName FROM Email WHERE EmailAddress = email_address LIMIT 1) THEN 
@@ -1336,13 +1300,14 @@ BEGIN
     ELSE
         SET result = 1;
     END IF;
-    SELECT result, "place holder";
+    SELECT result;
 END $$
 
 
 CREATE PROCEDURE check_username(in user_name varchar(100))
 -- order of parameter
 -- user name, result
+-- 1 for you can insert, 0 for not
 BEGIN 
     DECLARE result int(1);
     IF EXISTS(SELECT UserName FROM Users WHERE UserName = user_name LIMIT 1) THEN 
@@ -1350,22 +1315,23 @@ BEGIN
     ELSE
         SET result = 1;
     END IF;
-    SELECT result, "place holder";
+    SELECT result;
 END $$
 
 
 CREATE PROCEDURE check_status(in user_name varchar(100))
 -- order of parameter
 -- user name, result
+-- 1 for approved, 0 for other status
 BEGIN
     DECLARE result int(1);
      
-    IF (SELECT `Status` FROM Users WHERE UserName = user_name LIMIT 1) = "APPROVED" THEN 
+    IF (SELECT `Status` FROM Users WHERE UserName = user_name LIMIT 1) = 'APPROVED' THEN 
         SET result = 1;
     ELSE
         SET result = 0;
     END IF;
-    SELECT result, "place holder";
+    SELECT result;
 END $$
 
 
@@ -1379,15 +1345,15 @@ BEGIN
     DECLARE manager_name varchar(100);
      
     IF length(site_name) > 0 THEN
-        SELECT ZipCode, Address, ManagerName INTO zip_code, address_, manager_name FROM Site WHERE SiteName = site_name;
-        IF length(ZipCode) > 1 THEN 
+        SELECT Zipcode, Address, ManagerName INTO zip_code, address_, manager_name FROM Site WHERE SiteName = site_name;
+        IF length(zip_code) > 1 THEN 
             SELECT zip_code, address_, manager_name;
         ELSE 
-            SET @error = concat(site_name, " does not exist.");
+            SET @error = concat(site_name, ' does not exist.');
             SIGNAL SQLSTATE '45000' SET message_text = @error;
         END IF;
     ELSE 
-        SET @error = "Site name cannot be null.";
+        SET @error = 'Site name cannot be null.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     END IF;    
 END $$
@@ -1403,16 +1369,16 @@ BEGIN
     DECLARE capacity_ int;
     DECLARE description_ text;
      
-    IF length(site_name) > 0 AND length(event_name) > 0 AND start_date != "0000-00-00" THEN
-        SELECT EndDate, MinSraffReq, Capacity, Description INTO end_date, min_staff_req, capacity_, description_ FROM Events WHERE SiteName = site_name AND EventName = event_name AND StartDate = start_date LIMIT 1;        
+    IF length(site_name) > 0 AND length(event_name) > 0 AND start_date != '0000-00-00' THEN
+        SELECT EndDate, MinStaffReq, Capacity, Description INTO end_date, min_staff_req, capacity_, description_ FROM Events WHERE SiteName = site_name AND EventName = event_name AND StartDate = start_date LIMIT 1;        
         IF length(description_) > 1 THEN 
             SELECT end_date, min_staff_req, capacity_, description_;
         ELSE 
-            SET @error = concat(event_name, " does not exist.");
+            SET @error = concat(event_name, ' does not exist.');
             SIGNAL SQLSTATE '45000' SET message_text = @error;
         END IF;
     ELSE 
-        SET @error = "Primary key cannot have null value.";
+        SET @error = 'Primary key cannot have null value.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     END IF;
     
@@ -1422,6 +1388,7 @@ END $$
 CREATE PROCEDURE check_phone(in phone_ varchar(10))
 -- order of parameter
 -- phone
+-- 1 for you can insert, 0 for not
 BEGIN
     DECLARE result int;
     
@@ -1430,13 +1397,18 @@ BEGIN
     ELSE 
         SET result = 1;
     END IF;
-    SELECT result, phone_;
+    SELECT result;
+END $$
+
+
+CREATE PROCEDURE get_all_sites() 
+BEGIN
+    SELECT SiteName, ZipCode, Address, (EveryDay - 1) AS OpenEveryDay, ManagerName FROM Site;
 END $$
 
 
 
 DELIMITER ;
-
 
 DELIMITER $$
 
@@ -1453,12 +1425,12 @@ BEGIN
     IF length(site_name) > 0 THEN
         SET new_site_name = site_name;
     ELSE 
-        SET new_site_name = "%";
+        SET new_site_name = '%';
     END IF;
     IF length(route_) > 0 THEN
         SET new_route_ = route_;
     ELSE 
-        SET new_route_ = "%";
+        SET new_route_ = '%';
     END IF;
     IF high_price = 0 THEN
         SET new_high_price = 1000.00;
@@ -1485,15 +1457,15 @@ BEGIN
         IF length(site_name) > 0 THEN
             SET new_site_name = site_name;
         ELSE 
-            SET new_site_name = "%";
+            SET new_site_name = '%';
         END IF;
-        IF end_date = "0000-00-00" THEN
-            SET new_end_date = "9999-12-31";
+        IF end_date = '0000-00-00' THEN
+            SET new_end_date = '9999-12-31';
         ELSE 
             SET new_end_date = end_date;
         END IF;
-        IF start_date = "0000-00-00" THEN
-            SET new_start_date = "1000-01-01";
+        IF start_date = '0000-00-00' THEN
+            SET new_start_date = '1000-01-01';
         ELSE 
             SET new_start_date = start_date;
         END IF;
@@ -1503,7 +1475,7 @@ BEGIN
             SELECT DISTINCT Route, TransportType, Price, `Date` FROM Take JOIN Transit USING(Route, TransportType) JOIN Connects USING(Route, TransportType) WHERE UserName = user_name AND SiteName LIKE new_site_name AND `Date` >= new_start_date AND `Date` <= new_end_date;
         END IF;
     ELSE 
-        SET @error = "Username cannot be null.";
+        SET @error = 'Username cannot be null.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     END IF;  
     
@@ -1524,17 +1496,17 @@ BEGIN
     IF length(user_name) > 0 THEN 
         SET new_user_name = user_name;
     ELSE 
-        SET new_user_name = "%";
+        SET new_user_name = '%';
     END IF;
     IF length(type_) > 0 THEN 
         SET new_type_ = type_;
     ELSE 
-        SET new_type_ = "%";
+        SET new_type_ = '%';
     END IF;
     IF length(status_) > 0 THEN 
-        SELECT UserName, NumEmailCount, Type, `Status`, NumLogged FROM for_users WHERE UserName LIKE new_user_name AND Type LIKE new_type_ AND `Status` = status_;
+        SELECT UserName, NumEmailCount, Type, `Status`, NumEmailCount FROM for_users WHERE UserName LIKE new_user_name AND Type LIKE new_type_ AND `Status` = status_;
     ELSE 
-        SELECT UserName, NumEmailCount, Type, `Status`, NumLogged FROM for_users WHERE UserName LIKE new_user_name AND Type LIKE new_type_;
+        SELECT UserName, NumEmailCount, Type, `Status`, NumEmailCount  FROM for_users WHERE UserName LIKE new_user_name AND Type LIKE new_type_;
     END IF;
 END $$
 
@@ -1547,22 +1519,19 @@ BEGIN
     DECLARE new_manager_name varchar(100);
     DECLARE new_open_everyday int;
     
-     
-     
-    
     IF length(site_name) > 0 THEN 
         SET new_site_name = site_name;
     ELSE 
-        SET new_site_name = "%";
+        SET new_site_name = '%';
     END IF;
     IF length(manager_name) > 0 THEN 
         SET new_manager_name = manager_name;
     ELSE 
-        SET new_manager_name = "%";
+        SET new_manager_name = '%';
     END IF;
     SET new_open_everyday = open_everyday + 1;
     
-    SELECT SiteName, ManagerName, EveryDay FROM for_site WHERE SiteName LIKE new_siter_name AND ManagerName LIKE new_manager_name AND EveryDay = new_open_everyday;
+    SELECT SiteName, ManagerName, EveryDay FROM for_site WHERE SiteName LIKE new_site_name AND ManagerName LIKE new_manager_name AND EveryDay = new_open_everyday;
 END $$
 
 
@@ -1578,26 +1547,23 @@ BEGIN
     DECLARE new_high_visit int;
     DECLARE new_high_revenue float;
     
-     
-     
-    
     IF length(event_name) > 0 THEN 
         SET new_event_name = event_name;
     ELSE 
-        SET new_event_name = "%";
+        SET new_event_name = '%';
     END IF;
     IF length(key_word) > 0 THEN 
-        SET new_key_word = concat("%", concat(key_word, "%"));
+        SET new_key_word = concat('%', concat(key_word, '%'));
     ELSE 
-        SET new_key_word = "%";
+        SET new_key_word = '%';
     END IF;
-    IF end_date = "0000-00-00" THEN
-        SET new_end_date = "9999-12-31";
+    IF end_date = '0000-00-00' THEN
+        SET new_end_date = '9999-12-31';
     ELSE 
         SET new_end_date = end_date;
     END IF;
-    IF start_date = "0000-00-00" THEN
-            SET new_start_date = "1000-01-01";
+    IF start_date = '0000-00-00' THEN
+            SET new_start_date = '1000-01-01';
     ELSE 
         SET new_start_date = start_date;
     END IF;
@@ -1630,9 +1596,6 @@ BEGIN
     DECLARE new_high_visit int;
     DECLARE new_high_revenue float;
     
-     
-     
-    
     IF high_visit = 0 THEN
         SET new_high_visit = ~0;
     ELSE
@@ -1644,10 +1607,10 @@ BEGIN
         SET new_high_revenue = high_revenue;
     END IF;  
     
-    IF length(site_name) > 0 AND length(event_name) > 0 AND start_date != "0000-00-00" THEN
-        SELECT `Date`, DailyVisit, DailyRevenue FROM daily_event WHERE SiteName = site_name AND EventName = event_date AND StartDate = start_date AND DailyVisit >= low_price AND DailyVisit <= new_high_price AND DailyRevenue >= low_revenue AND DailyRevenue <= new_high_revenue;
+    IF length(site_name) > 0 AND length(event_name) > 0 AND start_date != '0000-00-00' THEN
+        SELECT `Date`, DailyVisit, DailyRevenue FROM daily_event WHERE SiteName = site_name AND EventName = event_name AND StartDate = start_date AND DailyVisit >= low_price AND DailyVisit <= new_high_price AND DailyRevenue >= low_revenue AND DailyRevenue <= new_high_revenue;
     ELSE 
-        SET @error = "Primary key cannot have null value.";
+        SET @error = 'Primary key cannot have null value.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     END IF;
 END $$
@@ -1663,37 +1626,34 @@ BEGIN
     DECLARE new_start_date date;
     DECLARE new_end_date date;
     
-     
-     
-    
     IF length(site_name) > 0 THEN 
         SET new_site_name = site_name;
     ELSE 
-        SET new_site_name = "%";
+        SET new_site_name = '%';
     END IF;
     IF length(first_name) > 0 THEN 
         SET new_first_name = first_name;
     ELSE 
-        SET new_first_name = "%";
+        SET new_first_name = '%';
     END IF;
     IF length(last_name) > 0 THEN 
         SET new_last_name = last_name;
     ELSE 
-        SET new_last_name = "%";
+        SET new_last_name = '%';
     END IF;
-    IF end_date = "0000-00-00" THEN
-        SET new_end_date = "9999-12-31";
+    IF end_date = '0000-00-00' THEN
+        SET new_end_date = '9999-12-31';
     ELSE 
         SET new_end_date = end_date;
     END IF;
-    IF start_date = "0000-00-00" THEN
-        SET new_start_date = "1000-01-01";
+    IF start_date = '0000-00-00' THEN
+        SET new_start_date = '1000-01-01';
     ELSE 
         SET new_start_date = start_date;
     END IF;
     
     SELECT concat(FirstName, LastName) AS `Staff Name`, NumEventShifts FROM for_staff 
-    WHERE SiteName LIKE new_site_name AND FistName LIKE new_first_name AND LastName LIKE new_last_name AND StartDate >= new_start_date AND EndDate <= new_end_date;
+    WHERE SiteName LIKE new_site_name AND FirstName LIKE new_first_name AND LastName LIKE new_last_name AND StartDate >= new_start_date AND EndDate <= new_end_date;
 
 END $$
 
@@ -1712,16 +1672,16 @@ BEGIN
      
     
     IF length(site_name) = 0 THEN 
-        SET @error = "Site name cannot be null.";
+        SET @error = 'Site name cannot be null.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     ELSE
-        IF end_date = "0000-00-00" THEN
-            SET new_end_date = "9999-12-31";
+        IF end_date = '0000-00-00' THEN
+            SET new_end_date = '9999-12-31';
         ELSE 
             SET new_end_date = end_date;
         END IF;
-        IF start_date = "0000-00-00" THEN
-            SET new_start_date = "1000-01-01";
+        IF start_date = '0000-00-00' THEN
+            SET new_start_date = '1000-01-01';
         ELSE 
             SET new_start_date = start_date;
         END IF;
@@ -1745,7 +1705,7 @@ BEGIN
         ELSE
             SET new_high_event = high_event;
         END IF;
-        SELECT `Date`, EventCount, CountStaff, DailyVisit, DailyReveneu FROM full_daily_size 
+        SELECT `Date`, EventCount, CountStaff, DailyVisit, DailyReveneu FROM full_daily_site 
         WHERE SiteName = site_name AND `Date` >= new_start_date AND `Date` <= new_end_date AND EventCount >= low_event AND EventCount <= new_high_event AND CountStaff >= low_staff AND CountStaff <= new_high_staff AND DailyVisit >= low_visit AND DailyVisit <= low_new_high_visit AND DailyRevenue >= low_revenue AND DailyRevenue <= new_high_revenue;
     END IF;
 END $$
@@ -1757,13 +1717,11 @@ CREATE PROCEDURE filter_daily_event(in site_name varchar(50), in date_ date )
 -- site name, date
 BEGIN
      
-     
-    
-    IF length(site_name) = 0 OR date_ = "0000-00-00" THEN 
-        SET @error = "Site name or date cannot be null.";
+    IF length(site_name) = 0 OR date_ = '0000-00-00' THEN 
+        SET @error = 'Site name or date cannot be null.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     ELSE 
-        SELECT EventName, SiteName, StartDate, DailyVisit, DailyRevenue FROM daily_event WHERE SiteNeme = site_name AND `Date` = date_;
+        SELECT EventName, SiteName, StartDate, DailyVisit, DailyRevenue FROM daily_event WHERE SiteName = site_name AND `Date` = date_;
     END IF;
 END $$
 
@@ -1775,22 +1733,19 @@ BEGIN
     DECLARE new_event_name varchar(50);
     DECLARE new_key_word varchar(200);
     
-     
-     
-    
     IF length(event_name) > 0 THEN 
         SET new_event_name = event_name;
     ELSE 
-        SET new_event_name = "%";
+        SET new_event_name = '%';
     END IF;
     IF length(key_word) > 0 THEN 
-        SET new_key_word = concat("%", concat(key_word, "%"));
+        SET new_key_word = concat('%', concat(key_word, '%'));
     ELSE 
-        SET new_key_word = "%";
+        SET new_key_word = '%';
     END IF;
     
-    IF start_date = "0000-00-00" THEN 
-        IF end_date = "0000-00-00" THEN
+    IF start_date = '0000-00-00' THEN 
+        IF end_date = '0000-00-00' THEN
             SELECT EventName, SiteName, StartDate, EndDate, CountStaff FROM for_schedule 
             WHERE StaffName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key_word;
         ELSE 
@@ -1798,7 +1753,7 @@ BEGIN
             WHERE StaffName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key_word AND EndDate = end_date;
         END IF;
     ELSE 
-        IF end_date = "0000-00-00" THEN
+        IF end_date = '0000-00-00' THEN
             SELECT EventName, SiteName, StartDate, EndDate, CountStaff FROM for_schedule 
             WHERE StaffName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key_word AND StartDate = start_date;
         ELSE 
@@ -1821,15 +1776,12 @@ BEGIN
     DECLARE new_visited int;
     DECLARE new_sold int;
     
-     
-     
-    
-    SET new_event_name = concat("%", concat(event_name, "%"));
-    SET new_key = concat("%", concat(key_word, "%"));
+    SET new_event_name = concat('%', concat(event_name, '%'));
+    SET new_key = concat('%', concat(key_word, '%'));
     IF length(site_name) > 0 THEN
         SET new_site_name = site_name;
     ELSE 
-        SET new_site_name = "%";
+        SET new_site_name = '%';
     END IF;    
     IF high_visit > 0 THEN
         SET new_high_visit = high_visit;
@@ -1853,8 +1805,8 @@ BEGIN
     END IF;
     
     IF length(user_name) > 0 THEN
-        IF start_date = "0000-00-00" THEN 
-            IF end_date = "0000-00-00" THEN
+        IF start_date = '0000-00-00' THEN 
+            IF end_date = '0000-00-00' THEN
                 SELECT EventName, SiteName, Price, TicketRem, TotalVisit, MyVisit FROM explore _event
                 WHERE UserName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key AND TotalVisit <= new_high_visit AND TotalVisit >= low_visit AND Price >= low_price AND Price <= new_high_price AND MyVisit < new_visited AND TicketRem >= new_sold ;
             ELSE 
@@ -1862,7 +1814,7 @@ BEGIN
                 WHERE UserName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key AND TotalVisit <= new_high_visit AND TotalVisit >= low_visit AND Price >= low_price AND Price <= new_high_price AND MyVisit < new_visited AND TicketRem >= new_sold AND EndDate = end_date;
             END IF;
         ELSE 
-            IF end_date = "0000-00-00" THEN
+            IF end_date = '0000-00-00' THEN
                 SELECT EventName, SiteName, Price, TicketRem, TotalVisit, MyVisit FROM explore _event
                 WHERE UserName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key AND TotalVisit <= new_high_visit AND TotalVisit >= low_visit AND Price >= low_price AND Price <= new_high_price AND MyVisit < new_visited AND TicketRem >= new_sold AND StartDate = start_date;
             ELSE 
@@ -1871,7 +1823,7 @@ BEGIN
             END IF;
         END IF;     
     ELSE
-        SET @error = "Username cannot be null.";
+        SET @error = 'Username cannot be null.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     END IF;
     
@@ -1894,15 +1846,15 @@ BEGIN
     IF length(site_name) > 0 THEN
         SET new_site_name = site_name;
     ELSE 
-        SET new_site_name = "%";
+        SET new_site_name = '%';
     END IF; 
-    IF end_date = "0000-00-00" THEN
-        SET new_end_date = "9999-12-31";
+    IF end_date = '0000-00-00' THEN
+        SET new_end_date = '9999-12-31';
     ELSE 
         SET new_end_date = end_date;
     END IF;
-    IF start_date = "0000-00-00" THEN
-            SET new_start_date = "1000-01-01";
+    IF start_date = '0000-00-00' THEN
+            SET new_start_date = '1000-01-01';
     ELSE 
         SET new_start_date = start_date;
     END IF;
@@ -1934,7 +1886,7 @@ BEGIN
             EveryDay = open_everyday;
         END IF;
     ELSE 
-        SET @error = "Username cannot be null.";
+        SET @error = 'Username cannot be null.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     END IF;
 END $$
@@ -1951,11 +1903,10 @@ CREATE PROCEDURE query_email_by_username(in user_name varchar(100) )
 -- username
 BEGIN   
      
-     
     IF length(user_name) > 0 THEN
         SELECT EmailAddress, UserName FROM Email WHERE UserName = user_name;
     ELSE 
-        SET @error = "Username cannot be null.";
+        SET @error = 'Username cannot be null.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     END IF;
 END $$
@@ -1966,11 +1917,10 @@ CREATE PROCEDURE query_transit_by_pk(in route_ varchar(20), in transport_type va
 -- route, transport type
 BEGIN   
      
-     
     IF length(route_) > 0  AND length(transport_type) > 0 THEN
         SELECT  Route, TransportType, Price, SiteName FROM Connects JOIN Transit USING(Route, TransportType) WHERE Route = route_ AND TransportType = transport_type;
     ELSE 
-        SET @error = "Username cannot be null.";
+        SET @error = 'Username cannot be null.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     END IF;
 END $$
@@ -1982,11 +1932,10 @@ CREATE PROCEDURE query_staff_by_event (in site_name varchar(50), in event_name v
 -- site name, event name, start date
 BEGIN
      
-     
-    IF length(site_name) > 0 AND length(event_name) > 0 AND start_date != "0000-00-00" THEN
-        SELECT StaffName, SiteName FROM AssignTo WHERE SiteName = site_name AND EventName = event_date AND StartDate = start_date;
+    IF length(site_name) > 0 AND length(event_name) > 0 AND start_date != '0000-00-00' THEN
+        SELECT StaffName, SiteName FROM AssignTo WHERE SiteName = site_name AND EventName = event_name AND StartDate = start_date;
     ELSE 
-        SET @error = "Primary key cannot have null value.";
+        SET @error = 'Primary key cannot have null value.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     END IF;
 END $$
@@ -1995,11 +1944,10 @@ END $$
 CREATE PROCEDURE query_transit_by_site(in site_name varchar(50) )
 BEGIN
      
-     
     IF length(site_name) > 0 THEN 
         SELECT Route, TransportType, Price FROM Transit JOIN Connects USING(Route, TransportType) WHERE SiteName = site_name;
     ELSE 
-        SET @error = "Site name cannot be null.";
+        SET @error = 'Site name cannot be null.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     END IF;
 END $$
@@ -2010,177 +1958,172 @@ BEGIN
     SELECT Route, TransportType, Price, count(*) AS CountSite FROM Transit JOIN Connects USING(TransportType, Route) Group BY TransportType, Route;
 END $$
 
-
-
-CREATE PROCEDURE get_all_sites() 
-BEGIN
-    SELECT SiteName, ZipCode, Address, (EveryDay - 1) AS OpenEveryDay, ManagerName FROM Site;
-END $$
+DELIMITER ;
 
 DELIMITER ;
 
 USE atlbeltline;
 
-CALL register_user("james.smith", "jsmith123", "James", "Smith", 0 );
-CALL manage_user("james.smith", "APPROVED" );
-CALL register_user("michael.smith", "msmith456", "Michael", "Smith", 1 );
-CALL manage_user("michael.smith", "APPROVED" );
-CALL register_user("robert.smith", "rsmith789", "Robert ", "Smith", 0 );
-CALL manage_user("robert.smith", "APPROVED" );
-CALL register_user("maria.garcia", "mgarcia123", "Maria", "Garcia", 1 );
-CALL manage_user("maria.garcia", "APPROVED" );
-CALL register_user("david.smith", "dsmith456", "David", "Smith", 0 );
-CALL manage_user("david.smith", "APPROVED" );
-CALL register_user("manager1", "manager1", "Manager", "One", 0 );
-CALL register_user("manager2", "manager2", "Manager", "Two", 1 );
-CALL manage_user("manager2", "APPROVED" );
-CALL register_user("manager3", "manager3", "Manager", "Three", 0 );
-CALL manage_user("manager3", "APPROVED" );
-CALL register_user("manager4", "manager4", "Manager", "Four", 1 );
-CALL manage_user("manager4", "APPROVED" );
-CALL register_user("manager5", "manager5", "Manager", "Five", 1 );
-CALL manage_user("manager5", "APPROVED" );
-CALL register_user("maria.rodriguez", "mrodriguez", "Maria", "Rodriguez", 1 );
-CALL manage_user("maria.rodriguez", "DENIED" );
-CALL register_user("mary.smith", "msmith789", "Mary", "Smith", 1 );
-CALL manage_user("mary.smith", "APPROVED" );
-CALL register_user("maria.hernandez", "mhernandez", "Maria", "Hernandez", 1 );
-CALL manage_user("maria.hernandez", "APPROVED" );
-CALL register_user("staff1", "staff1234", "Staff", "One", 0 );
-CALL manage_user("staff1", "APPROVED" );
-CALL register_user("staff2", "staff4567", "Staff", "Two", 1 );
-CALL manage_user("staff2", "APPROVED" );
-CALL register_user("staff3", "staff7890", "Staff", "Three", 1 );
-CALL manage_user("staff3", "APPROVED" );
-CALL register_user("user1", "user123456", "User", "One", 0 );
-CALL register_user("visitor1", "visitor123", "Visitor", "One", 1 );
-CALL manage_user("visitor1", "APPROVED" );
+CALL register_user('james.smith', 'jsmith123', 'James', 'Smith', 0 );
+CALL manage_user('james.smith', 'APPROVED' );
+CALL register_user('michael.smith', 'msmith456', 'Michael', 'Smith', 1 );
+CALL manage_user('michael.smith', 'APPROVED' );
+CALL register_user('robert.smith', 'rsmith789', 'Robert ', 'Smith', 0 );
+CALL manage_user('robert.smith', 'APPROVED' );
+CALL register_user('maria.garcia', 'mgarcia123', 'Maria', 'Garcia', 1 );
+CALL manage_user('maria.garcia', 'APPROVED' );
+CALL register_user('david.smith', 'dsmith456', 'David', 'Smith', 0 );
+CALL manage_user('david.smith', 'APPROVED' );
+CALL register_user('manager1', 'manager1', 'Manager', 'One', 0 );
+CALL register_user('manager2', 'manager2', 'Manager', 'Two', 1 );
+CALL manage_user('manager2', 'APPROVED' );
+CALL register_user('manager3', 'manager3', 'Manager', 'Three', 0 );
+CALL manage_user('manager3', 'APPROVED' );
+CALL register_user('manager4', 'manager4', 'Manager', 'Four', 1 );
+CALL manage_user('manager4', 'APPROVED' );
+CALL register_user('manager5', 'manager5', 'Manager', 'Five', 1 );
+CALL manage_user('manager5', 'APPROVED' );
+CALL register_user('maria.rodriguez', 'mrodriguez', 'Maria', 'Rodriguez', 1 );
+CALL manage_user('maria.rodriguez', 'DENIED' );
+CALL register_user('mary.smith', 'msmith789', 'Mary', 'Smith', 1 );
+CALL manage_user('mary.smith', 'APPROVED' );
+CALL register_user('maria.hernandez', 'mhernandez', 'Maria', 'Hernandez', 1 );
+CALL manage_user('maria.hernandez', 'APPROVED' );
+CALL register_user('staff1', 'staff1234', 'Staff', 'One', 0 );
+CALL manage_user('staff1', 'APPROVED' );
+CALL register_user('staff2', 'staff4567', 'Staff', 'Two', 1 );
+CALL manage_user('staff2', 'APPROVED' );
+CALL register_user('staff3', 'staff7890', 'Staff', 'Three', 1 );
+CALL manage_user('staff3', 'APPROVED' );
+CALL register_user('user1', 'user123456', 'User', 'One', 0 );
+CALL register_user('visitor1', 'visitor123', 'Visitor', 'One', 1 );
+CALL manage_user('visitor1', 'APPROVED' );
 
-CALL add_email("james.smith", "jsmith@gmail.com" );
-CALL add_email("james.smith", "jsmith@hotmail.com" );
-CALL add_email("james.smith", "jsmith@gatech.edu" );
-CALL add_email("james.smith", "jsmith@outlook.com" );
-CALL add_email("michael.smith", "msmith@gmail.com" );
-CALL add_email("robert.smith", "rsmith@hotmail.com" );
-CALL add_email("maria.garcia", "mgarcia@yahoo.com" );
-CALL add_email("maria.garcia", "mgarcia@gatech.edu" );
-CALL add_email("david.smith", "dsmith@outlook.com" );
-CALL add_email("maria.rodriguez", "mrodriguez@gmail.com" );
-CALL add_email("mary.smith", "mary@outlook.com" );
-CALL add_email("maria.hernandez", "mh@gatech.edu" );
-CALL add_email("maria.hernandez", "mh123@gmail.com" );
-CALL add_email("manager1", "m1@beltline.com" );
-CALL add_email("manager2", "m2@beltline.com" );
-CALL add_email("manager3", "m3@beltline.com" );
-CALL add_email("manager4", "m4@beltline.com" );
-CALL add_email("manager5", "m5@beltline.com" );
-CALL add_email("staff1", "s1@beltline.com" );
-CALL add_email("staff2", "s2@beltline.com" );
-CALL add_email("staff3", "s3@beltline.com" );
-CALL add_email("user1", "u1@beltline.com" );
-CALL add_email("visitor1", "v1@beltline.com" );
+CALL add_email('james.smith', 'jsmith@gmail.com' );
+CALL add_email('james.smith', 'jsmith@hotmail.com' );
+CALL add_email('james.smith', 'jsmith@gatech.edu' );
+CALL add_email('james.smith', 'jsmith@outlook.com' );
+CALL add_email('michael.smith', 'msmith@gmail.com' );
+CALL add_email('robert.smith', 'rsmith@hotmail.com' );
+CALL add_email('maria.garcia', 'mgarcia@yahoo.com' );
+CALL add_email('maria.garcia', 'mgarcia@gatech.edu' );
+CALL add_email('david.smith', 'dsmith@outlook.com' );
+CALL add_email('maria.rodriguez', 'mrodriguez@gmail.com' );
+CALL add_email('mary.smith', 'mary@outlook.com' );
+CALL add_email('maria.hernandez', 'mh@gatech.edu' );
+CALL add_email('maria.hernandez', 'mh123@gmail.com' );
+CALL add_email('manager1', 'm1@beltline.com' );
+CALL add_email('manager2', 'm2@beltline.com' );
+CALL add_email('manager3', 'm3@beltline.com' );
+CALL add_email('manager4', 'm4@beltline.com' );
+CALL add_email('manager5', 'm5@beltline.com' );
+CALL add_email('staff1', 's1@beltline.com' );
+CALL add_email('staff2', 's2@beltline.com' );
+CALL add_email('staff3', 's3@beltline.com' );
+CALL add_email('user1', 'u1@beltline.com' );
+CALL add_email('visitor1', 'v1@beltline.com' );
 
-INSERT INTO Employee VALUES("james.smith", "000000001", "4043721234", "123 East Main Street", "Rochester", "NY", "14604", 1);
-CALL register_employee_aft("michael.smith", "000000002", "4043726789", "350 Ferst Drive", "Atlanta", "GA", "30332", "STAFF" );
-CALL register_employee_aft("robert.smith", "000000003", "1234567890", "123 East Main Street", "Columbus", "OH", "43215", "STAFF" );
-CALL register_employee_aft("maria.garcia", "000000004", "7890123456", "123 East Main Street", "Richland", "PA", "17987", "MANAGER" );
-CALL register_employee_aft("david.smith", "000000005", "5124776435", "350 Ferst Drive", "Atlanta", "GA", "30332", "MANAGER" );
-CALL register_employee_aft("manager1", "000000006", "8045126767", "123 East Main Street", "Rochester", "NY", "14604", "MANAGER" );
-CALL register_employee_aft("manager2", "000000007", "9876543210", "123 East Main Street", "Rochester", "NY", "14604", "MANAGER" );
-CALL register_employee_aft("manager3", "000000008", "5432167890", "350 Ferst Drive", "Atlanta", "GA", "30332", "MANAGER" );
-CALL register_employee_aft("manager4", "000000009", "8053467565", "123 East Main Street", "Columbus", "OH", "43215", "MANAGER" );
-CALL register_employee_aft("manager5", "000000010", "8031446782", "801 Atlantic Drive", "Atlanta", "GA", "30332", "MANAGER" );
-CALL register_employee_aft("staff1", "000000011", "8024456765", "266 Ferst Drive Northwest", "Atlanta", "GA", "30332", "STAFF" );
-CALL register_employee_aft("staff2", "000000012", "8888888888", "266 Ferst Drive Northwest", "Atlanta", "GA", "30332", "STAFF" );
-CALL register_employee_aft("staff3", "000000013", "3333333333", "801 Atlantic Drive", "Atlanta", "GA", "30332", "STAFF" );
+INSERT INTO Employee VALUES('james.smith', '000000001', '4043721234', '123 East Main Street', 'Rochester', 'NY', '14604', 1);
+CALL register_employee_aft('michael.smith', '000000002', '4043726789', '350 Ferst Drive', 'Atlanta', 'GA', '30332', 'STAFF' );
+CALL register_employee_aft('robert.smith', '000000003', '1234567890', '123 East Main Street', 'Columbus', 'OH', '43215', 'STAFF' );
+CALL register_employee_aft('maria.garcia', '000000004', '7890123456', '123 East Main Street', 'Richland', 'PA', '17987', 'MANAGER' );
+CALL register_employee_aft('david.smith', '000000005', '5124776435', '350 Ferst Drive', 'Atlanta', 'GA', '30332', 'MANAGER' );
+CALL register_employee_aft('manager1', '000000006', '8045126767', '123 East Main Street', 'Rochester', 'NY', '14604', 'MANAGER' );
+CALL register_employee_aft('manager2', '000000007', '9876543210', '123 East Main Street', 'Rochester', 'NY', '14604', 'MANAGER' );
+CALL register_employee_aft('manager3', '000000008', '5432167890', '350 Ferst Drive', 'Atlanta', 'GA', '30332', 'MANAGER' );
+CALL register_employee_aft('manager4', '000000009', '8053467565', '123 East Main Street', 'Columbus', 'OH', '43215', 'MANAGER' );
+CALL register_employee_aft('manager5', '000000010', '8031446782', '801 Atlantic Drive', 'Atlanta', 'GA', '30332', 'MANAGER' );
+CALL register_employee_aft('staff1', '000000011', '8024456765', '266 Ferst Drive Northwest', 'Atlanta', 'GA', '30332', 'STAFF' );
+CALL register_employee_aft('staff2', '000000012', '8888888888', '266 Ferst Drive Northwest', 'Atlanta', 'GA', '30332', 'STAFF' );
+CALL register_employee_aft('staff3', '000000013', '3333333333', '801 Atlantic Drive', 'Atlanta', 'GA', '30332', 'STAFF' );
 	
-CALL create_site("Piedmont Park", "30306", "400 Park Drive Northeast", "manager2", 1 );
-CALL create_site("Atlanta Beltline Center", "30307", "112 Krog Street Northeast", "manager3", 0 );
-CALL create_site("Historic Fourth Ward Park", "30308", "680 Dallas Street Northeast", "manager4", 1 );
-CALL create_site("Westview Cemetery", "30310", "1680 Westview Drive Southwest", "manager5", 0 );
-CALL create_site("Inman Park", "30307", "", "david.smith", 1 );
+CALL create_site('Piedmont Park', '30306', '400 Park Drive Northeast', 'manager2', 1 );
+CALL create_site('Atlanta Beltline Center', '30307', '112 Krog Street Northeast', 'manager3', 0 );
+CALL create_site('Historic Fourth Ward Park', '30308', '680 Dallas Street Northeast', 'manager4', 1 );
+CALL create_site('Westview Cemetery', '30310', '1680 Westview Drive Southwest', 'manager5', 0 );
+CALL create_site('Inman Park', '30307', '', 'david.smith', 1 );
 
-CALL create_event("Piedmont Park", "Eastside Trail", "2019-02-04", "2019-02-05", 1, 0.00, 99999, "A combination of multi-use trail and linear greenspace, the Eastside Trail was the first finished section of the Atlanta BeltLine trail in the old rail corridor. The Eastside Trail, which was funded by a combination of public and private philanthropic sources, runs from the tip of Piedmont Park to Reynoldstown. More details at https://beltline.org/explore-atlanta-beltline-trails/eastside-trail/" );
-CALL create_event("Inman Park", "Eastside Trail", "2019-02-04", "2019-02-05", 1, 0.00, 99999, "A combination of multi-use trail and linear greenspace, the Eastside Trail was the first finished section of the Atlanta BeltLine trail in the old rail corridor. The Eastside Trail, which was funded by a combination of public and private philanthropic sources, runs from the tip of Piedmont Park to Reynoldstown. More details at https://beltline.org/explore-atlanta-beltline-trails/eastside-trail/" );
-CALL create_event("Inman Park", "Eastside Trail", "2019-03-01", "2019-03-02", 1, 0.00, 99999, "A combination of multi-use trail and linear greenspace, the Eastside Trail was the first finished section of the Atlanta BeltLine trail in the old rail corridor. The Eastside Trail, which was funded by a combination of public and private philanthropic sources, runs from the tip of Piedmont Park to Reynoldstown. More details at https://beltline.org/explore-atlanta-beltline-trails/eastside-trail/" );
-CALL create_event("Historic Fourth Ward Park", "Eastside Trail", "2019-02-13", "2019-02-14", 1, 0.00, 99999, "A combination of multi-use trail and linear greenspace, the Eastside Trail was the first finished section of the Atlanta BeltLine trail in the old rail corridor. The Eastside Trail, which was funded by a combination of public and private philanthropic sources, runs from the tip of Piedmont Park to Reynoldstown. More details at https://beltline.org/explore-atlanta-beltline-trails/eastside-trail/" );
-CALL create_event("Westview Cemetery", "Westside Trail", "2019-02-18", "2019-02-21", 1, 0.00, 99999, "The Westside Trail is a free amenity that offers a bicycle and pedestrian-safe corridor with a 14-foot-wide multi-use trail surrounded by mature trees and grasses thanks to Trees Atlanta’s Arboretum. With 16 points of entry, 14 of which will be ADA-accessible with ramp and stair systems, the trail provides numerous access points for people of all abilities. More details at: https://beltline.org/explore-atlanta-beltline-trails/westside-trail/" );
-CALL create_event("Inman Park", "Bus Tour", "2019-02-01", "2019-02-02", 2, 25.00, 6, "The Atlanta BeltLine Partnership’s tour program operates with a natural gas-powered, ADA accessible tour bus funded through contributions from 10th & Monroe, LLC, SunTrust Bank Trusteed Foundations – Florence C. and Harry L. English Memorial Fund and Thomas Guy Woolford Charitable Trust, and AGL Resources" );
-CALL create_event("Inman Park", "Bus Tour", "2019-02-08", "2019-02-10", 2, 25.00, 6, "The Atlanta BeltLine Partnership’s tour program operates with a natural gas-powered, ADA accessible tour bus funded through contributions from 10th & Monroe, LLC, SunTrust Bank Trusteed Foundations – Florence C. and Harry L. English Memorial Fund and Thomas Guy Woolford Charitable Trust, and AGL Resources" );
-CALL create_event("Inman Park", "Private Bus Tour", "2019-02-01", "2019-02-02", 1, 40.00, 4, "Private tours are available most days, pending bus and tour guide availability. Private tours can accommodate up to 4 guests per tour, and are subject to a tour fee (nonprofit rates are available). As a nonprofit organization with limited resources, we are unable to offer free private tours. We thank you for your support and your understanding as we try to provide as many private group tours as possible. The Atlanta BeltLine Partnership’s tour program operates with a natural gas-powered, ADA accessible tour bus funded through contributions from 10th & Monroe, LLC, SunTrust Bank Trusteed Foundations – Florence C. and Harry L. English Memorial Fund and Thomas Guy Woolford Charitable Trust, and AGL Resources" );
-CALL create_event("Inman Park", "Arboretum Walking Tour", "2019-02-08", "2019-02-11", 1, 5.00, 5, "Official Atlanta BeltLine Arboretum Walking Tours provide an up-close view of the Westside Trail and the Atlanta BeltLine Arboretum led by Trees Atlanta Docents. The one and a half hour tours step off at at 10am (Oct thru May), and 9am (June thru September). Departure for all tours is from Rose Circle Park near Brown Middle School. More details at: https://beltline.org/visit/atlanta-beltline-tours/#arboretum-walking" );
-CALL create_event("Inman Park", "Official Atlanta BeltLine Bike Tour", "2019-02-09", "2019-02-14", 1, 5.00, 5, "These tours will include rest stops highlighting assets and points of interest along the Atlanta BeltLine. Staff will lead the rides, and each group will have a ride sweep to help with any unexpected mechanical difficulties." );
+CALL create_event('Piedmont Park', 'Eastside Trail', '2019-02-04', '2019-02-05', 1, 0.00, 99999, 'A combination of multi-use trail and linear greenspace, the Eastside Trail was the first finished section of the Atlanta BeltLine trail in the old rail corridor. The Eastside Trail, which was funded by a combination of public and private philanthropic sources, runs from the tip of Piedmont Park to Reynoldstown. More details at https://beltline.org/explore-atlanta-beltline-trails/eastside-trail/' );
+CALL create_event('Inman Park', 'Eastside Trail', '2019-02-04', '2019-02-05', 1, 0.00, 99999, 'A combination of multi-use trail and linear greenspace, the Eastside Trail was the first finished section of the Atlanta BeltLine trail in the old rail corridor. The Eastside Trail, which was funded by a combination of public and private philanthropic sources, runs from the tip of Piedmont Park to Reynoldstown. More details at https://beltline.org/explore-atlanta-beltline-trails/eastside-trail/' );
+CALL create_event('Inman Park', 'Eastside Trail', '2019-03-01', '2019-03-02', 1, 0.00, 99999, 'A combination of multi-use trail and linear greenspace, the Eastside Trail was the first finished section of the Atlanta BeltLine trail in the old rail corridor. The Eastside Trail, which was funded by a combination of public and private philanthropic sources, runs from the tip of Piedmont Park to Reynoldstown. More details at https://beltline.org/explore-atlanta-beltline-trails/eastside-trail/' );
+CALL create_event('Historic Fourth Ward Park', 'Eastside Trail', '2019-02-13', '2019-02-14', 1, 0.00, 99999, 'A combination of multi-use trail and linear greenspace, the Eastside Trail was the first finished section of the Atlanta BeltLine trail in the old rail corridor. The Eastside Trail, which was funded by a combination of public and private philanthropic sources, runs from the tip of Piedmont Park to Reynoldstown. More details at https://beltline.org/explore-atlanta-beltline-trails/eastside-trail/' );
+CALL create_event('Westview Cemetery', 'Westside Trail', '2019-02-18', '2019-02-21', 1, 0.00, 99999, 'The Westside Trail is a free amenity that offers a bicycle and pedestrian-safe corridor with a 14-foot-wide multi-use trail surrounded by mature trees and grasses thanks to Trees Atlanta’s Arboretum. With 16 points of entry, 14 of which will be ADA-accessible with ramp and stair systems, the trail provides numerous access points for people of all abilities. More details at: https://beltline.org/explore-atlanta-beltline-trails/westside-trail/' );
+CALL create_event('Inman Park', 'Bus Tour', '2019-02-01', '2019-02-02', 2, 25.00, 6, 'The Atlanta BeltLine Partnership’s tour program operates with a natural gas-powered, ADA accessible tour bus funded through contributions from 10th & Monroe, LLC, SunTrust Bank Trusteed Foundations – Florence C. and Harry L. English Memorial Fund and Thomas Guy Woolford Charitable Trust, and AGL Resources' );
+CALL create_event('Inman Park', 'Bus Tour', '2019-02-08', '2019-02-10', 2, 25.00, 6, 'The Atlanta BeltLine Partnership’s tour program operates with a natural gas-powered, ADA accessible tour bus funded through contributions from 10th & Monroe, LLC, SunTrust Bank Trusteed Foundations – Florence C. and Harry L. English Memorial Fund and Thomas Guy Woolford Charitable Trust, and AGL Resources' );
+CALL create_event('Inman Park', 'Private Bus Tour', '2019-02-01', '2019-02-02', 1, 40.00, 4, 'Private tours are available most days, pending bus and tour guide availability. Private tours can accommodate up to 4 guests per tour, and are subject to a tour fee (nonprofit rates are available). As a nonprofit organization with limited resources, we are unable to offer free private tours. We thank you for your support and your understanding as we try to provide as many private group tours as possible. The Atlanta BeltLine Partnership’s tour program operates with a natural gas-powered, ADA accessible tour bus funded through contributions from 10th & Monroe, LLC, SunTrust Bank Trusteed Foundations – Florence C. and Harry L. English Memorial Fund and Thomas Guy Woolford Charitable Trust, and AGL Resources' );
+CALL create_event('Inman Park', 'Arboretum Walking Tour', '2019-02-08', '2019-02-11', 1, 5.00, 5, 'Official Atlanta BeltLine Arboretum Walking Tours provide an up-close view of the Westside Trail and the Atlanta BeltLine Arboretum led by Trees Atlanta Docents. The one and a half hour tours step off at at 10am (Oct thru May), and 9am (June thru September). Departure for all tours is from Rose Circle Park near Brown Middle School. More details at: https://beltline.org/visit/atlanta-beltline-tours/#arboretum-walking' );
+CALL create_event('Inman Park', 'Official Atlanta BeltLine Bike Tour', '2019-02-09', '2019-02-14', 1, 5.00, 5, 'These tours will include rest stops highlighting assets and points of interest along the Atlanta BeltLine. Staff will lead the rides, and each group will have a ride sweep to help with any unexpected mechanical difficulties.' );
 
-CALL create_transit("MARTA", "Blue", 2.00 );
-CALL create_transit("BUS", "152", 2.00 );
-CALL create_transit("BIKE", "Relay", 1.00 );
+CALL create_transit('MARTA', 'Blue', 2.00 );
+CALL create_transit('BUS', '152', 2.00 );
+CALL create_transit('BIKE', 'Relay', 1.00 );
 
-CALL connect_site("MARTA", "Blue", "Inman Park" );
-CALL connect_site("MARTA", "Blue", "Piedmont Park" );
-CALL connect_site("MARTA", "Blue", "Historic Fourth Ward Park" );
-CALL connect_site("MARTA", "Blue", "Westview Cemetery" );
-CALL connect_site("BUS", "152", "Inman Park" );
-CALL connect_site("BUS", "152", "Piedmont Park" );
-CALL connect_site("BUS", "152", "Historic Fourth Ward Park" );
-CALL connect_site("BIKE", "Relay", "Piedmont Park" );
-CALL connect_site("BIKE", "Relay", "Historic Fourth Ward Park" );
+CALL connect_site('MARTA', 'Blue', 'Inman Park' );
+CALL connect_site('MARTA', 'Blue', 'Piedmont Park' );
+CALL connect_site('MARTA', 'Blue', 'Historic Fourth Ward Park' );
+CALL connect_site('MARTA', 'Blue', 'Westview Cemetery' );
+CALL connect_site('BUS', '152', 'Inman Park' );
+CALL connect_site('BUS', '152', 'Piedmont Park' );
+CALL connect_site('BUS', '152', 'Historic Fourth Ward Park' );
+CALL connect_site('BIKE', 'Relay', 'Piedmont Park' );
+CALL connect_site('BIKE', 'Relay', 'Historic Fourth Ward Park' );
 
-CALL take_transit("manager2", "Blue", "MARTA", "2019-03-20" );
-CALL take_transit("manager2", "152", "BUS", "2019-03-20" );
-CALL take_transit("manager3", "Relay", "BIKE", "2019-03-20" );
-CALL take_transit("manager2", "Blue", "MARTA", "2019-03-21" );
-CALL take_transit("maria.hernandez", "152", "BUS", "2019-03-20" );
-CALL take_transit("maria.hernandez", "Relay", "BIKE", "2019-03-20" );
-CALL take_transit("manager2", "Blue", "MARTA", "2019-03-22" );
-CALL take_transit("maria.hernandez", "152", "BUS", "2019-03-22" );
-CALL take_transit("mary.smith", "Relay", "BIKE", "2019-03-23" );
-CALL take_transit("visitor1", "Blue", "MARTA", "2019-03-21" );
+CALL take_transit('manager2', 'Blue', 'MARTA', '2019-03-20' );
+CALL take_transit('manager2', '152', 'BUS', '2019-03-20' );
+CALL take_transit('manager3', 'Relay', 'BIKE', '2019-03-20' );
+CALL take_transit('manager2', 'Blue', 'MARTA', '2019-03-21' );
+CALL take_transit('maria.hernandez', '152', 'BUS', '2019-03-20' );
+CALL take_transit('maria.hernandez', 'Relay', 'BIKE', '2019-03-20' );
+CALL take_transit('manager2', 'Blue', 'MARTA', '2019-03-22' );
+CALL take_transit('maria.hernandez', '152', 'BUS', '2019-03-22' );
+CALL take_transit('mary.smith', 'Relay', 'BIKE', '2019-03-23' );
+CALL take_transit('visitor1', 'Blue', 'MARTA', '2019-03-21' );
 
-CALL assign_staff("Piedmont Park", "Eastside Trail", "2019-02-04", "michael.smith" );
-CALL assign_staff("Piedmont Park", "Eastside Trail", "2019-02-04", "staff1" );
-CALL assign_staff("Inman Park", "Eastside Trail", "2019-02-04", "robert.smith" );
-CALL assign_staff("Inman Park", "Eastside Trail", "2019-02-04", "staff2" );
-CALL assign_staff("Inman Park", "Eastside Trail", "2019-03-01", "staff1" );
-CALL assign_staff("Historic Fourth Ward Park", "Eastside Trail", "2019-02-13", "michael.smith" );
-CALL assign_staff("Westview Cemetery", "Westside Trail", "2019-02-18", "staff1" );
-CALL assign_staff("Westview Cemetery", "Westside Trail", "2019-02-18", "staff3" );
-CALL assign_staff("Inman Park", "Bus Tour", "2019-02-01", "michael.smith" );
-CALL assign_staff("Inman Park", "Bus Tour", "2019-02-01", "staff2" );
-CALL assign_staff("Inman Park", "Bus Tour", "2019-02-08", "robert.smith" );
-CALL assign_staff("Inman Park", "Bus Tour", "2019-02-08", "michael.smith" );
-CALL assign_staff("Inman Park", "Private Bus Tour", "2019-02-01", "robert.smith" );
-CALL assign_staff("Inman Park", "Arboretum Walking Tour", "2019-02-08", "staff3" );
-CALL assign_staff("Inman Park", "Official Atlanta BeltLine Bike Tour", "2019-02-09", "staff1" );
+CALL assign_staff('Piedmont Park', 'Eastside Trail', '2019-02-04', 'michael.smith' );
+CALL assign_staff('Piedmont Park', 'Eastside Trail', '2019-02-04', 'staff1' );
+CALL assign_staff('Inman Park', 'Eastside Trail', '2019-02-04', 'robert.smith' );
+CALL assign_staff('Inman Park', 'Eastside Trail', '2019-02-04', 'staff2' );
+CALL assign_staff('Inman Park', 'Eastside Trail', '2019-03-01', 'staff1' );
+CALL assign_staff('Historic Fourth Ward Park', 'Eastside Trail', '2019-02-13', 'michael.smith' );
+CALL assign_staff('Westview Cemetery', 'Westside Trail', '2019-02-18', 'staff1' );
+CALL assign_staff('Westview Cemetery', 'Westside Trail', '2019-02-18', 'staff3' );
+CALL assign_staff('Inman Park', 'Bus Tour', '2019-02-01', 'michael.smith' );
+CALL assign_staff('Inman Park', 'Bus Tour', '2019-02-01', 'staff2' );
+CALL assign_staff('Inman Park', 'Bus Tour', '2019-02-08', 'robert.smith' );
+CALL assign_staff('Inman Park', 'Bus Tour', '2019-02-08', 'michael.smith' );
+CALL assign_staff('Inman Park', 'Private Bus Tour', '2019-02-01', 'robert.smith' );
+CALL assign_staff('Inman Park', 'Arboretum Walking Tour', '2019-02-08', 'staff3' );
+CALL assign_staff('Inman Park', 'Official Atlanta BeltLine Bike Tour', '2019-02-09', 'staff1' );
 
-CALL log_event("Historic Fourth Ward Park", "Eastside Trail", "2019-02-13", "mary.smith", "2019-02-13" );
-CALL log_event("Historic Fourth Ward Park", "Eastside Trail", "2019-02-13", "mary.smith", "2019-02-14" );
-CALL log_event("Historic Fourth Ward Park", "Eastside Trail", "2019-02-13", "visitor1", "2019-02-14" );
-CALL log_event("Inman Park", "Official Atlanta BeltLine Bike Tour", "2019-02-09", "visitor1", "2019-02-10" );
-CALL log_event("Inman Park", "Bus Tour", "2019-02-01", "mary.smith", "2019-02-01" );
-CALL log_event("Inman Park", "Bus Tour", "2019-02-01", "maria.garcia", "2019-02-02" );
-CALL log_event("Inman Park", "Bus Tour", "2019-02-01", "manager2", "2019-02-02" );
-CALL log_event("Inman Park", "Bus Tour", "2019-02-01", "manager4", "2019-02-01" );
-CALL log_event("Inman Park", "Bus Tour", "2019-02-01", "manager5", "2019-02-02" );
-CALL log_event("Inman Park", "Bus Tour", "2019-02-01", "staff2", "2019-02-02" );
-CALL log_event("Inman Park", "Private Bus Tour", "2019-02-01", "mary.smith", "2019-02-01" );
-CALL log_event("Inman Park", "Private Bus Tour", "2019-02-01", "mary.smith", "2019-02-02" );
-CALL log_event("Inman Park", "Official Atlanta BeltLine Bike Tour", "2019-02-09", "mary.smith", "2019-02-10" );
-CALL log_event("Inman Park", "Arboretum Walking Tour", "2019-02-08", "mary.smith", "2019-02-10" );
-CALL log_event("Piedmont Park", "Eastside Trail", "2019-02-04", "mary.smith", "2019-02-04" );
-CALL log_event("Westview Cemetery", "Westside Trail", "2019-02-18", "mary.smith", "2019-02-19" );
-CALL log_event("Westview Cemetery", "Westside Trail", "2019-02-18", "visitor1", "2019-02-19" );
+CALL log_event('Historic Fourth Ward Park', 'Eastside Trail', '2019-02-13', 'mary.smith', '2019-02-13' );
+CALL log_event('Historic Fourth Ward Park', 'Eastside Trail', '2019-02-13', 'mary.smith', '2019-02-14' );
+CALL log_event('Historic Fourth Ward Park', 'Eastside Trail', '2019-02-13', 'visitor1', '2019-02-14' );
+CALL log_event('Inman Park', 'Official Atlanta BeltLine Bike Tour', '2019-02-09', 'visitor1', '2019-02-10' );
+CALL log_event('Inman Park', 'Bus Tour', '2019-02-01', 'mary.smith', '2019-02-01' );
+CALL log_event('Inman Park', 'Bus Tour', '2019-02-01', 'maria.garcia', '2019-02-02' );
+CALL log_event('Inman Park', 'Bus Tour', '2019-02-01', 'manager2', '2019-02-02' );
+CALL log_event('Inman Park', 'Bus Tour', '2019-02-01', 'manager4', '2019-02-01' );
+CALL log_event('Inman Park', 'Bus Tour', '2019-02-01', 'manager5', '2019-02-02' );
+CALL log_event('Inman Park', 'Bus Tour', '2019-02-01', 'staff2', '2019-02-02' );
+CALL log_event('Inman Park', 'Private Bus Tour', '2019-02-01', 'mary.smith', '2019-02-01' );
+CALL log_event('Inman Park', 'Private Bus Tour', '2019-02-01', 'mary.smith', '2019-02-02' );
+CALL log_event('Inman Park', 'Official Atlanta BeltLine Bike Tour', '2019-02-09', 'mary.smith', '2019-02-10' );
+CALL log_event('Inman Park', 'Arboretum Walking Tour', '2019-02-08', 'mary.smith', '2019-02-10' );
+CALL log_event('Piedmont Park', 'Eastside Trail', '2019-02-04', 'mary.smith', '2019-02-04' );
+CALL log_event('Westview Cemetery', 'Westside Trail', '2019-02-18', 'mary.smith', '2019-02-19' );
+CALL log_event('Westview Cemetery', 'Westside Trail', '2019-02-18', 'visitor1', '2019-02-19' );
 
-CALL log_site("Atlanta Beltline Center", "mary.smith", "2019-02-01" );
-CALL log_site("Atlanta Beltline Center", "mary.smith", "2019-02-10" );
-CALL log_site("Atlanta Beltline Center", "visitor1", "2019-02-13" );
-CALL log_site("Atlanta Beltline Center", "visitor1", "2019-02-09" );
-CALL log_site("Historic Fourth Ward Park", "mary.smith", "2019-02-02" );
-CALL log_site("Historic Fourth Ward Park", "visitor1", "2019-02-11" );
-CALL log_site("Inman Park", "mary.smith", "2019-02-01" );
-CALL log_site("Inman Park", "mary.smith", "2019-02-02" );
-CALL log_site("Inman Park", "mary.smith", "2019-02-03" );
-CALL log_site("Inman Park", "visitor1", "2019-02-01" );
-CALL log_site("Piedmont Park", "mary.smith", "2019-02-02" );
-CALL log_site("Piedmont Park", "visitor1", "2019-02-11" );
-CALL log_site("Piedmont Park", "visitor1", "2019-02-01" );
-CALL log_site("Westview Cemetery", "visitor1", "2019-02-06" );
+CALL log_site('Atlanta Beltline Center', 'mary.smith', '2019-02-01' );
+CALL log_site('Atlanta Beltline Center', 'mary.smith', '2019-02-10' );
+CALL log_site('Atlanta Beltline Center', 'visitor1', '2019-02-13' );
+CALL log_site('Atlanta Beltline Center', 'visitor1', '2019-02-09' );
+CALL log_site('Historic Fourth Ward Park', 'mary.smith', '2019-02-02' );
+CALL log_site('Historic Fourth Ward Park', 'visitor1', '2019-02-11' );
+CALL log_site('Inman Park', 'mary.smith', '2019-02-01' );
+CALL log_site('Inman Park', 'mary.smith', '2019-02-02' );
+CALL log_site('Inman Park', 'mary.smith', '2019-02-03' );
+CALL log_site('Inman Park', 'visitor1', '2019-02-01' );
+CALL log_site('Piedmont Park', 'mary.smith', '2019-02-02' );
+CALL log_site('Piedmont Park', 'visitor1', '2019-02-11' );
+CALL log_site('Piedmont Park', 'visitor1', '2019-02-01' );
+CALL log_site('Westview Cemetery', 'visitor1', '2019-02-06' );

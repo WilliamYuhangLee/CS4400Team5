@@ -173,9 +173,6 @@ BEGIN
 	IF (SELECT IsVisitor FROM Users WHERE UserName LIKE NEW.UserName LIMIT 1) LIKE 'No' THEN
 		SIGNAL SQLSTATE '45000' SET message_text = 'The user is not a visitor.';
 	END IF;
-    -- IF EXISTS(SELECT * FROM VisitSite WHERE SiteName = NEW.SiteName AND UserName = NEW.UserName AND `Date` = NEW.Date) THEN
-    --     DELETE FROM VisitSite WHERE SiteName = NEW.SiteName AND UserName = NEW.UserName AND `Date` = NEW.Date;
-    -- END IF;
 END $$
 
 
@@ -189,7 +186,6 @@ END $$
 
 
 -- Making sure that new visit date is between start and end date
--- Automatically add new row to VisitSite with the same user and same date
 CREATE TRIGGER tgr11_ve1 BEFORE INSERT ON VisitEvent FOR EACH ROW
 BEGIN
 	IF NEW.Date < NEW.StartDate THEN
@@ -201,10 +197,6 @@ BEGIN
 						AND StartDate = NEW.StartDate LIMIT 1) THEN
 		SIGNAL SQLSTATE '45000' SET message_text = 'Visiting after end date.';
 	END IF;
-    
-    IF NOT EXISTS(SELECT * FROM VisitSite WHERE UserName LIKE NEW.UserName AND SiteName LIKE NEW.SiteName AND `Date` = NEW.Date) THEN
-	   INSERT INTO VisitSite VALUES (NEW.UserName, NEW.SiteName, NEW.Date);
-    END IF;
 END $$
 
 
@@ -221,12 +213,6 @@ BEGIN
 						AND StartDate = NEW.StartDate) THEN
 		SIGNAL SQLSTATE '45000' SET message_text = 'Visiting after end date.';
 	END IF;
-
-	DELETE FROM VisitSite WHERE UserName LIKE OLD.UserName AND SiteName LIKE OLD.SiteName AND Date = OLD.Date;
-
-    IF NOT EXISTS(SELECT * FROM VisitSite WHERE UserName LIKE NEW.UserName AND SiteName LIKE NEW.SiteName AND `Date` = NEW.Date) THEN
-	   INSERT INTO VisitSite VALUES (NEW.UserName, NEW.SiteName, NEW.Date);
-    END IF;
 END $$
 
 
@@ -383,6 +369,9 @@ BEGIN
     IF OLD.Title != NEW.Title THEN
         SIGNAL SQLSTATE '45000' SET message_text = 'Cannot change the title of the employee.';
     END IF;
+    WHILE length(NEW.EmployeeID) < 9 DO
+        SET NEW.EmployeeID = concat('0', NEW.EmployeeID);
+    END WHILE;
 END $$
 
 
