@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 
 
 class Config(object):
@@ -6,6 +7,9 @@ class Config(object):
     # App
     APP_NAME = os.getenv("APP_NAME")
     SECRET_KEY = os.getenv("SECRET_KEY")
+
+    # Session
+    PERMANENT_SESSION_LIFETIME = timedelta(minutes=10)
 
     # Database
     MYSQL_HOST = os.getenv("MYSQL_HOST")

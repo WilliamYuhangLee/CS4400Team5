@@ -12,12 +12,6 @@ bcrypt = Bcrypt()
 login_manager = LoginManager()
 
 
-# Login Manager setup
-login_manager.login_view = "main.login"  # set view function for login (when login_required is triggered)
-login_manager.login_message = "You are now logged in."
-login_manager.login_message_category = "info"  # set login message style
-
-
 def create_app():
     """
     Factory method to create an app instance.
@@ -49,5 +43,12 @@ def create_app():
     app.register_blueprint(bp)
     from .staff import bp
     app.register_blueprint(bp)
+
+    # Login Manager setup
+    login_manager.login_view = "main.login"  # set view function for login (when login_required is triggered)
+    login_manager.login_message = "You are now logged in."
+    login_manager.login_message_category = "info"  # set login message style
+    from models import User
+    login_manager.user_callback = User.get_by_username
 
     return app

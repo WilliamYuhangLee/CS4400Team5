@@ -2,13 +2,7 @@ from enum import Enum
 
 from flask_login import UserMixin
 
-from app import login_manager
 from app.util import db_procedure, DatabaseError
-
-
-@login_manager.user_loader
-def load_user(user_id):
-    return User.get_by_username(user_id)
 
 
 class User(UserMixin):
@@ -78,6 +72,11 @@ class User(UserMixin):
 
     def is_employee(self) -> bool:
         return isinstance(self, Employee)
+
+    # Flask Login required functions
+    @property
+    def is_active(self):
+        return self.status is User.Status.APPROVED
 
     def get_id(self):
         return self.username
@@ -230,7 +229,8 @@ class Employee(User):
         if user is None:
             raise ValueError("Employee must be constructed with a valid User!")
         else:
-            super().__init__(user.username, user.password, user.first_name, user.last_name, user.is_visitor, user.status)
+            super().__init__(user.username, user.password, user.first_name, user.last_name, user.is_visitor,
+                             user.status)
 
         self.phone = phone
         self.address = address
