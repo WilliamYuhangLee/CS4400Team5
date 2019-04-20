@@ -1,6 +1,7 @@
 USE atlbeltline;
 DELIMITER $$
 
+
 -- change if the user is or not a visitor
 CREATE PROCEDURE switch_visitor(in user_name varchar(100), in new_visitor int)
 -- order of parameter
@@ -29,7 +30,7 @@ BEGIN
     DECLARE result varchar(100);     
 	
 	SET user_name = (SELECT UserName FROM Email WHERE EmailAddress LIKE email_address LIMIT 1);
-	IF length(user_name) <= 0 THEN 
+	IF NOT EXISTS(SELECT UserName FROM Email WHERE EmailAddress LIKE email_address LIMIT 1) THEN 
 		SET @error = 'Email address does not exist.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
 	ELSE
@@ -37,29 +38,13 @@ BEGIN
         SELECT result, email_address;
 	END IF;
 END $$
--- Correct way to call it
-
--- SET @a = '/*email address*/';
--- SET @b = '/*password after hashing*/';
--- CALL login(@a, @b);
-
--- Or
-
--- CALL login('/*email address*/', '/*password after hashing*/');
-
--- Then it will return the information about login
--- For the following procedures, if there is no need for further explanation,
--- there will not be a documentation.
-
 
 
 CREATE PROCEDURE register_user(in user_name varchar(50), in pass_word varchar(100), in first_name varchar(50), in last_name varchar(50), in is_visitor int ) 
 -- order of parameter
 -- username, password, firstname, lastname, is_visitor
 -- is_visitor's value shall be 0 or 1 (0 for 'Yes', 1 for 'No')
-BEGIN
-     
-     
+BEGIN    
     IF EXISTS(SELECT * FROM USERS WHERE UserName = user_name) THEN 
         SET @error = 'Username already exists.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
@@ -82,9 +67,7 @@ CREATE PROCEDURE register_employee(in user_name varchar(50), in phone_ char(10),
 -- username, phone, city, address, state, zipcode, employee type
 -- state's value shall be the abbreviation of states in uppercase or be 'other'
 -- this procedure require a register_user() to be called before it
-BEGIN
-     
-         
+BEGIN  
     IF title_ = 'ADMINISTRATOR' THEN 
         SET @error = 'Cannot create administrator.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
@@ -99,8 +82,7 @@ CREATE PROCEDURE register_employee_aft(in user_name varchar(50), in employee_id 
 -- username, employee id, phone, address, city, state, zipcode, employee type
 -- state's value shall be the abbreviation of states in uppercase or be 'other'
 -- this procedure require a register_user() to be called before it
-BEGIN
-     
+BEGIN    
      
     IF title_ = 'ADMINISTRATOR' THEN 
         SET @error = 'Cannot create administrator.';
@@ -126,7 +108,6 @@ CREATE PROCEDURE delete_email(in email_address varchar(100) )
 BEGIN 
     DELETE FROM Email WHERE EmailAddress LIKE email_address;
 END $$
-
 
 
 CREATE PROCEDURE take_transit(in user_name varchar(50), in route_ varchar(20), in transport_type varchar(10), in take_date date )
@@ -163,7 +144,7 @@ BEGIN
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     ELSE
         UPDATE Users SET Status = status_ WHERE UserName = user_name;
-        IF EXISTS(SELECT * FROM Employee WHERE UserName = user_name) AND NOT EXISTS(SELECT EmployeeID FROM Employee WHERE UserName = user_name) AND status_ = 'APPROVED' THEN                
+        IF EXISTS(SELECT * FROM Employee WHERE UserName = user_name) AND status_ = 'APPROVED' THEN                
             SET em_id = 000000001;
             WHILE EXISTS(SELECT * FROM Employee WHERE EmployeeID = em_id) DO
                 SET em_id = em_id + 1;
@@ -190,9 +171,7 @@ CREATE PROCEDURE create_site(in site_name varchar(50), in zip_code varchar(5), i
 -- order of parameter
 -- site name, zipcode, address, manager name, if open everyday
 -- open_every_day's value shall be 0 or 1 (1 for yes, 0 for no)
-BEGIN
-     
-     
+BEGIN   
     SET open_every_day = open_every_day + 1;    
     INSERT INTO Site VALUES(site_name, zip_code, address_, open_every_day, manager_name);
 END $$
@@ -248,6 +227,10 @@ CREATE PROCEDURE edit_eventt(in site_name varchar(50), in event_name varchar(50)
 -- order of parameter
 -- site name, event name, start date, new discription
 BEGIN 
+    IF NOT EXISTS(SELECT * FROM Events WHERE SiteName = site_name AND EventName = event_name AND StartDate = start_date) THEN 
+        SET @error = 'This event does not exist.';
+    END IF;
+        SIGNAL SQLSTATE '45000' SET message_text = @error;
     UPDATE `Events` 
     SET Description = description_ 
     WHERE SiteName = site_name AND EventName = event_name AND StartDate = start_date;
@@ -376,8 +359,7 @@ BEGIN
         SELECT SiteName INTO site_name FROM Site WHERE ManagerName = user_name;
         SELECT site_name;
     ELSE 
-        SET @error = 'This user is not an employee.';
-        SIGNAL SQLSTATE '45000' SET message_text = @error;
+        SELECT "";
     END IF;    
 END $$
 
@@ -424,10 +406,15 @@ BEGIN
     
     SELECT UserName INTO user_name FROM Email WHERE EmailAddress = email_address;
     IF length(user_name) > 0 THEN 
-        SELECT EmployeeID, Phone, Address, City, State, ZipCode, Title 
-        INTO employee_id, phone_, address_, city_, state_, zip_code, title_ 
-        FROM Employee WHERE UserName = user_name;
-        SELECT user_name, phone_, address_, city_, state_, zip_code, title_, employee_id;
+        IF EXISTS(SELECT * FROM Employee WHERE UserName = user_name) THEN
+            SELECT EmployeeID, Phone, Address, City, State, ZipCode, Title 
+            INTO employee_id, phone_, address_, city_, state_, zip_code, title_ 
+            FROM Employee WHERE UserName = user_name;
+            SELECT user_name, phone_, address_, city_, state_, zip_code, title_, employee_id;
+        ELSE 
+            SET @error = 'This user is not an employee.';
+            SIGNAL SQLSTATE '45000' SET message_text = @error;
+        END IF;  
     ELSE 
         SET @error = 'This user does not exist.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
@@ -446,6 +433,7 @@ END $$
 CREATE PROCEDURE check_email(in email_address varchar(100))
 -- order of parameter
 -- email address, result
+-- 1 for you can insert, 0 for not
 BEGIN 
     DECLARE result int(1);
     IF EXISTS(SELECT UserName FROM Email WHERE EmailAddress = email_address LIMIT 1) THEN 
@@ -453,13 +441,14 @@ BEGIN
     ELSE
         SET result = 1;
     END IF;
-    SELECT result, 'place holder';
+    SELECT result;
 END $$
 
 
 CREATE PROCEDURE check_username(in user_name varchar(100))
 -- order of parameter
 -- user name, result
+-- 1 for you can insert, 0 for not
 BEGIN 
     DECLARE result int(1);
     IF EXISTS(SELECT UserName FROM Users WHERE UserName = user_name LIMIT 1) THEN 
@@ -467,13 +456,14 @@ BEGIN
     ELSE
         SET result = 1;
     END IF;
-    SELECT result, 'place holder';
+    SELECT result;
 END $$
 
 
 CREATE PROCEDURE check_status(in user_name varchar(100))
 -- order of parameter
 -- user name, result
+-- 1 for approved, 0 for other status
 BEGIN
     DECLARE result int(1);
      
@@ -482,7 +472,7 @@ BEGIN
     ELSE
         SET result = 0;
     END IF;
-    SELECT result, 'place holder';
+    SELECT result;
 END $$
 
 
@@ -496,8 +486,8 @@ BEGIN
     DECLARE manager_name varchar(100);
      
     IF length(site_name) > 0 THEN
-        SELECT ZipCode, Address, ManagerName INTO zip_code, address_, manager_name FROM Site WHERE SiteName = site_name;
-        IF length(ZipCode) > 1 THEN 
+        SELECT Zipcode, Address, ManagerName INTO zip_code, address_, manager_name FROM Site WHERE SiteName = site_name;
+        IF length(zip_code) > 1 THEN 
             SELECT zip_code, address_, manager_name;
         ELSE 
             SET @error = concat(site_name, ' does not exist.');
@@ -539,6 +529,7 @@ END $$
 CREATE PROCEDURE check_phone(in phone_ varchar(10))
 -- order of parameter
 -- phone
+-- 1 for you can insert, 0 for not
 BEGIN
     DECLARE result int;
     
@@ -547,7 +538,7 @@ BEGIN
     ELSE 
         SET result = 1;
     END IF;
-    SELECT result, phone_;
+    SELECT result;
 END $$
 
 
