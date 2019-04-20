@@ -11,19 +11,19 @@
                 Manage Profile
             </legend>
             <div class="form-group">
-                    {{ render_field(form.first_name)}}
+                {{ render_field(form.first_name)}}
             </div>
             <div class="form-group">
-                    {{ render_field(form.last_name)}}
+                {{ render_field(form.last_name)}}
             </div>
             <div class="form-group">
-                    {{ render_field(form.username)}}
+                {{ render_field(form.username)}}
             </div>
             <div class="form-group">
-                    {{ render_field(form.password)}}
+                {{ render_field(form.password)}}
             </div>
             <div class="form-group">
-                    {{ render_field(form.confirm_password)}}
+                {{ render_field(form.confirm_password)}}
             </div>
             <div class="form-group" id="container">
                 {% block container %}
@@ -46,7 +46,10 @@
                 {% endif %}
             </div>
             <div class="form-group">
-                    {{ render_field(form.checkbox_visitor_account)}}
+                {{ render_field(form.visitor)}}
+                <button type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#exampleModal">
+                    Confirm
+                </button>
             </div>
         </fieldset>
         <div class="form-group">
@@ -56,8 +59,30 @@
     <button type="button" class="btn btn-outline-info" href="javascript:history.back()">Back</button>
 </div>
 <div class="border-top pt-2">
-        <small class="text-muted">
-                Sign out now? <a class="ml-2" href="{{ url_for('main.logout') }}">Sign out</a>
-            </small>>
+    <small class="text-muted">
+        Sign out now? <a class="ml-2" href="{{ url_for('main.logout') }}">Sign out</a>
+    </small>>
 </div>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Alter!</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                When you add or move your visitor attribute, your data of visits will be wiped!
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock content %}

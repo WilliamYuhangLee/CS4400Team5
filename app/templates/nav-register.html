@@ -7,10 +7,8 @@
         Register Menu
     </legend>
     <div class="col-md-6 btn-group-vertical" id="registerNav_frame">
-        <button type="button" class="btn btn-outline-info" onclick="window.location.href='{{ url_for('main.register', is_employee=False, is_visitor=False) }}';">User Register</button>
-        <button type="button" class="btn btn-outline-info" onclick="window.location.href='{{ url_for('main.register', is_employee=False, is_visitor=True) }}';">Visitor Register</button>
-        <button type="button" class="btn btn-outline-info" onclick="window.location.href='{{ url_for('main.register', is_employee=True, is_visitor=False) }}';">Employee Register</button>
-        <button type="button" class="btn btn-outline-info" onclick="window.location.href='{{ url_for('main.register', is_employee=True, is_visitor=True) }}';">Employee Visitor Register</button>
+        <button type="button" class="btn btn-outline-info" onclick="window.location.href='{{ url_for('main.register', is_employee=False) }}';">User Register</button>
+        <button type="button" class="btn btn-outline-info" onclick="window.location.href='{{ url_for('main.register', is_employee=True) }}';">Employee Register</button>
         <button type="button" class="btn btn-outline-info" onclick="window.location.href='{{ url_for('main.login') }}';">Back</button>
     </div>
 </div>

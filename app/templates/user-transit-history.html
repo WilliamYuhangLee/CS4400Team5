@@ -1,45 +1,43 @@
 {% extends "home.html" %}
 {% block content %}
-<div class="unselected-field row" id="select_site">
+<div class="unselected-field row" id="select">
     <label>Transport Type<select id="transport_type" name="transport_type">
             <option value="MARTA">MARTA</option>
             <option value="Bus">Bus</option>
-            <option value="Bike">Bike</option></select>
+            <option value="Bike">Bike</option>
+        </select>
     </label>
     <label>Contain Site<select id="contain_site" name="contain_site">
-            <option>contain_site</option></select>
+            <option>contain_site</option>
+        </select>
     </label>
 </div>​
 <div class="row">
-        <input type="text" id="transit_date" name="transit_date">
+    <table>
+        <tbody>
+            <tr>
+                <td>Start Date<input type="text" id="min" name="min"></td>
+            </tr>
+            <tr>
+                <td>End Date<input type="text" id="max" name="max"></td>
+            </tr>
+        </tbody>
+    </table>
 </div>
 <div class="row">
-<table>
-    <tbody>
-        <tr>
-            <td>Price Range</td>
-            <td>Min<input type="text" id="min" name="min"></td>
-        </tr>
-        <tr>
-            <td>Max<input type="text" id="max" name="max"></td>
-        </tr>
-    </tbody>
-</table>
-<table id="take_transit" class="display" cellspacing="0" width="100%">
-    <thead>
-        <tr>
-            <th>Route</th>
-            <th>Transport Type</th>
-            <th>Price</th>
-            <th>#Connected Sites</th>
-        </tr>
-    </thead>
-</table>
-</div> 
+    <table id="transit_history" class="display" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Route</th>
+                <th>Transport Type</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+    </table>
+</div>
 <div class="row">
-<input type="text" id="transit_date" name="transit_date">
-<button type="button" class="btn btn-outline-info" href="javascript:history.back()">Back</button>
-<button type="button" class="btn btn-outline-info" id="log_transit">Log Transit</button>
+    <button type="button" class="btn btn-outline-info" href="javascript:history.back()">Back</button>
 </div>
 {% endblock content %}
 
@@ -47,9 +45,10 @@
 <script>
     $.fn.dataTable.ext.search.push(
         function (settings, data, dataIndex) {
-            var min = parseInt($('#min').val(), 10);
-            var max = parseInt($('#max').val(), 10);
-            var price = parseFloat(data[2]) || 0;
+
+            var min = parseInt($('#min').val().replaceAll('-', ''), 10);
+            var max = parseInt($('#max').val().replaceAll('-', ''), 10);
+            var price = parseInt(data[2].replaceAll('-', '')) || 0;
 
             if ((isNaN(min) && isNaN(max)) ||
                 (isNaN(min) && age <= max) ||

@@ -61,10 +61,15 @@
                     {{ render_field(form.add) }}
                 </div>
             </div>
-        </fieldset>
+            <div class="form-row">
+                    {{ render_field(form.visitor)}}
+            </div>
+        </fieldset> 
         <div class="form-group">
             {{ form.submit(class="btn btn-outline-info") }}
+            <button type="button" class="btn btn-outline-info" onclick="window.location.href='{{ url_for('main.nav_register') }}';">Back</button>
         </div>
+    </div>
     </form>
 </div>
 <div class="border-top pt-2">
@@ -72,4 +77,5 @@
         Already have an account? <a class="ml-2" href="{{ url_for('main.login') }}">Log in</a>
     </small>
 </div>
+
 {% endblock content %}
