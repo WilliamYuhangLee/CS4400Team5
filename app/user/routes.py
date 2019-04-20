@@ -13,13 +13,40 @@ def home():
     return render_template("home-user.html", title="Home")
 
 
-@bp.route("/take-transit")
+@bp.route("/take_transit")
 @login_required
 def take_transit():
-    return "Not implemented yet!"  # TODO: implement this method
+    result, error = db_procedure("get_all_sites", ())
+    if error:
+        raise DatabaseError("An error occurred when getting all sites: " + error)
+    site_names = [row[0] for row in result]
+    return render_template("user-take-transit.html", title="Take Transit", sites=site_names)
 
 
-@bp.route("/transit-history")
+@bp.route("/take_transit/_get_table_data")
+@login_required
+def take_transit_get_table_data():
+    site_name = request.args.get("site_name", type=str)
+    transits = Transit.get_by_site_name(site_name)
+    return jsonify({"data": [transit.__dict__ for transit in transits]})
+
+
+@bp.route("/take_transit/_send_data")
+@login_required
+def take_transit_send_data():
+    date = request.args.get("date", type=str)
+    if not validate_date(date):
+        return jsonify({"result": "Date format incorrect."})
+    route = request.args.get("route", type=str)
+    transport_type = request.args.get("transport_type", type=Transit.TYPE.coerce)
+    args = (current_user.username, route, str(transport_type), date)
+    result, error = db_procedure("take_transit", args)
+    if error:
+        raise DatabaseError("An error occurred when logging transit: " + error)
+    return jsonify({"result": "Successfully logged transit."})
+
+
+@bp.route("/transit_history")
 @login_required
 def transit_history():
     return "Not implemented yet!"  # TODO: implement this method
