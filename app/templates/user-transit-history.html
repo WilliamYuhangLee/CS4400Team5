@@ -1,40 +1,63 @@
 {% extends "home.html" %}
 {% block content %}
-<div class="content-section">
-    <form method="post" action="" title="Transit_History">
-        {{ form.hidden_tag() }}
-        <fieldset class="form-group">
-            <legend class="border-bottom mb-4">
-                Transit History
-            </legend>
-            <div class="form-group">
-                {{ render_field(form.transport_type)}}
-            </div>
-            <div class="form-group">
-                {{ render_field(form.contain_site)}}
-            </div>
-            <div class="form-group">
-                {{ render_field(form.price_range)}}
-            </div>
-            <div class="form-group">
-                {{ render_field(form.route)}}
-            </div>
-            <div class="form-group">
-                {{ render_field(form.start_date)}}
-            </div>
-            <div class="form-group">
-                {{ render_field(form.end_date)}}
-            </div>
-        </fieldset>
-        <div class="form-group">
-            {{ form.submit(class="btn btn-outline-info") }}
-        </div>
-    </form>
+<div class="unselected-field row" id="select">
+    <label>Transport Type<select id="transport_type" name="transport_type">
+            <option value="MARTA">MARTA</option>
+            <option value="Bus">Bus</option>
+            <option value="Bike">Bike</option>
+        </select>
+    </label>
+    <label>Contain Site<select id="contain_site" name="contain_site">
+            <option>contain_site</option>
+        </select>
+    </label>
+</div>​
+<div class="row">
+    <table>
+        <tbody>
+            <tr>
+                <td>Start Date<input type="text" id="min" name="min"></td>
+            </tr>
+            <tr>
+                <td>End Date<input type="text" id="max" name="max"></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div class="row">
+    <table id="transit_history" class="display" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Route</th>
+                <th>Transport Type</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+<div class="row">
     <button type="button" class="btn btn-outline-info" href="javascript:history.back()">Back</button>
 </div>
-<div class="border-top pt-2">
-    <small class="text-muted">
-        Sign out now? <a class="ml-2" href="{{ url_for('main.logout') }}">Sign out</a>
-    </small>>
-</div>
 {% endblock content %}
+
+{% block scripts %}
+<script>
+    $.fn.dataTable.ext.search.push(
+        function (settings, data, dataIndex) {
+
+            var min = parseInt($('#min').val().replaceAll('-', ''), 10);
+            var max = parseInt($('#max').val().replaceAll('-', ''), 10);
+            var price = parseInt(data[2].replaceAll('-', '')) || 0;
+
+            if ((isNaN(min) && isNaN(max)) ||
+                (isNaN(min) && age <= max) ||
+                (min <= price && isNaN(max)) ||
+                (min <= price && price <= max)) {
+                return true;
+            }
+            return false;
+        }
+    );
+</script>
+{% endblock %}

@@ -1,40 +1,42 @@
 {% extends "home.html" %}
 {% block content %}
-<div class="content-section">
-    <form method="post" action="" title="Manage_User">
-        {{ form.hidden_tag() }}
-        <fieldset class="form-group">
-            <legend class="border-bottom mb-4">
-                Manage User
-            </legend>
-            <div class="form-group">
-                {{ render_field(form.username)}}
-            </div>
-            <div class="form-group">
-                {{ render_field(form.type)}}
-            </div>
-            <div class="form-group">
-                {{ render_field(form.status)}}
-            </div>
-            <div class="form-group">
-                {{ render_field(form.users)}}
-            </div>
-        </fieldset>
-        <div class="form-group">
-            {{ form.submit(class="btn btn-outline-info") }}
-        </div>
-        <div class="form-group">
-            {{ form.submit(class="btn btn-outline-info") }}
-        </div>
-        <div class="form-group">
-                {{ form.submit(class="btn btn-outline-info") }}
-            </div>
-    </form>
-    <button type="button" class="btn btn-outline-info" href="javascript:history.back()">Back</button>
+<div class="row">
+        <div class="unselected-field row" id="select">
+                <label>Username<input type="text" id="username_search">
+                </label>
+            <label>Type<select id="user_type" name="user_type">
+                    <option value="User">User</option>
+                    <option value="Visitor">Visitor</option>
+                    <option value="Staff">Staff</option>
+                    <option value="Manager">Manager</option>
+                </select>
+            </label>
+            <label>Status<select id="user_status" name="user_status">
+                    <option value="Approved">Approved</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Decline">Decline</option>
+                </select>
+            </label>
+        </div>​
 </div>
-<div class="border-top pt-2">
-        <small class="text-muted">
-                Sign out now? <a class="ml-2" href="{{ url_for('main.logout') }}">Sign out</a>
-            </small>>
+<div class="row">
+    <!--Script for admin needed-->
+    <button type="button" class="btn btn-outline-info" id="admin_manage_user_approve">Approve</button>
+    <button type="button" class="btn btn-outline-info" id="admin_manage_user_decline">Approve</button>
+</div>
+<div class="row">
+<table id="user_list" class="display" cellspacing="0" width="100%">
+    <thead>
+        <tr>
+            <th>Username</th>
+            <th>Email Count</th>
+            <th>User Type</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+</table>
+</div>
+<div class="row">
+<button type="button" class="btn btn-outline-info" href="javascript:history.back()">Back</button>
 </div>
 {% endblock content %}
