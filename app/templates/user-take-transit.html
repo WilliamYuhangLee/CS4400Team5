@@ -1,4 +1,13 @@
 {% extends "home.html" %}
+
+{% block scripts %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
+<script type="text/javascript" src="../static/main.js"></script> 
+
+{% endblock %}
+
 {% block content %}
 <div class="row">
 <div class="unselected-field" id="select_site">
@@ -6,12 +15,14 @@
             {% for site in sites %}
             <option value="{{ site.name }}">{{site.name}}</option>
             {% endfor %}
+            </select>
             <button type="button" class="btn btn-outline-info" id="filter_take_transit">Filter for sites</button>
     </label>
     <label>Transport Type<select id="transport_type" name="transport_type">
             <option value="MARTA">MARTA</option>
             <option value="Bus">Bus</option>
-            <option value="Bike">Bike</option></select>
+            <option value="Bike">Bike</option>
+        </select>    
     </label>
 </div>​
 </div>

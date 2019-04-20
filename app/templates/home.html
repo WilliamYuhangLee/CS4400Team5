@@ -1,4 +1,12 @@
 {% extends "base.html" %}
+
+{% block scripts %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
+<script type="text/javascript" src="../static/main.js"></script> 
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
+{% endblock %}
+
 {% block navbar_item2 %}
     <li class="nav-item active">
         <a class="nav-link" href="{{ url_for('user.take_transit') }}">Take Transit</a>
