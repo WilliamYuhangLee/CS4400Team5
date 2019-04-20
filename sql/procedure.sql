@@ -1,27 +1,26 @@
 USE atlbeltline;
-
 DELIMITER $$
 
-
+-- change if the user is or not a visitor
 CREATE PROCEDURE switch_visitor(in user_name varchar(100), in new_visitor int)
 -- order of parameter
 -- username, new state of if the user is visitor
 BEGIN
     IF new_visitor != 0 AND new_visitor != 1 THEN 
-        SET @error = "New_visitor is out of range.";
+        SET @error = 'New_visitor is out of range.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     END IF;
     IF EXISTS(SELECT * FROM Users WHERE UserName = user_name) THEN
         SET new_visitor = new_visitor + 1;
         UPDATE Users SET IsVisitor = new_visitor WHERE UserName = user_name;
     ELSE 
-        SET @error = "User does not exist.";
+        SET @error = 'User does not exist.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     END IF;
-END $$t
+END $$
 
 
-CREATE PROCEDURE login(in email_address varchar(100) )
+CREATE PROCEDURE login(in email_address varchar(100))
 -- order of parameter
 -- email address
 -- password
@@ -31,7 +30,7 @@ BEGIN
 	
 	SET user_name = (SELECT UserName FROM Email WHERE EmailAddress LIKE email_address LIMIT 1);
 	IF length(user_name) <= 0 THEN 
-		SET @error = "Email address does not exist.";
+		SET @error = 'Email address does not exist.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
 	ELSE
         SET result = (SELECT Password FROM Users WHERE UserName = user_name LIMIT 1);
@@ -40,13 +39,13 @@ BEGIN
 END $$
 -- Correct way to call it
 
--- SET @a = "/*email address*/";
--- SET @b = "/*password after hashing*/";
+-- SET @a = '/*email address*/';
+-- SET @b = '/*password after hashing*/';
 -- CALL login(@a, @b);
 
 -- Or
 
--- CALL login("/*email address*/", "/*password after hashing*/");
+-- CALL login('/*email address*/', '/*password after hashing*/');
 
 -- Then it will return the information about login
 -- For the following procedures, if there is no need for further explanation,
@@ -57,16 +56,16 @@ END $$
 CREATE PROCEDURE register_user(in user_name varchar(50), in pass_word varchar(100), in first_name varchar(50), in last_name varchar(50), in is_visitor int ) 
 -- order of parameter
 -- username, password, firstname, lastname, is_visitor
--- is_visitor's value shall be 0 or 1 (0 for "Yes", 1 for "No")
+-- is_visitor's value shall be 0 or 1 (0 for 'Yes', 1 for 'No')
 BEGIN
      
      
     IF EXISTS(SELECT * FROM USERS WHERE UserName = user_name) THEN 
-        SET @error = "Username already exists.";
+        SET @error = 'Username already exists.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     ELSE
         IF is_visitor != 1 AND is_visitor != 0 THEN
-            SET @error = "IsVisitor is out of range.";
+            SET @error = 'IsVisitor is out of range.';
             SIGNAL SQLSTATE '45000' SET message_text = @error;
         ELSE 
             SET is_visitor = is_visitor + 1;
@@ -86,8 +85,8 @@ CREATE PROCEDURE register_employee(in user_name varchar(50), in phone_ char(10),
 BEGIN
      
          
-    IF title_ = "ADMINISTRATOR" THEN 
-        SET @error = "Cannot create administrator.";
+    IF title_ = 'ADMINISTRATOR' THEN 
+        SET @error = 'Cannot create administrator.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     ELSE 
         INSERT INTO Employee(Username, Phone, Address, City, State, ZipCode, Title) VALUES(user_name, phone_, address_, city_, state_, zip_code, title_);
@@ -103,8 +102,8 @@ CREATE PROCEDURE register_employee_aft(in user_name varchar(50), in employee_id 
 BEGIN
      
      
-    IF title_ = "ADMINISTRATOR" THEN 
-        SET @error = "Cannot create administrator.";
+    IF title_ = 'ADMINISTRATOR' THEN 
+        SET @error = 'Cannot create administrator.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     ELSE 
         INSERT INTO Employee(Username, Phone, Address, City, State, ZipCode, Title, EmployeeID) VALUES(user_name, phone_, address_, city_, state_, zip_code, title_, employee_id);
@@ -159,12 +158,12 @@ BEGIN
     DECLARE status_ varchar(10);
     DECLARE em_id int(9);
     SET status_ = new_status;
-    IF ("APPROVED" IN (SELECT `Status` FROM Users WHERE UserName = user_name)) AND (new_status = "DENIED") THEN 
-        SET @error = "Cannot deny an approved user.";
+    IF ('APPROVED' IN (SELECT `Status` FROM Users WHERE UserName = user_name)) AND (new_status = 'DENIED') THEN 
+        SET @error = 'Cannot deny an approved user.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     ELSE
         UPDATE Users SET Status = status_ WHERE UserName = user_name;
-        IF EXISTS(SELECT * FROM Employee WHERE UserName = user_name) AND (SELECT EmployeeID FROM Employee WHERE UserName = user_name = null) AND status_ = "APPROVED" THEN                
+        IF EXISTS(SELECT * FROM Employee WHERE UserName = user_name) AND NOT EXISTS(SELECT EmployeeID FROM Employee WHERE UserName = user_name) AND status_ = 'APPROVED' THEN                
             SET em_id = 000000001;
             WHILE EXISTS(SELECT * FROM Employee WHERE EmployeeID = em_id) DO
                 SET em_id = em_id + 1;
@@ -225,7 +224,7 @@ BEGIN
     IF ! EXISTS(SELECT * FROM Connects WHERE TransportType = transport_type AND Route = route_ AND SiteName = site_name) THEN 
         INSERT INTO Connects VALUES(route_, transport_type, site_name);
     ELSE 
-        SET @error = "This site has been connected.";
+        SET @error = 'This site has been connected.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     END IF;
 END $$
@@ -238,7 +237,7 @@ BEGIN
     IF EXISTS(SELECT * FROM Connects WHERE TransportType = transport_type AND Route = route_ AND SiteName = site_name) THEN 
         DELETE FROM Connects WHERE TransportType = transport_type AND Route = route_ AND SiteName = site_name;
     ELSE 
-        SET @error = "This site has been disconnected.";
+        SET @error = 'This site has been disconnected.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     END IF;
     
@@ -270,7 +269,7 @@ BEGIN
     IF ! EXISTS(SELECT * FROM AssignTo WHERE SiteName = site_name AND EventName = event_name AND StartDate = start_date AND StaffName = staff_name) THEN 
         INSERT INTO AssignTo VALUES(staff_name, site_name, event_name, start_date);
     ELSE 
-        SET @error = "This staff has been assigned.";
+        SET @error = 'This staff has been assigned.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     END IF;
     
@@ -284,7 +283,7 @@ BEGIN
     IF EXISTS(SELECT * FROM AssignTo WHERE SiteName = site_name AND EventName = event_name AND StartDate = start_date AND StaffName = staff_name) THEN 
         DELETE FROM AssignTo WHERE SiteName = site_name AND EventName = event_name AND StartDate = start_date AND StaffName = staff_name;
     ELSE 
-        SET @error = "This staff has been unassigned.";
+        SET @error = 'This staff has been unassigned.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     END IF;
 END $$
@@ -330,7 +329,7 @@ BEGIN
         END IF;
         SELECT user_name, pass_word, first_name, last_name, is_visitor, status_, is_employee;
     ELSE 
-        SET @error = "Email Address does not exist.";
+        SET @error = 'Email Address does not exist.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     END IF;
     
@@ -359,7 +358,7 @@ BEGIN
     IF length(pass_word) > 1 THEN 
         SELECT pass_word, first_name, last_name, is_visitor, status_, is_employee;
     ELSE 
-        SET @error = concat(user_name, " does not exist.");
+        SET @error = concat(user_name, ' does not exist.');
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     END IF;
     
@@ -377,7 +376,7 @@ BEGIN
         SELECT SiteName INTO site_name FROM Site WHERE ManagerName = user_name;
         SELECT site_name;
     ELSE 
-        SET @error = "This user is not an employee.";
+        SET @error = 'This user is not an employee.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     END IF;    
 END $$
@@ -402,7 +401,7 @@ BEGIN
         FROM Employee WHERE UserName = user_name;
         SELECT  phone_, address_, city_, state_, zip_code, title_, employee_id;
     ELSE 
-        SET @error = "This user is not an employee.";
+        SET @error = 'This user is not an employee.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     END IF;    
 END $$
@@ -430,7 +429,7 @@ BEGIN
         FROM Employee WHERE UserName = user_name;
         SELECT user_name, phone_, address_, city_, state_, zip_code, title_, employee_id;
     ELSE 
-        SET @error = "This user does not exist.";
+        SET @error = 'This user does not exist.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     END IF;
 END $$
@@ -454,7 +453,7 @@ BEGIN
     ELSE
         SET result = 1;
     END IF;
-    SELECT result, "place holder";
+    SELECT result, 'place holder';
 END $$
 
 
@@ -468,7 +467,7 @@ BEGIN
     ELSE
         SET result = 1;
     END IF;
-    SELECT result, "place holder";
+    SELECT result, 'place holder';
 END $$
 
 
@@ -478,12 +477,12 @@ CREATE PROCEDURE check_status(in user_name varchar(100))
 BEGIN
     DECLARE result int(1);
      
-    IF (SELECT `Status` FROM Users WHERE UserName = user_name LIMIT 1) = "APPROVED" THEN 
+    IF (SELECT `Status` FROM Users WHERE UserName = user_name LIMIT 1) = 'APPROVED' THEN 
         SET result = 1;
     ELSE
         SET result = 0;
     END IF;
-    SELECT result, "place holder";
+    SELECT result, 'place holder';
 END $$
 
 
@@ -501,11 +500,11 @@ BEGIN
         IF length(ZipCode) > 1 THEN 
             SELECT zip_code, address_, manager_name;
         ELSE 
-            SET @error = concat(site_name, " does not exist.");
+            SET @error = concat(site_name, ' does not exist.');
             SIGNAL SQLSTATE '45000' SET message_text = @error;
         END IF;
     ELSE 
-        SET @error = "Site name cannot be null.";
+        SET @error = 'Site name cannot be null.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     END IF;    
 END $$
@@ -521,16 +520,16 @@ BEGIN
     DECLARE capacity_ int;
     DECLARE description_ text;
      
-    IF length(site_name) > 0 AND length(event_name) > 0 AND start_date != "0000-00-00" THEN
-        SELECT EndDate, MinSraffReq, Capacity, Description INTO end_date, min_staff_req, capacity_, description_ FROM Events WHERE SiteName = site_name AND EventName = event_date AND StartDate = start_date LIMIT 1;        
+    IF length(site_name) > 0 AND length(event_name) > 0 AND start_date != '0000-00-00' THEN
+        SELECT EndDate, MinStaffReq, Capacity, Description INTO end_date, min_staff_req, capacity_, description_ FROM Events WHERE SiteName = site_name AND EventName = event_name AND StartDate = start_date LIMIT 1;        
         IF length(description_) > 1 THEN 
             SELECT end_date, min_staff_req, capacity_, description_;
         ELSE 
-            SET @error = concat(event_name, " does not exist.");
+            SET @error = concat(event_name, ' does not exist.');
             SIGNAL SQLSTATE '45000' SET message_text = @error;
         END IF;
     ELSE 
-        SET @error = "Primary key cannot have null value.";
+        SET @error = 'Primary key cannot have null value.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     END IF;
     
@@ -549,6 +548,12 @@ BEGIN
         SET result = 1;
     END IF;
     SELECT result, phone_;
+END $$
+
+
+CREATE PROCEDURE get_all_sites() 
+BEGIN
+    SELECT SiteName, ZipCode, Address, (EveryDay - 1) AS OpenEveryDay, ManagerName FROM Site;
 END $$
 
 
