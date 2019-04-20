@@ -1,32 +1,6 @@
 {% extends "home.html" %}
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
-<script type = "text/javascript" src="{{url_for('static', filename='main.js')}}"></script>
-<script>
-    $.fn.dataTable.ext.search.push(
-        function (settings, data, dataIndex) {
-            var min = parseInt($('#min').val(), 10);
-            var max = parseInt($('#max').val(), 10);
-            var price = parseFloat(data[2]) || 0;
-
-            if ((isNaN(min) && isNaN(max)) ||
-                (isNaN(min) && age <= max) ||
-                (min <= price && isNaN(max)) ||
-                (min <= price && price <= max)) {
-                return true;
-            }
-            return false;
-        }
-    );
-</script>
-
 {% block scripts %}
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
-<script type = "text/javascript" src="{{url_for('static', filename='main.js')}}"></script>
 <script>
     $.fn.dataTable.ext.search.push(
         function (settings, data, dataIndex) {

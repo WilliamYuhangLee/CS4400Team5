@@ -1,31 +1,69 @@
-{% extends "base.html" %}
+{% extends "home.html" %}
 
-<!DOCTYPE html>
-<html lang="en">
+{% block scripts %}
+<script>
+    $.fn.dataTable.ext.search.push(
+        function (settings, data, dataIndex) {
+            var min = parseInt($('#min').val(), 10);
+            var max = parseInt($('#max').val(), 10);
+            var price = parseFloat(data[2]) || 0;
+
+            if ((isNaN(min) && isNaN(max)) ||
+                (isNaN(min) && age <= max) ||
+                (min <= price && isNaN(max)) ||
+                (min <= price && price <= max)) {
+                return true;
+            }
+            return false;
+        }
+    );
+</script>
+{% endblock %}
 
 {% block content %}
-<div class="content-section">
-    <form method="post" action="" title="Login">
-        {{ form.hidden_tag() }}
-        <fieldset class="form-group">
-            <legend class="border-bottom mb-4">
-                Sign In
-            </legend>
-            <div class="form-group">
-                {{ render_field(form.email)}}
-            </div>
-            <div class="form-group">
-                {{ render_field(form.password)}}
-            </div>
-        </fieldset>
-        <div class="form-group">
-            {{ form.submit(class="btn btn-outline-info") }}
-        </div>
-    </form>
+<div class="row">
+    <div class="unselected-field" id="select_site">
+        <label>Contain Site<select id="contain_site" name="contain_site">
+                {% for site in sites %}
+                <option value="{{site}}">{{site}}</option>
+                {% endfor %}
+            </select>
+            <button type="button" class="btn btn-outline-info" id="filter_take_transit">Filter for sites</button>
+        </label>
+        <label>Transport Type<select id="transport_type" name="transport_type">
+                <option value="MARTA">MARTA</option>
+                <option value="Bus">Bus</option>
+                <option value="Bike">Bike</option>
+            </select>
+        </label>
+    </div>​
 </div>
-<div class="border-top pt-2">
-    <small class="text-muted">
-        Don't have an account? <a class="ml-2" href="{{ url_for('main.nav_register') }}">Sign up now</a>
-    </small>
+<div class="row">
+    <table>
+        <tbody>
+            <tr>
+                <td>Price Range</td>
+                <td>Min<input type="text" id="min" name="min"></td>
+            </tr>
+            <tr>
+                <td>Max<input type="text" id="max" name="max"></td>
+            </tr>
+        </tbody>
+    </table>
 </div>
-{% endblock content %}
+<table id="take_transit" class="display" cellspacing="0" width="100%">
+    <thead>
+        <tr>
+            <th>Route</th>
+            <th>Transport Type</th>
+            <th>Price</th>
+            <th>#Connected Sites</th>
+        </tr>
+    </thead>
+</table>
+<div class="row">
+    <input type="text" id="transit_date" name="transit_date">
+    <button type="button" class="btn btn-outline-info" href="javascript:history.back()">Back</button>
+    <button type="button" class="btn btn-outline-info" id="log_transit">Log Transit</button>
+</div>
+{% endblock content %}  

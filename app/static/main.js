@@ -63,15 +63,11 @@ $(document).ready(function () {
     });
     $('#filter_take_transit').on('click', function () {
         var site = $( "#contain_site option:selected" ).text();
-        $.getJSON('Flask.url_for("user.take_transit_get_table_data")', (site), function() {
-            console.log(site);
+        $.getJSON('Flask.url_for("user.take_transit_get_table_data")', (site), function(data) {
+            console.log(data);
+            var datatable = JSON.parse(data);
             $('#take_transit').DataTable({
-                "ajax": {
-                    "url": "{{url_for('take_transit_get_table_data')}}",
-                    "dataType": "json",
-                    "dataSrc": "data",
-                    "contentType": "application/json"
-                },
+                data:datatable,
                 columns: [
                     { data: "Route" },
                     { data: "Transport Type" },
