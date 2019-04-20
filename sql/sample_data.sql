@@ -106,16 +106,16 @@ CALL connect_site("BUS", "152", "Historic Fourth Ward Park" );
 CALL connect_site("BIKE", "Relay", "Piedmont Park" );
 CALL connect_site("BIKE", "Relay", "Historic Fourth Ward Park" );
 
-CALL take_tansit("manager2", "Blue", "MARTA", "2019-03-20" );
-CALL take_tansit("manager2", "152", "BUS", "2019-03-20" );
-CALL take_tansit("manager3", "Relay", "BIKE", "2019-03-20" );
-CALL take_tansit("manager2", "Blue", "MARTA", "2019-03-21" );
-CALL take_tansit("maria.hernandez", "152", "BUS", "2019-03-20" );
-CALL take_tansit("maria.hernandez", "Relay", "BIKE", "2019-03-20" );
-CALL take_tansit("manager2", "Blue", "MARTA", "2019-03-22" );
-CALL take_tansit("maria.hernandez", "152", "BUS", "2019-03-22" );
-CALL take_tansit("mary.smith", "Relay", "BIKE", "2019-03-23" );
-CALL take_tansit("visitor1", "Blue", "MARTA", "2019-03-21" );
+CALL take_transit("manager2", "Blue", "MARTA", "2019-03-20" );
+CALL take_transit("manager2", "152", "BUS", "2019-03-20" );
+CALL take_transit("manager3", "Relay", "BIKE", "2019-03-20" );
+CALL take_transit("manager2", "Blue", "MARTA", "2019-03-21" );
+CALL take_transit("maria.hernandez", "152", "BUS", "2019-03-20" );
+CALL take_transit("maria.hernandez", "Relay", "BIKE", "2019-03-20" );
+CALL take_transit("manager2", "Blue", "MARTA", "2019-03-22" );
+CALL take_transit("maria.hernandez", "152", "BUS", "2019-03-22" );
+CALL take_transit("mary.smith", "Relay", "BIKE", "2019-03-23" );
+CALL take_transit("visitor1", "Blue", "MARTA", "2019-03-21" );
 
 CALL assign_staff("Piedmont Park", "Eastside Trail", "2019-02-04", "michael.smith" );
 CALL assign_staff("Piedmont Park", "Eastside Trail", "2019-02-04", "staff1" );

@@ -54,7 +54,7 @@ GROUP BY UserName HAVING Title = "Staff";
 CREATE VIEW for_staff AS
 SELECT * FROM for_staff_pre JOIN AssignTO ON for_staff_pre.UserName = AssignTo.StaffName INNER JOIN Users USING (UserName) LEFT JOIN Events USING(SiteName, EventName, StartDate); 
 
-CREATE VIEW tansit_logged_num AS 
+CREATE VIEW transit_logged_num AS 
 SELECT Route, TransportType, count(*) AS NumLogged 
 FROM Transit LEFT JOIN Take USING(Route, TransportType) 
 GROUP BY Route, TransportType;
@@ -66,7 +66,7 @@ GROUP BY Route, TransportType;
 
 CREATE VIEW for_transit AS 
 SELECT Route, TransportType, Price, NumLogged, NumConnected 
-FROM tansit_logged_num LEFT JOIN transit_connect_num USING(Route, TransportType);
+FROM transit_logged_num LEFT JOIN transit_connect_num USING(Route, TransportType);
 
 CREATE VIEW event_staff_num AS 
 SELECT SiteName, EventName, StartDate, count(*) AS StaffCount 

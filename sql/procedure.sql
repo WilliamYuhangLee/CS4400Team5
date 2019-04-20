@@ -18,7 +18,7 @@ BEGIN
         SET @error = "User does not exist.";
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     END IF;
-END $$
+END $$t
 
 
 CREATE PROCEDURE login(in email_address varchar(100) )
@@ -130,7 +130,7 @@ END $$
 
 
 
-CREATE PROCEDURE take_tansit(in user_name varchar(50), in route_ varchar(20), in transport_type varchar(10), in take_date date )
+CREATE PROCEDURE take_transit(in user_name varchar(50), in route_ varchar(20), in transport_type varchar(10), in take_date date )
 -- order of parameter
 -- username, route, transport type, date
 BEGIN 

@@ -770,7 +770,7 @@ GROUP BY UserName HAVING Title = "Staff";
 CREATE VIEW for_staff AS
 SELECT * FROM for_staff_pre JOIN AssignTO ON for_staff_pre.UserName = AssignTo.StaffName INNER JOIN Users USING (UserName) LEFT JOIN Events USING(SiteName, EventName, StartDate); 
 
-CREATE VIEW tansit_logged_num AS 
+CREATE VIEW transit_logged_num AS 
 SELECT Route, TransportType, count(*) AS NumLogged 
 FROM Transit LEFT JOIN Take USING(Route, TransportType) 
 GROUP BY Route, TransportType;
@@ -782,7 +782,7 @@ GROUP BY Route, TransportType;
 
 CREATE VIEW for_transit AS 
 SELECT Route, TransportType, Price, NumLogged, NumConnected 
-FROM tansit_logged_num LEFT JOIN transit_connect_num USING(Route, TransportType);
+FROM transit_logged_num LEFT JOIN transit_connect_num USING(Route, TransportType);
 
 CREATE VIEW event_staff_num AS 
 SELECT SiteName, EventName, StartDate, count(*) AS StaffCount 
@@ -1010,7 +1010,7 @@ END $$
 
 
 
-CREATE PROCEDURE take_tansit(in user_name varchar(50), in route_ varchar(20), in transport_type varchar(10), in take_date date )
+CREATE PROCEDURE take_transit(in user_name varchar(50), in route_ varchar(20), in transport_type varchar(10), in take_date date )
 -- order of parameter
 -- username, route, transport type, date
 BEGIN 
@@ -2096,16 +2096,16 @@ CALL connect_site("BUS", "152", "Historic Fourth Ward Park" );
 CALL connect_site("BIKE", "Relay", "Piedmont Park" );
 CALL connect_site("BIKE", "Relay", "Historic Fourth Ward Park" );
 
-CALL take_tansit("manager2", "Blue", "MARTA", "2019-03-20" );
-CALL take_tansit("manager2", "152", "BUS", "2019-03-20" );
-CALL take_tansit("manager3", "Relay", "BIKE", "2019-03-20" );
-CALL take_tansit("manager2", "Blue", "MARTA", "2019-03-21" );
-CALL take_tansit("maria.hernandez", "152", "BUS", "2019-03-20" );
-CALL take_tansit("maria.hernandez", "Relay", "BIKE", "2019-03-20" );
-CALL take_tansit("manager2", "Blue", "MARTA", "2019-03-22" );
-CALL take_tansit("maria.hernandez", "152", "BUS", "2019-03-22" );
-CALL take_tansit("mary.smith", "Relay", "BIKE", "2019-03-23" );
-CALL take_tansit("visitor1", "Blue", "MARTA", "2019-03-21" );
+CALL take_transit("manager2", "Blue", "MARTA", "2019-03-20" );
+CALL take_transit("manager2", "152", "BUS", "2019-03-20" );
+CALL take_transit("manager3", "Relay", "BIKE", "2019-03-20" );
+CALL take_transit("manager2", "Blue", "MARTA", "2019-03-21" );
+CALL take_transit("maria.hernandez", "152", "BUS", "2019-03-20" );
+CALL take_transit("maria.hernandez", "Relay", "BIKE", "2019-03-20" );
+CALL take_transit("manager2", "Blue", "MARTA", "2019-03-22" );
+CALL take_transit("maria.hernandez", "152", "BUS", "2019-03-22" );
+CALL take_transit("mary.smith", "Relay", "BIKE", "2019-03-23" );
+CALL take_transit("visitor1", "Blue", "MARTA", "2019-03-21" );
 
 CALL assign_staff("Piedmont Park", "Eastside Trail", "2019-02-04", "michael.smith" );
 CALL assign_staff("Piedmont Park", "Eastside Trail", "2019-02-04", "staff1" );
