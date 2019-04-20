@@ -1,3 +1,4 @@
+from datetime import datetime
 from app import db
 
 
@@ -39,3 +40,20 @@ def process_phone(phone):
     :rtype: str
     """
     return ''.join(c for c in phone if c not in "+() -")
+
+
+def validate_date(date_string):
+    """
+    Check if a data string is in concordance with the YYYY-MM-DD format.
+
+    :param date_string: a date string to validate
+    :type date_string: str
+    :return: True if the string is valid, False otherwise
+    :rtype: bool
+    """
+    try:
+        datetime.strptime(date_string, '%Y-%m-%d')
+        return True
+    except ValueError:
+        print("Incorrect data format, should be YYYY-MM-DD (got %s)" % date_string)
+        return False

@@ -52,15 +52,15 @@ BEGIN
         ELSE 
             SET new_end_date = end_date;
         END IF;
-        IF start_date = "1000-01-01" THEN
-            SET new_start_date = "9999-12-31";
+        IF start_date = "0000-00-00" THEN
+            SET new_start_date = "1000-01-01";
         ELSE 
             SET new_start_date = start_date;
         END IF;
         IF length(transport_type) >  0 THEN 
-            SELECT DISTINCT `Date`, Route, TransportType, Price FROM Take JOIN Transit USING(Route, TransportType) JOIN Connects USING(Route, TransportType) WHERE UserName = user_name AND SiteName LIKE new_site_name AND TransportType = transport_type AND `Date` >= new_start_date AND `Date` <= new_end_date;
+            SELECT DISTINCT Route, TransportType, Price, `Date` FROM Take JOIN Transit USING(Route, TransportType) JOIN Connects USING(Route, TransportType) WHERE UserName = user_name AND SiteName LIKE new_site_name AND TransportType = transport_type AND `Date` >= new_start_date AND `Date` <= new_end_date;
         ELSE 
-            SELECT DISTINCT `Date`, Route, TransportType, Price FROM Take JOIN Transit USING(Route, TransportType) JOIN Connects USING(Route, TransportType) WHERE UserName = user_name AND SiteName LIKE new_site_name AND `Date` >= new_start_date AND `Date` <= new_end_date;
+            SELECT DISTINCT Route, TransportType, Price, `Date` FROM Take JOIN Transit USING(Route, TransportType) JOIN Connects USING(Route, TransportType) WHERE UserName = user_name AND SiteName LIKE new_site_name AND `Date` >= new_start_date AND `Date` <= new_end_date;
         END IF;
     ELSE 
         SET @error = "Username cannot be null.";
@@ -156,8 +156,8 @@ BEGIN
     ELSE 
         SET new_end_date = end_date;
     END IF;
-    IF start_date = "1000-01-01" THEN
-        SET new_start_date = "9999-12-31";
+    IF start_date = "0000-00-00" THEN
+            SET new_start_date = "1000-01-01";
     ELSE 
         SET new_start_date = start_date;
     END IF;
@@ -246,7 +246,7 @@ BEGIN
     ELSE 
         SET new_end_date = end_date;
     END IF;
-    IF start_date = "1000-01-01" THEN
+    IF start_date = "0000-00-00" THEN
         SET new_start_date = "1000-01-01";
     ELSE 
         SET new_start_date = start_date;
@@ -280,8 +280,8 @@ BEGIN
         ELSE 
             SET new_end_date = end_date;
         END IF;
-        IF start_date = "1000-01-01" THEN
-            SET new_start_date = "9999-12-31";
+        IF start_date = "0000-00-00" THEN
+            SET new_start_date = "1000-01-01";
         ELSE 
             SET new_start_date = start_date;
         END IF;
@@ -461,8 +461,8 @@ BEGIN
     ELSE 
         SET new_end_date = end_date;
     END IF;
-    IF start_date = "1000-01-01" THEN
-        SET new_start_date = "1000-01-01";
+    IF start_date = "0000-00-00" THEN
+            SET new_start_date = "1000-01-01";
     ELSE 
         SET new_start_date = start_date;
     END IF;
@@ -528,7 +528,7 @@ BEGIN
      
      
     IF length(route_) > 0  AND length(transport_type) > 0 THEN
-        SELECT SiteName, Price FROM Connects JOIN Transit USING(Route, TransportType) WHERE Route = route_ AND TransportType = transport_type;
+        SELECT  Route, TransportType, Price, SiteName FROM Connects JOIN Transit USING(Route, TransportType) WHERE Route = route_ AND TransportType = transport_type;
     ELSE 
         SET @error = "Username cannot be null.";
         SIGNAL SQLSTATE '45000' SET message_text = @error;
@@ -564,3 +564,8 @@ BEGIN
     END IF;
 END $$
 
+
+CREATE PROCEDURE get_all_transit()
+BEGIN
+    SELECT Route, TransportType, Price, count(*) AS CountSite FROM Transit JOIN Connects USING(TransportType, Route) Group BY TransportType, Route;
+END $$

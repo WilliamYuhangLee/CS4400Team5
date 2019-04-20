@@ -3,6 +3,24 @@ USE atlbeltline;
 DELIMITER $$
 
 
+CREATE PROCEDURE switch_visitor(in user_name varchar(100), in new_visitor int)
+-- order of parameter
+-- username, new state of if the user is visitor
+BEGIN
+    IF new_visitor != 0 AND new_visitor != 1 THEN 
+        SET @error = "New_visitor is out of range.";
+        SIGNAL SQLSTATE '45000' SET message_text = @error;
+    END IF;
+    IF EXISTS(SELECT * FROM Users WHERE UserName = user_name) THEN
+        SET new_visitor = new_visitor + 1;
+        UPDATE Users SET IsVisitor = new_visitor WHERE UserName = user_name;
+    ELSE 
+        SET @error = "User does not exist.";
+        SIGNAL SQLSTATE '45000' SET message_text = @error;
+    END IF;
+END $$t
+
+
 CREATE PROCEDURE login(in email_address varchar(100) )
 -- order of parameter
 -- email address
@@ -112,7 +130,7 @@ END $$
 
 
 
-CREATE PROCEDURE take_tansit(in user_name varchar(50), in route_ varchar(20), in transport_type varchar(10), in take_date date )
+CREATE PROCEDURE take_transit(in user_name varchar(50), in route_ varchar(20), in transport_type varchar(10), in take_date date )
 -- order of parameter
 -- username, route, transport type, date
 BEGIN 
@@ -348,6 +366,23 @@ BEGIN
 END $$
 
 
+CREATE PROCEDURE query_employee_sitename(in user_name varchar(100))
+-- order of parameter
+-- user name
+-- site name
+BEGIN 
+    DECLARE site_name varchar(50);
+     
+    IF EXISTS(SELECT * FROM Site WHERE ManagerName = user_name) THEN
+        SELECT SiteName INTO site_name FROM Site WHERE ManagerName = user_name;
+        SELECT site_name;
+    ELSE 
+        SET @error = "This user is not an employee.";
+        SIGNAL SQLSTATE '45000' SET message_text = @error;
+    END IF;    
+END $$
+
+
 CREATE PROCEDURE query_employee_by_username(in user_name varchar(100) )
 -- order of parameter
 -- user name
@@ -387,9 +422,12 @@ BEGIN
     DECLARE state_ varchar(100); 
     DECLARE zip_code varchar(10); 
     DECLARE title_ varchar(20);
+    
     SELECT UserName INTO user_name FROM Email WHERE EmailAddress = email_address;
     IF length(user_name) > 0 THEN 
-        CALL query_employee_by_user(user_name, employee_id, phone_, address_, city_, state_, zip_code, title_);
+        SELECT EmployeeID, Phone, Address, City, State, ZipCode, Title 
+        INTO employee_id, phone_, address_, city_, state_, zip_code, title_ 
+        FROM Employee WHERE UserName = user_name;
         SELECT user_name, phone_, address_, city_, state_, zip_code, title_, employee_id;
     ELSE 
         SET @error = "This user does not exist.";

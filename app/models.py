@@ -26,7 +26,7 @@ class User(UserMixin):
 
         @classmethod
         def coerce(cls, item):
-            return item if isinstance(item, cls) else cls[item]
+            return item if isinstance(item, cls) else cls[item.upper()]
 
     def __init__(self, username, password, first_name, last_name, is_visitor, status=Status.PENDING):
         """
@@ -140,7 +140,7 @@ class Employee(User):
 
         @classmethod
         def coerce(cls, item):
-            return item if isinstance(item, cls) else cls[item]
+            return item if isinstance(item, cls) else cls[item.upper()]
 
     class State(Enum):
         AL = 'AL'
@@ -204,7 +204,7 @@ class Employee(User):
 
         @classmethod
         def coerce(cls, item):
-            return item if isinstance(item, cls) else cls[item]
+            return item if isinstance(item, cls) else cls[item.upper()]
 
     def __init__(self, user, phone, address, city, state, zip_code, title, employee_id=None):
         """
@@ -250,3 +250,55 @@ class Employee(User):
         if error:
             self.delete()
             raise DatabaseError("Fail to create employee in database: " + error)
+
+    def update(self):
+        args = (self.username, self.first_name, self.last_name, self.is_visitor, self.phone)
+        result, error = db_procedure("edit_profile", args)
+        if error:
+            raise DatabaseError("An error occurred when updating user profile: " + error)
+
+
+class Transit:
+    class TYPE(Enum):
+        BUS = "BUS"
+        MARTA = "MARTA"
+        BIKE = "BIKE"
+
+        def __str__(self):
+            return self.value
+
+        @classmethod
+        def choices(cls):
+            return [(choice, choice.value) for choice in cls]
+
+        @classmethod
+        def coerce(cls, item):
+            return item if isinstance(item, cls) else cls[item.upper()]
+
+    def __init__(self, route, transport_type, price, num_of_connected_sites=None):
+        self.route = route
+        self.transport_type = Transit.TYPE.coerce(transport_type)
+        self.price = price
+        if num_of_connected_sites:
+            self.num_of_connected_sites = num_of_connected_sites
+
+    @staticmethod
+    def get_all():
+        result, error = db_procedure("get_all_transit", ())
+        if error:
+            raise DatabaseError("An error occurred when querying all transits: " + error)
+        transits = []
+        for row in result:
+            transits.append(Transit(*row))
+        return transits
+
+    @staticmethod
+    def get_by_site_name(site_name):
+        args = (site_name, "", "", 0, 0)
+        result, error = db_procedure("filter_transit", args)
+        if error:
+            raise DatabaseError("An error occurred when querying transits by site name: " + error)
+        transits = []
+        for row in result:
+            transits.append(Transit(*row))
+        return transits

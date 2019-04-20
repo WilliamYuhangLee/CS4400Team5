@@ -700,6 +700,15 @@ BEGIN
     END IF;
 END $$
 
+
+CREATE TRIGGER tgr20_visitor1 BEFORE UPDATE ON Users FOR EACH ROW
+BEGIN
+    IF OLD.IsVisitor = "Yes" AND NEW.IsVisitor = "No" THEN
+        DELETE FROM VisitEvent WHERE UserName = OLD.UserName;
+        DELETE FROM VisitSite WHERE UserName = OLD.UserName;
+    END IF;
+END $$
+
 DELIMITER ;
 
 
@@ -761,7 +770,7 @@ GROUP BY UserName HAVING Title = "Staff";
 CREATE VIEW for_staff AS
 SELECT * FROM for_staff_pre JOIN AssignTO ON for_staff_pre.UserName = AssignTo.StaffName INNER JOIN Users USING (UserName) LEFT JOIN Events USING(SiteName, EventName, StartDate); 
 
-CREATE VIEW tansit_logged_num AS 
+CREATE VIEW transit_logged_num AS 
 SELECT Route, TransportType, count(*) AS NumLogged 
 FROM Transit LEFT JOIN Take USING(Route, TransportType) 
 GROUP BY Route, TransportType;
@@ -773,7 +782,7 @@ GROUP BY Route, TransportType;
 
 CREATE VIEW for_transit AS 
 SELECT Route, TransportType, Price, NumLogged, NumConnected 
-FROM tansit_logged_num LEFT JOIN transit_connect_num USING(Route, TransportType);
+FROM transit_logged_num LEFT JOIN transit_connect_num USING(Route, TransportType);
 
 CREATE VIEW event_staff_num AS 
 SELECT SiteName, EventName, StartDate, count(*) AS StaffCount 
@@ -872,6 +881,24 @@ SELECT x.UserName, x.SiteName, x.Date, y.TotalVisit, y.CountEvent, y.EveryDay, I
 USE atlbeltline;
 
 DELIMITER $$
+
+
+CREATE PROCEDURE switch_visitor(in user_name varchar(100), in new_visitor int)
+-- order of parameter
+-- username, new state of if the user is visitor
+BEGIN
+    IF new_visitor != 0 AND new_visitor != 1 THEN 
+        SET @error = "New_visitor is out of range.";
+        SIGNAL SQLSTATE '45000' SET message_text = @error;
+    END IF;
+    IF EXISTS(SELECT * FROM Users WHERE UserName = user_name) THEN
+        SET new_visitor = new_visitor + 1;
+        UPDATE Users SET IsVisitor = new_visitor WHERE UserName = user_name;
+    ELSE 
+        SET @error = "User does not exist.";
+        SIGNAL SQLSTATE '45000' SET message_text = @error;
+    END IF;
+END $$
 
 
 CREATE PROCEDURE login(in email_address varchar(100) )
@@ -983,7 +1010,7 @@ END $$
 
 
 
-CREATE PROCEDURE take_tansit(in user_name varchar(50), in route_ varchar(20), in transport_type varchar(10), in take_date date )
+CREATE PROCEDURE take_transit(in user_name varchar(50), in route_ varchar(20), in transport_type varchar(10), in take_date date )
 -- order of parameter
 -- username, route, transport type, date
 BEGIN 
@@ -1219,6 +1246,24 @@ BEGIN
 END $$
 
 
+CREATE PROCEDURE query_employee_sitename(in user_name varchar(100))
+-- order of parameter
+-- user name
+-- site name
+BEGIN 
+    DECLARE site_name varchar(50);
+     
+    IF EXISTS(SELECT * FROM Site WHERE ManagerName = user_name) THEN
+        SELECT SiteName INTO site_name FROM Site WHERE ManagerName = user_name;
+        SELECT site_name;
+    ELSE 
+        SET @error = "This user is not an employee.";
+        SIGNAL SQLSTATE '45000' SET message_text = @error;
+    END IF;    
+END $$
+
+
+
 CREATE PROCEDURE query_employee_by_username(in user_name varchar(100) )
 -- order of parameter
 -- user name
@@ -1236,6 +1281,7 @@ BEGIN
         SELECT EmployeeID, Phone, Address, City, State, ZipCode, Title 
         INTO employee_id, phone_, address_, city_, state_, zip_code, title_ 
         FROM Employee WHERE UserName = user_name;
+        SELECT SiteName INTO site_name FROM Site WHERE ManagerName = user_name;
         SELECT  phone_, address_, city_, state_, zip_code, title_, employee_id;
     ELSE 
         SET @error = "This user is not an employee.";
@@ -1258,9 +1304,12 @@ BEGIN
     DECLARE state_ varchar(100); 
     DECLARE zip_code varchar(10); 
     DECLARE title_ varchar(20);
+    
     SELECT UserName INTO user_name FROM Email WHERE EmailAddress = email_address;
     IF length(user_name) > 0 THEN 
-        CALL query_employee_by_user(user_name, employee_id, phone_, address_, city_, state_, zip_code, title_);
+        SELECT EmployeeID, Phone, Address, City, State, ZipCode, Title 
+        INTO employee_id, phone_, address_, city_, state_, zip_code, title_ 
+        FROM Employee WHERE UserName = user_name;
         SELECT user_name, phone_, address_, city_, state_, zip_code, title_, employee_id;
     ELSE 
         SET @error = "This user does not exist.";
@@ -1443,15 +1492,15 @@ BEGIN
         ELSE 
             SET new_end_date = end_date;
         END IF;
-        IF start_date = "1000-01-01" THEN
-            SET new_start_date = "9999-12-31";
+        IF start_date = "0000-00-00" THEN
+            SET new_start_date = "1000-01-01";
         ELSE 
             SET new_start_date = start_date;
         END IF;
         IF length(transport_type) >  0 THEN 
-            SELECT DISTINCT `Date`, Route, TransportType, Price FROM Take JOIN Transit USING(Route, TransportType) JOIN Connects USING(Route, TransportType) WHERE UserName = user_name AND SiteName LIKE new_site_name AND TransportType = transport_type AND `Date` >= new_start_date AND `Date` <= new_end_date;
+            SELECT DISTINCT Route, TransportType, Price, `Date` FROM Take JOIN Transit USING(Route, TransportType) JOIN Connects USING(Route, TransportType) WHERE UserName = user_name AND SiteName LIKE new_site_name AND TransportType = transport_type AND `Date` >= new_start_date AND `Date` <= new_end_date;
         ELSE 
-            SELECT DISTINCT `Date`, Route, TransportType, Price FROM Take JOIN Transit USING(Route, TransportType) JOIN Connects USING(Route, TransportType) WHERE UserName = user_name AND SiteName LIKE new_site_name AND `Date` >= new_start_date AND `Date` <= new_end_date;
+            SELECT DISTINCT Route, TransportType, Price, `Date` FROM Take JOIN Transit USING(Route, TransportType) JOIN Connects USING(Route, TransportType) WHERE UserName = user_name AND SiteName LIKE new_site_name AND `Date` >= new_start_date AND `Date` <= new_end_date;
         END IF;
     ELSE 
         SET @error = "Username cannot be null.";
@@ -1547,8 +1596,8 @@ BEGIN
     ELSE 
         SET new_end_date = end_date;
     END IF;
-    IF start_date = "1000-01-01" THEN
-        SET new_start_date = "9999-12-31";
+    IF start_date = "0000-00-00" THEN
+            SET new_start_date = "1000-01-01";
     ELSE 
         SET new_start_date = start_date;
     END IF;
@@ -1637,7 +1686,7 @@ BEGIN
     ELSE 
         SET new_end_date = end_date;
     END IF;
-    IF start_date = "1000-01-01" THEN
+    IF start_date = "0000-00-00" THEN
         SET new_start_date = "1000-01-01";
     ELSE 
         SET new_start_date = start_date;
@@ -1671,8 +1720,8 @@ BEGIN
         ELSE 
             SET new_end_date = end_date;
         END IF;
-        IF start_date = "1000-01-01" THEN
-            SET new_start_date = "9999-12-31";
+        IF start_date = "0000-00-00" THEN
+            SET new_start_date = "1000-01-01";
         ELSE 
             SET new_start_date = start_date;
         END IF;
@@ -1699,7 +1748,7 @@ BEGIN
         SELECT `Date`, EventCount, CountStaff, DailyVisit, DailyReveneu FROM full_daily_size 
         WHERE SiteName = site_name AND `Date` >= new_start_date AND `Date` <= new_end_date AND EventCount >= low_event AND EventCount <= new_high_event AND CountStaff >= low_staff AND CountStaff <= new_high_staff AND DailyVisit >= low_visit AND DailyVisit <= low_new_high_visit AND DailyRevenue >= low_revenue AND DailyRevenue <= new_high_revenue;
     END IF;
-END$$
+END $$
 
 
 
@@ -1714,7 +1763,7 @@ BEGIN
         SET @error = "Site name or date cannot be null.";
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     ELSE 
-        SELECT EventName, SiteName, StartDate, DailyVisit, DailyRevenue FROM daily_event WHERE SiteName = site_name AND `Date` = date_;
+        SELECT EventName, SiteName, StartDate, DailyVisit, DailyRevenue FROM daily_event WHERE SiteNeme = site_name AND `Date` = date_;
     END IF;
 END $$
 
@@ -1852,8 +1901,8 @@ BEGIN
     ELSE 
         SET new_end_date = end_date;
     END IF;
-    IF start_date = "1000-01-01" THEN
-        SET new_start_date = "1000-01-01";
+    IF start_date = "0000-00-00" THEN
+            SET new_start_date = "1000-01-01";
     ELSE 
         SET new_start_date = start_date;
     END IF;
@@ -1919,7 +1968,7 @@ BEGIN
      
      
     IF length(route_) > 0  AND length(transport_type) > 0 THEN
-        SELECT SiteName, Price FROM Connects JOIN Transit USING(Route, TransportType) WHERE Route = route_ AND TransportType = transport_type;
+        SELECT  Route, TransportType, Price, SiteName FROM Connects JOIN Transit USING(Route, TransportType) WHERE Route = route_ AND TransportType = transport_type;
     ELSE 
         SET @error = "Username cannot be null.";
         SIGNAL SQLSTATE '45000' SET message_text = @error;
@@ -1953,6 +2002,12 @@ BEGIN
         SET @error = "Site name cannot be null.";
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     END IF;
+END $$
+
+
+CREATE PROCEDURE get_all_transit()
+BEGIN
+    SELECT Route, TransportType, Price, count(*) AS CountSite FROM Transit JOIN Connects USING(TransportType, Route) Group BY TransportType, Route;
 END $$
 
 DELIMITER ;
@@ -2063,16 +2118,16 @@ CALL connect_site("BUS", "152", "Historic Fourth Ward Park" );
 CALL connect_site("BIKE", "Relay", "Piedmont Park" );
 CALL connect_site("BIKE", "Relay", "Historic Fourth Ward Park" );
 
-CALL take_tansit("manager2", "Blue", "MARTA", "2019-03-20" );
-CALL take_tansit("manager2", "152", "BUS", "2019-03-20" );
-CALL take_tansit("manager3", "Relay", "BIKE", "2019-03-20" );
-CALL take_tansit("manager2", "Blue", "MARTA", "2019-03-21" );
-CALL take_tansit("maria.hernandez", "152", "BUS", "2019-03-20" );
-CALL take_tansit("maria.hernandez", "Relay", "BIKE", "2019-03-20" );
-CALL take_tansit("manager2", "Blue", "MARTA", "2019-03-22" );
-CALL take_tansit("maria.hernandez", "152", "BUS", "2019-03-22" );
-CALL take_tansit("mary.smith", "Relay", "BIKE", "2019-03-23" );
-CALL take_tansit("visitor1", "Blue", "MARTA", "2019-03-21" );
+CALL take_transit("manager2", "Blue", "MARTA", "2019-03-20" );
+CALL take_transit("manager2", "152", "BUS", "2019-03-20" );
+CALL take_transit("manager3", "Relay", "BIKE", "2019-03-20" );
+CALL take_transit("manager2", "Blue", "MARTA", "2019-03-21" );
+CALL take_transit("maria.hernandez", "152", "BUS", "2019-03-20" );
+CALL take_transit("maria.hernandez", "Relay", "BIKE", "2019-03-20" );
+CALL take_transit("manager2", "Blue", "MARTA", "2019-03-22" );
+CALL take_transit("maria.hernandez", "152", "BUS", "2019-03-22" );
+CALL take_transit("mary.smith", "Relay", "BIKE", "2019-03-23" );
+CALL take_transit("visitor1", "Blue", "MARTA", "2019-03-21" );
 
 CALL assign_staff("Piedmont Park", "Eastside Trail", "2019-02-04", "michael.smith" );
 CALL assign_staff("Piedmont Park", "Eastside Trail", "2019-02-04", "staff1" );

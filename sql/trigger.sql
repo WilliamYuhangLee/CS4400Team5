@@ -391,4 +391,14 @@ BEGIN
     END IF;
 END $$
 
+
+
+CREATE TRIGGER tgr20_visitor1 BEFORE UPDATE ON Users FOR EACH ROW
+BEGIN
+    IF OLD.IsVisitor = "Yes" AND NEW.IsVisitor = "No" THEN
+        DELETE FROM VisitEvent WHERE UserName = OLD.UserName;
+        DELETE FROM VisitSite WHERE UserName = OLD.UserName;
+    END IF;
+END $$
+
 DELIMITER ;
