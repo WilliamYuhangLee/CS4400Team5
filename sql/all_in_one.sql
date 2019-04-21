@@ -1964,7 +1964,7 @@ CREATE PROCEDURE query_transit_by_pk(in route_ varchar(20), in transport_type va
 BEGIN   
      
     IF length(route_) > 0  AND length(transport_type) > 0 THEN
-        SELECT  Route, TransportType, Price, SiteName FROM Connects JOIN Transit USING(Route, TransportType) WHERE Route = route_ AND TransportType = transport_type;
+        SELECT Price, SiteName FROM Connects JOIN Transit USING(Route, TransportType) WHERE Route = route_ AND TransportType = transport_type;
     ELSE 
         SET @error = 'Username cannot be null.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
