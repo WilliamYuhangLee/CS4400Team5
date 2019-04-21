@@ -1373,11 +1373,12 @@ BEGIN
     DECLARE min_staff_req int; 
     DECLARE capacity_ int;
     DECLARE description_ text;
+    DECLARE duration_ int;
      
     IF length(site_name) > 0 AND length(event_name) > 0 AND start_date != '0000-00-00' THEN
-        SELECT EndDate, MinStaffReq, Capacity, Description INTO end_date, min_staff_req, capacity_, description_ FROM Events WHERE SiteName = site_name AND EventName = event_name AND StartDate = start_date LIMIT 1;        
+        SELECT EndDate, MinStaffReq, Capacity, Description, Duration INTO end_date, min_staff_req, capacity_, description_, duration_ FROM for_event WHERE SiteName = site_name AND EventName = event_name AND StartDate = start_date LIMIT 1;        
         IF length(description_) > 1 THEN 
-            SELECT end_date, min_staff_req, capacity_, description_;
+            SELECT end_date, min_staff_req, capacity_, description_, duration_;
         ELSE 
             SET @error = concat(event_name, ' does not exist.');
             SIGNAL SQLSTATE '45000' SET message_text = @error;
