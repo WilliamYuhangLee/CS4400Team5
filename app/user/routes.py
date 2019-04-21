@@ -7,6 +7,7 @@ from app.models import Employee, Transit
 from app.util import validate_date, db_procedure, DatabaseError, process_phone
 
 
+@bp.route("/")
 @bp.route("/home")
 @login_required
 def home():
@@ -31,7 +32,7 @@ def take_transit_get_table_data():
     return jsonify({"data": [transit.__dict__ for transit in transits]})
 
 
-@bp.route("/take_transit/_send_data")
+@bp.route("/take_transit/_send_data", methods=["POST"])
 @login_required
 def take_transit_send_data():
     date = request.args.get("date", type=str)
