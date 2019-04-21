@@ -1,6 +1,7 @@
-from flask import render_template
+from flask import render_template, request, jsonify
 from flask_login import login_required, current_user
 from . import bp
+from app.util import validate_date, db_procedure, DatabaseError
 
 
 @bp.route("/home")
@@ -33,13 +34,67 @@ def manage_staff():
     return "Not implemented yet!"  # TODO: implement this method
 
 
-@bp.route("/site-report")
+@bp.route("/site_report")
 @login_required
 def site_report():
-    return "Not implemented yet!"  # TODO: implement this method
+    return render_template("manager-site-report.html")
 
 
-@bp.route("/daily-detail")
+@bp.route("/site_report/_get_data")
+@login_required
+def site_report_get_data():
+    start_date = request.args.get("start_date", type=str)
+    if not validate_date(start_date):
+        return jsonify({"result": False, "message": "Start date format incorrect."})
+    end_date = request.args.get("end_date", type=str)
+    if not validate_date(end_date):
+        return jsonify({"result": False, "message": "End date format incorrect."})
+    result, error = db_procedure("query_employee_sitename", (current_user.username,))
+    if error:
+        raise DatabaseError("An error occurred when getting manager's site name: " + error)
+    site_name = result[0][0]
+    result, error = db_procedure("filter_daily_site", (site_name, start_date, end_date, 0, 0, 0, 0, 0, 0, 0, 0))
+    if error:
+        raise DatabaseError("An error occurred when getting manager's site reports: " + error)
+    reports = []
+    for row in result:
+        reports.append({
+            "date": row[0],
+            "event_count": row[1],
+            "staff_count": row[2],
+            "total_visit": row[3],
+            "total_revenue": row[4],
+        })
+    return jsonify({"result": True, "data": reports})
+
+
+@bp.route("/daily_detail")
 @login_required
 def daily_detail():
-    return "Not implemented yet!"  # TODO: implement this method
+    date = request.args.get("date", type=str)
+    if not validate_date(date):
+        raise ValueError("Date format incorrect!")
+    result, error = db_procedure("query_employee_sitename", (current_user.username,))
+    if error:
+        raise DatabaseError("An error occurred when getting manager's site name: " + error)
+    site_name = result[0][0]
+    result, error = db_procedure("filter_daily_event", (site_name, date))
+    if error:
+        raise DatabaseError("An error occurred when getting site's daily detail: " + error)
+    detail = []
+    for row in result:
+        detail.append({
+            "event_name": row[0],
+            "site_name": row[1],
+            "start_date": row[2],
+            "visits": row[3],
+            "revenue": row[4],
+        })
+    for event in detail:
+        result, error = db_procedure("query_staff_by_event", (event["site_name"], event["event_name"], event["start_date"]))
+        if error:
+            raise DatabaseError("An error occurred when querying staff for an event: " + error)
+        event["staff_names"] = []
+        for staff in result:
+            event["staff_names"].append(staff[1] + staff[2])
+    return render_template("manager-daily-detail.html", title="Daily Detail", detail=detail)
