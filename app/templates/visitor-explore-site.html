@@ -2,16 +2,16 @@
 {% block content %}
 
     <div class="col-md-12">
-        <label>Name<input type="text" id="name_search" class="form-control">
-        </label>
-        <label>Description Keyword<input type="text" id="description_search" class="form-control">
-        </label>
-    </div>
-    <div class="col-md-12">
-        <label>Contain Site<select id="contain_site" name="contain_site" class="form-control">
+        <label>Name<select id="contain_site" name="contain_site" class="form-control">
             {% for site in sites %}
                 <option value="{{ site }}">{{ site }}</option>
             {% endfor %}
+        </select>
+        </label>
+        <label>Open Everyday<select id="open_everyday" name="open_everyday" class="form-control">
+            <option value="">All</option>
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
         </select>
         </label>
     </div>
@@ -34,9 +34,9 @@
         <table>
             <tbody>
             <tr>
-                <td>Total Price Range</td>
-                <td><input type="text" class="form-control" id="ticket_price_min" name="min"></td>
-                <td><input type="text" class="form-control" id="ticket_price_max" name="max"></td>
+                <td>Event Count Range</td>
+                <td><input type="text" class="form-control" id="event_count_min" name="min"></td>
+                <td><input type="text" class="form-control" id="event_count_max" name="max"></td>
             </tr>
             </tbody>
         </table>
@@ -49,26 +49,20 @@
             <option value="False">Only Unvisited</option>
         </select>
         </label>
-
-        <label>Sold Out<select id="sold_out" name="sold_out" class="form-control">
-            <option value="">ALL</option>
-            <option value="True">Only Sold Out Events</option>
-            <option value="False">Only Unsold Out Events</option>
-        </select>
-        </label>
     </div>
     <div class="col-md-12">
-        <table id="explore_event" class="display" cellspacing="0" width="100%">
+        <button type="button" class="btn btn-outline-info" id="site_detail">Site Detail</button>
+        <button type="button" class="btn btn-outline-info" id="transit_detail">Transit Detail</button>
+    </div>
+    <div class="col-md-12">
+        <table id="explore_site" class="display" cellspacing="0" width="100%">
             <thead>
             <tr>
                 <th></th>
-                <th>Event Name</th>
                 <th>Site Name</th>
-                <th>Ticket Price</th>
-                <th>Ticket Remaining</th>
+                <th>Event Count</th>
                 <th>Total Visits</th>
                 <th>My Visits</th>
-                <th style="display:none;"></th>
                 <th style="display:none;"></th>
                 <th style="display:none;"></th>
                 <th style="display:none;"></th>
@@ -82,20 +76,14 @@
     </div>
     <script>
         $(document).ready(function () {
-            var table = $('#explore_event').DataTable({
-                data: JSON.parse({{ events|tojson|safe }}),
+            var table = $('#explore_site').DataTable({
+                data: JSON.parse({{ sites|tojson|safe }}),
                 columns: [
-                    {
-                        data: "event_name",
-                    },
                     {
                         data: "site_name"
                     },
                     {
-                        data: "ticket_price"
-                    },
-                    {
-                        data: "ticket_remaining"
+                        data: "event_count"
                     },
                     {
                         data: "total_visits"
@@ -110,13 +98,10 @@
                         data: "end_date"
                     },
                     {
-                        data: "description"
+                        data: "open_everyday"
                     },
                     {
                         data: "visited"
-                    },
-                    {
-                        data: "sold_out"
                     },
                 ],
                 columnDefs: [{
@@ -133,17 +118,21 @@
                 ]
             });
 
-            $('#event_detail').on('click', function () {
+            $('#site_detail').on('click', function () {
                 var name = table.cell('.selected', 0).data();
-                window.location.replace("{{ url_for('visitor.event_detail' , name) }}");
+                window.location.replace("{{ url_for('visitor.site_detail' , name) }}");
+            });
+            $('#transit_detail').on('click', function () {
+                var name = table.cell('.selected', 0).data();
+                window.location.replace("{{ url_for('visitor.transit_detail' , name) }}");
             });
 
             $.fn.dataTable.ext.search.push(
                 function (settings, data, dataIndex) {
                     var min = parseInt($('#date_min').replace(/-/g, ' ').val(), 10);
                     var max = parseInt($('#date_max').replace(/-/g, ' ').val(), 10);
-                    var start = parseFloat(data[6].replace(/-/g, ' ')) || 0;
-                    var end = parseFloat(data[7].replace(/-/g, ' ')) || 0;
+                    var start = parseFloat(data[4].replace(/-/g, ' ')) || 0;
+                    var end = parseFloat(data[5].replace(/-/g, ' ')) || 0;
 
                     if ((isNaN(min) && isNaN(max)) ||
                         (isNaN(min) && end <= max) ||
@@ -158,25 +147,9 @@
 
             $.fn.dataTable.ext.search.push(
                 function (settings, data, dataIndex) {
-                    var min = parseInt($('#ticket_price_min').val(), 10);
-                    var max = parseInt($('#ticket_price_max').val(), 10);
-                    var price = parseFloat(data[2]) || 0;
-
-                    if ((isNaN(min) && isNaN(max)) ||
-                        (isNaN(min) && price <= max) ||
-                        (min <= price && isNaN(max)) ||
-                        (min <= price && price <= max)) {
-                        return true;
-                    }
-                    return false;
-                }
-            );
-
-            $.fn.dataTable.ext.search.push(
-                function (settings, data, dataIndex) {
                     var min = parseInt($('#total_visit_min').val(), 10);
                     var max = parseInt($('#total_visit_max').val(), 10);
-                    var visit = parseFloat(data[4]) || 0;
+                    var visit = parseFloat(data[2]) || 0;
 
                     if ((isNaN(min) && isNaN(max)) ||
                         (isNaN(min) && visit <= max) ||
@@ -188,35 +161,41 @@
                 }
             );
 
+            $.fn.dataTable.ext.search.push(
+                function (settings, data, dataIndex) {
+                    var min = parseInt($('#event_count_min').val(), 10);
+                    var max = parseInt($('#event_count_max').val(), 10);
+                    var event = parseFloat(data[1]) || 0;
+
+                    if ((isNaN(min) && isNaN(max)) ||
+                        (isNaN(min) && event <= max) ||
+                        (min <= event && isNaN(max)) ||
+                        (min <= event && event <= max)) {
+                        return true;
+                    }
+                    return false;
+                }
+            );
+
 
             $('#date_min, #date_max').keyup(function () {
+                table.draw();
+            });
+            $('#event_count_min, #event_count_max').keyup(function () {
                 table.draw();
             });
             $('#total_visit_min, #total_visit_max').keyup(function () {
                 table.draw();
             });
-            $('#ticket_price_min, #ticket_price_max').keyup(function () {
-                table.draw();
-            });
-
-
-            $('#name_search').on('change', function () {
-                table.columns(0).search(this.value).draw();
-            });
-            $('#description_search').on('change', function () {
-                table.columns(8).search(this.value).draw();
-            });
-
-            $('#visit_status').on('change', function () {
-                table.columns(9).search(this.value).draw();
-            });
-            $('#sold_out').on('change', function () {
-                table.columns(10).search(this.value).draw();
-            });
-
 
             $('#contain_site').on('change', function () {
-                table.columns(1).search(this.value).draw();
+                table.columns(0).search(this.value).draw();
+            });
+            $('#visit_status').on('change', function () {
+                table.columns(7).search(this.value).draw();
+            });
+            $('#open_everyday').on('change', function () {
+                table.columns(6).search(this.value).draw();
             });
 
         });

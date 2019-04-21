@@ -1,0 +1,81 @@
+{% extends "home.html" %}
+<!DOCTYPE html>
+<html lang="en">
+
+{% block content %}
+    <div class="col-md-12">
+        <label>Site<input type="text" id="site_name" class="form-control" value="{{ site_name }}" readonly>
+        </label>
+        <label>Transport Type<select id="transport_type" name="transport_type" class="form-control">
+            <option value="">All</option>
+            <option value="MARTA">MARTA</option>
+            <option value="Bus">Bus</option>
+            <option value="Bike">Bike</option>
+        </select>
+        </label>
+    </div>​
+    <div class="content-section">
+        <div class="col-md-12">
+            <table id="daily_detail" class="display" cellspacing="0" width="100%">
+                <thead>
+                <tr>
+                    <th>Route</th>
+                    <th>Transport Type</th>
+                    <th>Price</th>
+                    <th># Connected Sites</th>
+                </tr>
+                </thead>
+            </table>
+        </div>
+
+        <input type="textbox" id="transit_date" name="transit_date" value="2019-11-11"></input>
+        <button type="button" class="btn btn-outline-info" onclick="goBack()">Back</button>
+        <button type="button" class="btn btn-outline-info" id="log_transit">Log Transit</button>
+
+    </div>
+    <script>
+        $(document).ready(function () {
+            var table = $('#daily_detail').DataTable({
+                data: JSON.parse({{ detail|tojson|safe }}),
+                columns: [
+                    {
+                        data: "route"
+                    },
+                    {
+                        data: "transport_type",
+                    },
+                    {
+                        data: "price",
+                    },
+                    {
+                        data: "connected_sites"
+                    }
+                ]
+            });
+
+            $('#transport_type').on('change', function () {
+                table.columns(1).search(this.value).draw();
+            });
+
+            $('#log_transit').on('click', function () {
+                var route = table.cell('.selected', 0).data();
+                var type = table.cell('.selected', 1).data();
+                var date = $('#transit_date').val();
+                var data = JSON.stringify({route: route, transport_type: type, date: date});
+                console.log(data);
+                $.ajax({
+                    url: '{{ url_for('visitor.transit_detail_send_data') }}',
+                    type: 'POST',
+                    contentType: 'application/json;charset=UTF-8',
+                    dataType: 'json',
+                    data: data,
+                    success: function (data) {
+                        alert(data.result)
+                    }
+                });
+            });
+
+
+        })
+    </script>
+{% endblock content %}

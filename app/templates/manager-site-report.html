@@ -1,9 +1,9 @@
 {% extends "home.html" %}
 {% block content %}
     <div class="col-md-12">
-        <label>Start Date<input type="text" id="date_min" class="form-control">
+        <label>Start Date<input type="text" id="date_min" class="form-control" value="0000-00-00">
         </label>
-        <label>End Date<input type="text" id="date_max" class="form-control">
+        <label>End Date<input type="text" id="date_max" class="form-control" value="0000-00-00">
         </label>
     </div>
     <div class="col-md-12">
@@ -60,7 +60,6 @@
                 <th>Total Revenue</th>
                 <th style="display:none;"></th>
                 <th style="display:none;"></th>
-                <th style="display:none;"></th>
             </tr>
             </thead>
         </table>
@@ -70,32 +69,39 @@
     </div>
     <script>
         $(document).ready(function () {
+
             var table = $('#site_report').DataTable({
-                data: JSON.parse({{ sites|tojson|safe }}),
+                ajax: {
+                    url: "{{ url_for('manager.site_report_get_table_data') }}",
+                    type: "GET",
+                    data: function () {
+                        return {
+                            start_date: $("#date_min").text(),
+                            end_date: $("#date_min").text(),
+                        }
+                    }
+                },
                 columns: [
                     {
-                        data: "date"
+                        data: "data.date"
                     },
                     {
-                        data: "event_count",
+                        data: "data.event_count",
                     },
                     {
-                        data: "staff_count"
+                        data: "data.staff_count"
                     },
                     {
-                        data: "total_visits"
+                        data: "data.total_visits"
                     },
                     {
-                        data: "total_revenue"
+                        data: "data.total_revenue"
                     },
                     {
-                        data: "start_date"
+                        data: "data.start_date"
                     },
                     {
-                        data: "end_date"
-                    },
-                    {
-                        data: "site_name"
+                        data: "data.end_date"
                     },
                 ],
                 columnDefs: [{
@@ -112,9 +118,17 @@
                 ]
             });
 
+            $('#event_count_min, #event_count_max').focusout(function () {
+                table.ajax.reload(function (json) {
+                    $('#date_min').val( json.start_date );
+                    $('#date_max').val( json.end_date );
+                });
+            });
+
+
             $('#daily_detail').on('click', function () {
-                var name = table.cell('.selected', 7).data();
-                window.location.replace("{{ url_for('manager.daily_detail' , name) }}");
+                var date = table.cell('.selected', 0).data();
+                window.location.replace("{{ url_for('manager.daily_detail' , date) }}");
             });
 
             $.fn.dataTable.ext.search.push(
@@ -214,6 +228,6 @@
             $('#total_visit_min, #total_visit_max').keyup(function () {
                 table.draw();
             });
-});
+        });
     </script>
 {% endblock content %}

@@ -13,31 +13,33 @@
                 </div>
             </div>
             <div class="form-row">
-                <div class="form-group col-md-4">
+                <div class="form-group col-md-6">
                     {{ render_field(form.start_date) }}
                 </div>
-                <div class="form-group col-md-4">
+                <div class="form-group col-md-6">
                     {{ render_field(form.end_date) }}
-                </div>
-                <div class="form-group col-md-4">
-                    {{ render_field(form.duration_days) }}
                 </div>
             </div>
             <div class="form-row">
-                <div class="form-group col-md-4">
-                    {{ render_field(form.staffs_assigned) }}
+                <div class="form-group col-md-6">
+                    {{ render_field(form.ticket_price) }}
                 </div>
-                <div class="form-group col-md-4">
-                    {{ render_field(form.capacity) }}
-                </div>
-                <div class="form-group col-md-4">
-                    {{ render_field(form.price) }}
+                <div class="form-group col-md-6">
+                    {{ render_field(form.ticket_remaining) }}
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group col-md-12">
                     <div class="form-group col-md-4">
                         {{ render_field(form.description) }}
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-8">
+                    {{ render_field(form.visit_date) }}
+                    <div class="form-group col-md-4">
+                    {{ form.submit(class="btn btn-outline-info") }}
                     </div>
                 </div>
             </div>
