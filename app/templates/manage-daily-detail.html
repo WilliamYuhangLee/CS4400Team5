@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
+
+{% block content %}
+    <div class="content-section">
+            <div class="col-md-12">
+                <table id="daily_detail" class="display" cellspacing="0" width="100%">
+                    <thead>
+                    <tr>
+                        <th>Event Name</th>
+                        <th>Satff Names</th>
+                        <th>Visits</th>
+                        <th>Revenue($)</th>
+                    </tr>
+                    </thead>
+                </table>
+            </div>
+
+            <button type="button" class="btn btn-outline-info" onclick="goBack()">Back</button>
+    </div>
+    <script>
+    $(document).ready(function () {
+      var table = $('#daily_detail').DataTable({
+          data: JSON.parse({{ detail|tojson|safe }}),
+                columns: [
+                    {
+                        data: "event_name"
+                    },
+                    {
+                        data: "staff_names",
+                    },
+                    {
+                        data: "visits",
+                    },
+                    {
+                        data: "revenue"
+                    }
+                ]
+            });
+    })
+    </script>
+{% endblock content %}

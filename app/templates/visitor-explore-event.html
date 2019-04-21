@@ -1,0 +1,212 @@
+{% extends "home.html" %}
+{% block content %}
+
+    <div class="col-md-12">
+        <label>Name<input type="text" id="name_search" class="form-control">
+        </label>
+        <label>Description Keyword<input type="text" id="description_search" class="form-control">
+        </label>
+    </div>
+    <div class="col-md-12">
+        <label>Contain Site<select id="contain_site" name="contain_site" class="form-control">
+            {% for site in sites %}
+                <option value="{{ site }}">{{ site }}</option>
+            {% endfor %}
+        </select>
+        </label>
+    </div>
+    <div class="col-md-12">
+        <label>Start Date<input type="text" id="date_min" class="form-control">
+        </label>
+        <label>End Date<input type="text" id="date_max" class="form-control">
+        </label>
+    </div>
+    <div class="col-md-12">
+        <table>
+            <tbody>
+            <tr>
+                <td>Total Visit Range</td>
+                <td><input type="text" class="form-control" id="total_visit_min" name="min"></td>
+                <td><input type="text" class="form-control" id="total_visit_max" name="max"></td>
+            </tr>
+            </tbody>
+        </table>
+        <table>
+            <tbody>
+            <tr>
+                <td>Total Price Range</td>
+                <td><input type="text" class="form-control" id="ticket_price_min" name="min"></td>
+                <td><input type="text" class="form-control" id="ticket_price_max" name="max"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="col-md-12">
+        <div class="checkbox">
+            <label><input type="checkbox" id="visited" value="True">Include Visited</label>
+        </div>
+        <div class="checkbox">
+            <label><input type="checkbox" id="sold_out" value="True">Include Sold Out Events</label>
+        </div>
+        <div class="col-md-12">
+            <table id="explore_event" class="display" cellspacing="0" width="100%">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>Event Name</th>
+                    <th>Site Name</th>
+                    <th>Ticket Price</th>
+                    <th>Ticket Remaining</th>
+                    <th>Total Visits</th>
+                    <th>My Visits</th>
+                    <th style="display:none;"></th>
+                    <th style="display:none;"></th>
+                    <th style="display:none;"></th>
+                    <th style="display:none;"></th>
+                    <th style="display:none;"></th>
+                </tr>
+                </thead>
+            </table>
+        </div>
+        <div class="col-md-12">
+            <button type="button" class="btn btn-outline-info" onclick="goBack()">Back</button>
+        </div>
+        <script>
+            $(document).ready(function () {
+                var table = $('#explore_event').DataTable({
+                    data: JSON.parse({{ events|tojson|safe }}),
+                    columns: [
+                        {
+                            data: "event_name",
+                        },
+                        {
+                            data: "site_name"
+                        },
+                        {
+                            data: "ticket_price"
+                        },
+                        {
+                            data: "ticket_remaining"
+                        },
+                        {
+                            data: "total_visits"
+                        },
+                        {
+                            data: "my_visits"
+                        },
+                        {
+                            data: "start_date"
+                        },
+                        {
+                            data: "end_date"
+                        },
+                        {
+                            data: "description"
+                        },
+                        {
+                            data: "visited"
+                        },
+                        {
+                            data: "sold_out"
+                        },
+                    ],
+                    columnDefs: [{
+                        orderable: false,
+                        className: 'select-checkbox',
+                        targets: 0
+                    }],
+                    select: {
+                        style: 'os',
+                        selector: 'td:first-child'
+                    },
+                    order: [
+                        [1, 'asc']
+                    ]
+                });
+
+                $('#event_detail').on('click', function () {
+                    var name = table.cell('.selected', 0).data();
+                    window.location.replace("{{ url_for('visitor.event_detail' , name) }}");
+                });
+
+                $.fn.dataTable.ext.search.push(
+                    function (settings, data, dataIndex) {
+                        var min = parseInt($('#date_min').replace(/-/g, ' ').val(), 10);
+                        var max = parseInt($('#date_max').replace(/-/g, ' ').val(), 10);
+                        var start = parseFloat(data[6].replace(/-/g, ' ')) || 0;
+                        var end = parseFloat(data[7].replace(/-/g, ' ')) || 0;
+
+                        if ((isNaN(min) && isNaN(max)) ||
+                            (isNaN(min) && end <= max) ||
+                            (min <= start && isNaN(max)) ||
+                            (min <= start && end <= max)) {
+                            return true;
+                        }
+                        return false;
+                    }
+                );
+
+
+                $.fn.dataTable.ext.search.push(
+                    function (settings, data, dataIndex) {
+                        var min = parseInt($('#ticket_price_min').val(), 10);
+                        var max = parseInt($('#ticket_price_max').val(), 10);
+                        var price = parseFloat(data[2]) || 0;
+
+                        if ((isNaN(min) && isNaN(max)) ||
+                            (isNaN(min) && price <= max) ||
+                            (min <= price && isNaN(max)) ||
+                            (min <= price && price <= max)) {
+                            return true;
+                        }
+                        return false;
+                    }
+                );
+
+                $.fn.dataTable.ext.search.push(
+                    function (settings, data, dataIndex) {
+                        var min = parseInt($('#total_visit_min').val(), 10);
+                        var max = parseInt($('#total_visit_max').val(), 10);
+                        var visit = parseFloat(data[4]) || 0;
+
+                        if ((isNaN(min) && isNaN(max)) ||
+                            (isNaN(min) && visit <= max) ||
+                            (min <= visit && isNaN(max)) ||
+                            (min <= visit && visit <= max)) {
+                            return true;
+                        }
+                        return false;
+                    }
+                );
+
+
+                $('#date_min, #date_max').keyup(function () {
+                    table.draw();
+                });
+                $('#total_visit_min, #total_visit_max').keyup(function () {
+                    table.draw();
+                });
+                $('#ticket_price_min, #ticket_price_max').keyup(function () {
+                    table.draw();
+                });
+
+
+                $('#name_search').on('change', function () {
+                    table.columns(0).search(this.value).draw();
+                });
+                $('#description_search').on('change', function () {
+                    table.columns(8).search(this.value).draw();
+                });
+                $('#description_search').on('change', function () {
+                    table.columns(8).search(this.value).draw();
+                });
+                $('#description_search').on('change', function () {
+                    table.columns(8).search(this.value).draw();
+                });
+                $('#contain_site').on('change', function () {
+                    table.columns(1).search(this.value).draw();
+                });
+
+            });
+        </script>
+{% endblock content %}

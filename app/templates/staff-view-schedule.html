@@ -1,0 +1,111 @@
+{% extends "home.html" %}
+{% block content %}
+    <div class="col-md-12">
+        <label>Start Date<input type="text" id="date_min" class="form-control">
+        </label>
+        <label>End Date<input type="text" id="date_max" class="form-control">
+        </label>
+    </div>
+    <div class="col-md-12">
+        <label>Name<input type="text" id="name_search" class="form-control">
+        </label>
+        <label>Description<input type="text" id="description_search" class="form-control">
+        </label>
+    </div>
+    <div class="col-md-12">
+        <button type="button" class="btn btn-outline-info" id="view_event">View Event</button>
+    </div>
+
+    <div class="col-md-12">
+        <table id="view_schedule" class="display" cellspacing="0" width="100%">
+            <thead>
+            <tr>
+                <th>Event Name</th>
+                <th>Site Name</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Staff Count</th>
+                <th style="display:none;"></th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+    <div class="col-md-12">
+        <button type="button" class="btn btn-outline-info" onclick="goBack()">Back</button>
+    </div>
+    <script>
+        $(document).ready(function () {
+            var table = $('#site_report').DataTable({
+                data: JSON.parse({{ events|tojson|safe }}),
+                columns: [
+                    {
+                        data: "event_name"
+                    },
+                    {
+                        data: "site_name",
+                    },
+                    {
+                        data: "start_date"
+                    },
+                    {
+                        data: "end_date"
+                    },
+                    {
+                        data: "staff_count"
+                    },
+                    {
+                        data: "description"
+                    },
+                ],
+                columnDefs: [{
+                    orderable: false,
+                    className: 'select-checkbox',
+                    targets: 0
+                }],
+                select: {
+                    style: 'os',
+                    selector: 'td:first-child'
+                },
+                order: [
+                    [1, 'asc']
+                ]
+            });
+
+            $('#view_event').on('click', function () {
+                var name = table.cell('.selected', 0).data();
+                window.location.replace("{{ url_for('manager.view_event' , name) }}");
+            });
+
+            $.fn.dataTable.ext.search.push(
+                function (settings, data, dataIndex) {
+                    var min = parseInt($('#date_min').replace(/-/g, ' ').val(), 10);
+                    var max = parseInt($('#date_max').replace(/-/g, ' ').val(), 10);
+                    var start = parseFloat(data[2].replace(/-/g, ' ')) || 0;
+                    var end = parseFloat(data[3].replace(/-/g, ' ')) || 0;
+
+                    if ((isNaN(min) && isNaN(max)) ||
+                        (isNaN(min) && end <= max) ||
+                        (min <= start && isNaN(max)) ||
+                        (min <= start && end <= max)) {
+                        return true;
+                    }
+                    return false;
+                }
+            );
+
+
+            $('#date_min, #date_max').keyup(function () {
+                table.draw();
+            });
+
+            $('#name_search').on('change', function () {
+                table.columns(0).search(this.value).draw();
+            });
+            $('#description_search').on('change', function () {
+                table.columns(7).search(this.value).draw();
+            });
+
+
+        });
+    </script>
+{% endblock content %}

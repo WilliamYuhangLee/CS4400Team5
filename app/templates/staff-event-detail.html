@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+<!DOCTYPE html>
+{% block content %}
+    <form method="post" action="">
+        {{ form.hidden_tag() }}
+        <fieldset class="form-group">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    {{ render_field(form.event_name) }}
+                </div>
+                <div class="form-group col-md-6">
+                    {{ render_field(form.site_name) }}
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    {{ render_field(form.start_date) }}
+                </div>
+                <div class="form-group col-md-4">
+                    {{ render_field(form.end_date) }}
+                </div>
+                <div class="form-group col-md-4">
+                    {{ render_field(form.duration_days) }}
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    {{ render_field(form.staffs_assigned) }}
+                </div>
+                <div class="form-group col-md-4">
+                    {{ render_field(form.capacity) }}
+                </div>
+                <div class="form-group col-md-4">
+                    {{ render_field(form.price) }}
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-12">
+                    <div class="form-group col-md-4">
+                        {{ render_field(form.description) }}
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+        <div class="form-group">
+            <button type="button" class="btn btn-outline-info" onclick="goBack()">Back</button>
+        </div>
+    </form>
+{% endblock %}

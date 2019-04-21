@@ -1,9 +1,6 @@
 {% extends "base.html" %}
 <!DOCTYPE html>
-<html lang="en">
-
 {% block content %}
-    <div class="content-section">
         <form method="post" action="">
             {{ form.hidden_tag() }}
             <fieldset class="form-group">
@@ -66,17 +63,12 @@
             </fieldset>
             <div class="form-group">
                 {{ form.submit(class="btn btn-outline-info") }}
-                <button type="button" class="btn btn-outline-info"
-                        onclick="window.location.href='{{ url_for('main.nav_register') }}';">Back
-                </button>
+                <button type="button" class="btn btn-outline-info" onclick="goBack()">Back</button>
             </div>
-    </div>
     </form>
-    </div>
     <div class="border-top pt-2">
         <small class="text-muted">
             Already have an account? <a class="ml-2" href="{{ url_for('main.login') }}">Log in</a>
         </small>
     </div>
-
 {% endblock content %}
