@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, FieldList, FormField, SelectField
 from wtforms.widgets import PasswordInput
-from wtforms.validators import DataRequired, Email, EqualTo, ValidationError, Regexp, Length, StopValidation
+from wtforms.validators import DataRequired, Email, EqualTo, ValidationError, Regexp, Length, InputRequired
 
 from app.models import Employee
 from app.util import db_procedure, DatabaseError, process_phone
@@ -87,15 +87,15 @@ class UserRegistrationForm(FlaskForm):
 
 class EmployeeRegistrationForm(UserRegistrationForm):
     title = SelectField(label="User Type", validators=[DataRequired()], choices=Employee.Title.choices(),
-                        coerce=Employee.Title.coerce, default=Employee.Title.STAFF)
+                        coerce=Employee.Title.coerce)
     phone = StringField(label="Phone",
                         validators=[DataRequired("Please enter your phone number."),
                         Regexp(regex=r"^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$",
                                message="Please enter a valid US 10-digit phone number.")])
     address = StringField(label="Address", validators=[DataRequired("Please enter your address.")])
     city = StringField(label="City", validators=[DataRequired("Please enter your city.")])
-    state = SelectField(label="State", validators=[DataRequired()], choices=Employee.State.choices(),
-                        coerce=Employee.State.coerce, default=Employee.State.GA)
+    state = SelectField(label="State", validators=[InputRequired()], choices=Employee.State.choices(),
+                        coerce=Employee.State.coerce, default=Employee.State.GA.value)
     zip_code = StringField(label="Zip code", validators=[DataRequired(),
                                                          Length(min=5, max=5,
                                                                 message="A valid zip code must be 5 digits.")])
@@ -103,6 +103,6 @@ class EmployeeRegistrationForm(UserRegistrationForm):
     def validate_phone(self, phone_field):
         result, error = db_procedure("check_phone", (process_phone(phone_field.data),))
         if error:
-            raise DatabaseError("An error occurred when validating phone number with database: " + error)
+            raise ValidationError("Please enter a valid US 10-digit phone number.")
         if not result[0][0]:
             raise ValidationError("This phone number has been claimed by another user.")

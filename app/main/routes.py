@@ -65,10 +65,10 @@ def login():
     if form.validate_on_submit():
         user = User.get_by_email(form.email.data)
         if user and bcrypt.check_password_hash(user.password, form.password.data):
-            if user.status is User.Status.PENDING:
+            if user.status == User.Status.PENDING.value:
                 flash("Your registration has not been approved. Please wait for an administrator to approve your "
                       "request or contact support if needed.", category="warning")
-            elif user.Status is User.Status.DECLINED:
+            elif user.status == User.Status.DECLINED.value:
                 flash("Your registration has been declined. Please contact administrator for support.", category="error")
             else:
                 login_user(user, remember=form.remember_me.data)
