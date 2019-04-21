@@ -35,11 +35,11 @@ def take_transit_get_table_data():
 @bp.route("/take_transit/_send_data", methods=["POST"])
 @login_required
 def take_transit_send_data():
-    date = request.args.get("date", type=str)
+    date = request.json["date"]
     if not validate_date(date):
         return jsonify({"result": "Date format incorrect."})
-    route = request.args.get("route", type=str)
-    transport_type = request.args.get("transport_type", type=Transit.Type.coerce)
+    route = request.json["route"]
+    transport_type = Transit.Type.coerce(request.json["transport_type"])
     args = (current_user.username, route, str(transport_type), date)
     result, error = db_procedure("take_transit", args)
     if error:

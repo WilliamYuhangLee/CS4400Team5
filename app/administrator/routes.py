@@ -28,8 +28,8 @@ def manage_user():
 @bp.route("/manage_user/_send_data", methods=["POST"])
 @login_required
 def manage_user_send_data():
-    username = request.args.get("username")
-    status = request.args.get("status", type=User.Status.coerce)
+    username = request.json["username"]
+    status = User.Status.coerce(request.json["status"])
     result, error = db_procedure("query_user_by_username", (username,))
     if error:
         return jsonify(
@@ -67,7 +67,7 @@ def manage_site():
 @bp.route("/manage_site/_send_data", methods=["DELETE"])
 @login_required
 def manage_site_send_data():
-    site_name = request.args.get("site_name", type=str)
+    site_name = request.json["site_name"]
     result, error = db_procedure("delete_site", (site_name,))
     if error:
         return jsonify({"result": False, "message": "An error occurred preventing deletion of the site: " + error})
