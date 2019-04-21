@@ -1804,21 +1804,21 @@ BEGIN
     
     IF start_date = '0000-00-00' THEN 
         IF end_date = '0000-00-00' THEN
-            SELECT EventName, SiteName, StartDate, EndDate, CountStaff FROM for_schedule 
+            SELECT EventName, SiteName, StartDate, EndDate, CountStaff, Description FROM for_schedule 
             WHERE StaffName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key_word;
         ELSE 
-            SELECT EventName, SiteName, StartDate, EndDate, CountStaff FROM for_schedule 
+            SELECT EventName, SiteName, StartDate, EndDate, CountStaff, Description FROM for_schedule 
             WHERE StaffName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key_word AND EndDate = end_date;
         END IF;
     ELSE 
         IF end_date = '0000-00-00' THEN
-            SELECT EventName, SiteName, StartDate, EndDate, CountStaff FROM for_schedule 
+            SELECT EventName, SiteName, StartDate, EndDate, CountStaff, Description FROM for_schedule 
             WHERE StaffName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key_word AND StartDate = start_date;
         ELSE 
-            SELECT EventName, SiteName, StartDate, EndDate, CountStaff FROM for_schedule 
+            SELECT EventName, SiteName, StartDate, EndDate, CountStaff, Description FROM for_schedule 
             WHERE StaffName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key_word AND EndDate = end_date AND StartDate = start_date;
         END IF;
-    END IF;     
+    END IF; 
 END $$
 
 
