@@ -9,7 +9,6 @@ class User(UserMixin):
         APPROVED = "APPROVED"
         PENDING = "PENDING"
 
-
     def __init__(self, username, password, first_name, last_name, is_visitor, status=Status.PENDING):
         """
         Construct a User instance with default approval status as PENDING.
@@ -64,7 +63,7 @@ class User(UserMixin):
     # Flask Login required functions
     @property
     def is_active(self):
-        return self.status is User.Status.APPROVED
+        return self.status == User.Status.coerce(User.Status.APPROVED)
 
     def get_id(self):
         return self.username
