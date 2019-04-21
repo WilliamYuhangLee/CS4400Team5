@@ -28,8 +28,19 @@ def take_transit():
 @login_required
 def take_transit_get_table_data():
     site_name = request.args.get("site_name", type=str)
-    transits = Transit.get_by_site_name(site_name)
-    return jsonify({"data": [transit.__dict__ for transit in transits]})
+    args = (site_name, "", "", 0, 0)
+    result, error = db_procedure("filter_transit", args)
+    if error:
+        raise DatabaseError("An error occurred when querying transits by site name: " + error)
+    transits = []
+    for row in result:
+        transits.append({
+            "route": row[0],
+            "transport_type": row[1],
+            "price": row[2],
+            "num_of_connected_sites": row[3],
+        })
+    return jsonify({"data": transits})
 
 
 @bp.route("/take_transit/_send_data", methods=["POST"])
@@ -61,7 +72,7 @@ def transit_history():
 @login_required
 def transit_history_get_table_data():
     site_name = request.args.get("site_name", type=str)
-    args = (current_user.username, site_name, "", None, None)
+    args = (current_user.username, site_name, "", "0000-00-00", "0000-00-00")
     result, error = db_procedure("filter_transit_history", args)
     if error:
         raise DatabaseError("An error occurred when querying user transit history: " + error)
