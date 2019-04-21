@@ -1433,6 +1433,24 @@ BEGIN
 END $$
 
 
+CREATE PROCEDURE delete_transit(in route_ varchar(20), in transport_type varchar(20))
+BEGIN
+    DELETE FROM Transit WHERE Route = route_ AND TransportType = transport_type;
+END $$
+
+
+CREATE PROCEDURE check_transit(in route_ varchar(20), in transport_type varchar(20))
+BEGIN
+    DECLARE result int;
+    IF EXISTS(SELECT * FROM Transit WHERE Route = route_ AND TransportType = transport_type) THEN 
+        SET result = 0;
+    ELSE 
+        SET result = 1;
+    END IF;
+    SELECT result;
+END $$
+
+
 DELIMITER ;
 
 
@@ -1464,9 +1482,9 @@ BEGIN
         SET new_high_price = high_price;
     END IF;
     IF length(transport_type) > 0 THEN 
-        SELECT DISTINCT Route, TransportType, Price, NumConnected FROM for_transit JOIN Connects USING(Route, TransportType) WHERE SiteName LIKE new_site_name AND TransportType = transport_type AND Price >= low_price AND Price <= new_high_price AND Route LIKE new_route_;
+        SELECT DISTINCT Route, TransportType, Price, NumConnected, NumLogged  FROM for_transit JOIN Connects USING(Route, TransportType) WHERE SiteName LIKE new_site_name AND TransportType = transport_type AND Price >= low_price AND Price <= new_high_price AND Route LIKE new_route_;
     ELSE 
-        SELECT DISTINCT Route, TransportType, Price, NumConnected FROM for_transit JOIN Connects USING(Route, TransportType) WHERE SiteName LIKE new_site_name AND Price >= low_price AND Price <= new_high_price AND Route LIKE new_route_;
+        SELECT DISTINCT Route, TransportType, Price, NumConnected, NumLogged  FROM for_transit JOIN Connects USING(Route, TransportType) WHERE SiteName LIKE new_site_name AND Price >= low_price AND Price <= new_high_price AND Route LIKE new_route_;
     END IF;
 END $$
 
@@ -1946,7 +1964,7 @@ CREATE PROCEDURE query_transit_by_pk(in route_ varchar(20), in transport_type va
 BEGIN   
      
     IF length(route_) > 0  AND length(transport_type) > 0 THEN
-        SELECT  Route, TransportType, Price, SiteName FROM Connects JOIN Transit USING(Route, TransportType) WHERE Route = route_ AND TransportType = transport_type;
+        SELECT Price, SiteName FROM Connects JOIN Transit USING(Route, TransportType) WHERE Route = route_ AND TransportType = transport_type;
     ELSE 
         SET @error = 'Username cannot be null.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
