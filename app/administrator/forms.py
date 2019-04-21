@@ -17,6 +17,5 @@ class EditSiteForm(FlaskForm):
     name = StringField(label="Name", validators=[InputRequired()])
     zip_code = StringField(label="Zip Code", validators=[InputRequired(), Length(min=5, max=5, message="A valid zip code must be 5 digits.")])
     address = StringField(label="Address", default="")
-    manager = SelectField(label="Manager", validators=[InputRequired()],
-                          choices=[(manager, manager) for manager in get_free_managers()], coerce=str)
+    manager = SelectField(label="Manager", validators=[InputRequired()], coerce=str)
     open_everyday = BooleanField(label="Open Everyday")

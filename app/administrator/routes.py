@@ -99,7 +99,7 @@ def edit_site():
     form.name.data = site_name
     form.zip_code.data = zip_code
     form.address.data = address
-    form.manager.choices.append((manager, manager))
+    form.manager.choices = [(manager, manager) for manager in EditSiteForm.get_free_managers()] + [(manager, manager)]
     form.manager.data = manager
     form.open_everyday.data = open_everyday
     return render_template("administrator-edit-site.html", title="Edit Site", form=form)
@@ -116,6 +116,7 @@ def create_site():
             raise DatabaseError("An error occurred when creating site: " + error)
         flash(message="Site created!", category="success")
         return redirect(url_for(".manage_site"))
+    form.manager.choices = [(manager, manager) for manager in EditSiteForm.get_free_managers()]
     return render_template("administrator-edit-site.html", title="Create Site", form=form)
 
 
