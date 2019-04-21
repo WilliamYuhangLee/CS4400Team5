@@ -132,7 +132,7 @@ def manage_transit():
     if error:
         raise DatabaseError("An error occurred when getting all sites: " + error)
     site_names = [row[0] for row in result]
-    return render_template("user-take-transit.html", title="Take Transit", sites=site_names)
+    return render_template("administrator-manage-transit.html", title="Take Transit", sites=site_names)
 
 
 @bp.route("/manage_transit/_get_table_data")
