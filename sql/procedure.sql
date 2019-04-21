@@ -35,7 +35,7 @@ BEGIN
         SIGNAL SQLSTATE '45000' SET message_text = @error;
 	ELSE
         SET result = (SELECT Password FROM Users WHERE UserName = user_name LIMIT 1);
-        SELECT result, email_address;
+        SELECT result;
 	END IF;
 END $$
 
@@ -223,7 +223,7 @@ BEGIN
 END $$
 
 
-CREATE PROCEDURE edit_eventt(in site_name varchar(50), in event_name varchar(50), in start_date date, in description_ text )
+CREATE PROCEDURE edit_event(in site_name varchar(50), in event_name varchar(50), in start_date date, in description_ text )
 -- order of parameter
 -- site name, event name, start date, new discription
 BEGIN 
