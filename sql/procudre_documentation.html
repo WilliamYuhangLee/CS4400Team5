@@ -220,6 +220,21 @@
                 </tr>
                 
                 <tr>
+                    <td class="name">delete_site()</td>
+                    <td class="functionality">Delete the specified site.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>site_name (str)</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>Null</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
                     <td class="name"><del>delete_user()</del></td>
                     <td class="functionality">Delete a spesified user.</td>
                     <td class="variable">
@@ -379,6 +394,7 @@
                     <td class="functionality">Filter detail information about events, and used by a manager.</td>
                     <td class="variable">
                         <ul>
+                            <li>manager_name (str) the currently logged in manager's username</li>
                             <li>event_name (str) can be empty string</li>
                             <li>key_word (str) can be empty string</li>
                             <li>start_date (str) 'yyyy-mm-dd', not apply shall be '0000-00-00'</li>
@@ -610,6 +626,28 @@
                 </tr>
                 
                 <tr>
+                    <td class="name">get_all_events()</td>
+                    <td class="functionality">Return the detail information about all the events.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>Null</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>SiteName (str)</li>
+                            <li>EventName (str)</li>
+                            <li>StartDate (str/date)</li>
+                            <li>EndDate (str/date)</li>
+                            <li>MinStaffReq (int)</li>
+                            <li>Price (float)</li>
+                            <li>Capacity (int)</li>
+                            <li>Description (str)</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
                     <td class="name">get_all_sites()</td>
                     <td class="functionality">Return information about all sites.</td>
                     <td class="variable">
@@ -641,6 +679,21 @@
                             <li>TransportType (str)</li>
                             <li>Price (float)</li>
                             <li>CountSite (int)</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name">get_free_managers()</td>
+                    <td class="functionality">Get a list of manager who does not have a site to manage.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>Null</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>UserName (str)</li>
                         </ul>
                     </td>
                 </tr>
@@ -817,6 +870,7 @@
                         <ul>
                             <li>zip_code (str)</li>
                             <li>address_ (str) may be empty</li>
+                            <li>every_day (str/enum)</li>
                             <li>manager_name (str)</li>
                         </ul>
                     </td>

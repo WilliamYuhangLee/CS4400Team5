@@ -123,7 +123,7 @@ BEGIN
 END $$
 
 
-CREATE PROCEDURE filter_event_adm(in event_name varchar(50), in key_word varchar(100), in start_date date, in end_date date, in short_duration int, in long_duration int, in low_visit int, in high_visit int, in low_revenue float, in high_revenue float )
+CREATE PROCEDURE filter_event_adm(in manager_name varchar(100), in event_name varchar(50), in key_word varchar(100), in start_date date, in end_date date, in short_duration int, in long_duration int, in low_visit int, in high_visit int, in low_revenue float, in high_revenue float )
 -- order of parameter
 -- event nane, key word in description, start date, end date, lower bondary of duration, higher bondary of duration, lower bondary of visit, higher bondary of visit, lower bondary of revenue, higher bondary of revenue
 BEGIN 
@@ -134,6 +134,7 @@ BEGIN
     DECLARE new_long_duration int;
     DECLARE new_high_visit int;
     DECLARE new_high_revenue float;
+    DECLARE site_name varchar(50);
     
     IF length(event_name) > 0 THEN 
         SET new_event_name = event_name;
@@ -171,8 +172,9 @@ BEGIN
         SET new_high_revenue = high_revenue;
     END IF;   
     
+    SELECT SiteName INTO site_name FROM Site WHERE ManagerName = manager_name;    
     
-    SELECT EventName, CountStaff, Duration, TotalVisit, TotalRevenue FROM for_event WHERE EventName LIKE new_event_name AND Description LIKE new_key_word AND StartDate >= new_start_date AND EndDate <= new_end_date AND Duration >= short_duration AND Duration <= new_long_duration AND TotalVisit >= low_visit AND TotalVisit <= new_high_visit AND TotalRevenue >= low_revenue AND TotalRevenue <= new_high_revenue;
+    SELECT EventName, CountStaff, Duration, TotalVisit, TotalRevenue FROM for_event WHERE SiteName = site_name AND EventName LIKE new_event_name AND Description LIKE new_key_word AND StartDate >= new_start_date AND EndDate <= new_end_date AND Duration >= short_duration AND Duration <= new_long_duration AND TotalVisit >= low_visit AND TotalVisit <= new_high_visit AND TotalRevenue >= low_revenue AND TotalRevenue <= new_high_revenue;
     
 END $$
 
