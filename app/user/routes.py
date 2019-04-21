@@ -38,7 +38,7 @@ def take_transit_send_data():
     if not validate_date(date):
         return jsonify({"result": "Date format incorrect."})
     route = request.args.get("route", type=str)
-    transport_type = request.args.get("transport_type", type=Transit.TYPE.coerce)
+    transport_type = request.args.get("transport_type", type=Transit.Type.coerce)
     args = (current_user.username, route, str(transport_type), date)
     result, error = db_procedure("take_transit", args)
     if error:

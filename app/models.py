@@ -1,26 +1,14 @@
-from enum import Enum
-
 from flask_login import UserMixin
 
-from app.util import db_procedure, DatabaseError
+from app.util import db_procedure, DatabaseError, EnumAttribute
 
 
 class User(UserMixin):
-    class Status(Enum):
+    class Status(EnumAttribute):
         DECLINED = "DECLINED"
         APPROVED = "APPROVED"
         PENDING = "PENDING"
 
-        def __str__(self):
-            return self.value
-
-        @classmethod
-        def choices(cls):
-            return [(choice, choice.value) for choice in cls if choice is not cls.PENDING]
-
-        @classmethod
-        def coerce(cls, item):
-            return item if isinstance(item, cls) else cls[item.upper()]
 
     def __init__(self, username, password, first_name, last_name, is_visitor, status=Status.PENDING):
         """
@@ -125,23 +113,13 @@ class User(UserMixin):
 
 
 class Employee(User):
-    class Title(Enum):
+    class Title(EnumAttribute):
         ADMINISTRATOR = "ADMINISTRATOR"
         MANAGER = "MANAGER"
         STAFF = "STAFF"
 
-        def __str__(self):
-            return self.value
 
-        @classmethod
-        def choices(cls):
-            return [(choice, choice.value) for choice in cls if choice is not cls.ADMINISTRATOR]
-
-        @classmethod
-        def coerce(cls, item):
-            return item if isinstance(item, cls) else cls[item.upper()]
-
-    class State(Enum):
+    class State(EnumAttribute):
         AL = 'AL'
         AK = 'AK'
         AZ = 'AZ'
@@ -194,16 +172,6 @@ class Employee(User):
         WY = 'WY'
         OTHER = 'OTHER'
 
-        def __str__(self):
-            return self.value
-
-        @classmethod
-        def choices(cls):
-            return [(choice, choice.value) for choice in cls]
-
-        @classmethod
-        def coerce(cls, item):
-            return item if isinstance(item, cls) else cls[item.upper()]
 
     def __init__(self, user, phone, address, city, state, zip_code, title, employee_id=None):
         """
@@ -259,25 +227,15 @@ class Employee(User):
 
 
 class Transit:
-    class TYPE(Enum):
+    class Type(EnumAttribute):
         BUS = "BUS"
         MARTA = "MARTA"
         BIKE = "BIKE"
 
-        def __str__(self):
-            return self.value
-
-        @classmethod
-        def choices(cls):
-            return [(choice, choice.value) for choice in cls]
-
-        @classmethod
-        def coerce(cls, item):
-            return item if isinstance(item, cls) else cls[item.upper()]
 
     def __init__(self, route, transport_type, price, num_of_connected_sites=None):
         self.route = route
-        self.transport_type = Transit.TYPE.coerce(transport_type)
+        self.transport_type = Transit.Type.coerce(transport_type)
         self.price = price
         if num_of_connected_sites:
             self.num_of_connected_sites = num_of_connected_sites
