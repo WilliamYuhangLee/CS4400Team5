@@ -51,7 +51,7 @@ def redirect_authenticated_user(user):
         return redirect(next_page)
     if user.is_employee():
         user: Employee
-        return redirect(url_for(user.title.value.lower() + ".home"))
+        return redirect(url_for(user.title.lower() + ".home"))
     else:
         return redirect(url_for("user.home"))
 
