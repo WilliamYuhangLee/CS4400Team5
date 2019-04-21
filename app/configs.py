@@ -9,7 +9,7 @@ class Config(object):
     SECRET_KEY = os.getenv("SECRET_KEY")
 
     # Session
-    PERMANENT_SESSION_LIFETIME = timedelta(minutes=10)
+    # PERMANENT_SESSION_LIFETIME = timedelta(minutes=10)
 
     # Database
     MYSQL_HOST = os.getenv("MYSQL_HOST")
