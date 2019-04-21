@@ -94,17 +94,12 @@
             $('#admin_manage_user_approve').on('click', function () {
                 var user = table.cell('.selected', 0).data();
                 var status = "APPROVED";
-                console.log(user);
-                console.log(status);
+                var data = JSON.stringify({username:user, status:status})
                 $.ajax({
                     url: '{{ url_for('administrator.manage_user_send_data') }}',
                     type: 'POST',
-                    data: function () {
-                        return {
-                            username: user,
-                            status: status,
-                        };
-                    },
+                    datatype: 'json',
+                    data: data,
                     success: function(data){
                       alert(data.message);
                         var json = JSON.parse({{ users|tojson|safe }});
@@ -117,18 +112,12 @@
             $('#admin_manage_user_decline').on('click', function () {
                 var user = table.cell('.selected', 0).data();
                 var status = "DECLINE";
-                var result,message;
-                console.log(result);
-                console.log(message);
+                var data = JSON.stringify({username:user, status:status})
                 $.ajax({
                     url: '{{ url_for('administrator.manage_user_send_data') }}',
                     type: 'POST',
-                    data: function () {
-                        return {
-                            username: user,
-                            status: status,
-                        };
-                    },
+                    datatype: 'json',
+                    data: data,
                     success: function(data){
                         alert(data.message);
                         var json = JSON.parse({{ users|tojson|safe }});

@@ -122,15 +122,12 @@
             $('#transit_delete').on('click', function () {
                 var name = table.cell('.selected', 0).data();
                 var action = "DELETE"
+                var data = JSON.stringify({transit_name:name, action:action})
                 $.ajax({
                     url: '{{ url_for('administrator.manage_transit_send_data') }}',
                     type: 'POST',
-                    data: function () {
-                        return {
-                            transit_name: name,
-                            action: action,
-                        };
-                    },
+                    datatype: 'json',
+                    data: data,
                     success: response => {
                         table.ajax.reload(function (json) {
                             console.log(json.transit)

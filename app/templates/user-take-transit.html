@@ -27,16 +27,16 @@
         </table>
     </div>
     <div class="col-md-12">
-    <table id="take_transit" class="display" cellspacing="0" width="100%">
-        <thead>
-        <tr>
-            <th>Route</th>
-            <th>Transport Type</th>
-            <th>Price</th>
-            <th>#Connected Sites</th>
-        </tr>
-        </thead>
-    </table>
+        <table id="take_transit" class="display" cellspacing="0" width="100%">
+            <thead>
+            <tr>
+                <th>Route</th>
+                <th>Transport Type</th>
+                <th>Price</th>
+                <th>#Connected Sites</th>
+            </tr>
+            </thead>
+        </table>
     </div>
     <div class="col-md-12">
         <input type="textbox" id="transit_date" name="transit_date" value="2019-11-11"></input>
@@ -49,7 +49,9 @@
                 ajax: {
                     url: "{{ url_for('user.take_transit_get_table_data') }}",
                     type: "GET",
-                    data: function () { return {site_name: $("#contain_site option:selected").text()};},
+                    data: function () {
+                        return {site_name: $("#contain_site option:selected").text()};
+                    },
                 },
                 columns: [
                     {
@@ -80,7 +82,8 @@
             });
 
             $('#contain_site').on('change', function () {
-                table.ajax.reload(function(json) {console.log(json)});
+                table.ajax.reload(function (json) {
+                });
             });
 
             $('#transport_type').on('change', function () {
@@ -103,27 +106,27 @@
                 }
             );
 
-            $('#min, #max').keyup( function() {
+            $('#min, #max').keyup(function () {
                 table.draw();
-                } );
+            });
 
             $('#log_transit').on('click', function () {
-                    var route = table.cell('.selected', 0).data();
-                    var type = table.cell('.selected', 1).data();
-                    var date = $('#transit_date').val();
-                    console.log(date);
-                    console.log(route);
-                    console.log(type);
-                    $.ajax( {
+                var route = table.cell('.selected', 0).data();
+                var type = table.cell('.selected', 1).data();
+                var date = $('#transit_date').val();
+                var data = JSON.stringify({route: route, transport_type: type, date: date});
+                console.log(data);
+                $.ajax({
                     url: '{{ url_for('user.take_transit_send_data') }}',
                     type: 'POST',
-                    data: function () { return {
-                        route: route,
-                        transport_type: type,
-                        date: date
-                    };},
+                    contentType: 'application/json;charset=UTF-8',
+                    dataType: 'json',
+                    data: data,
+                    success: function(data) {
+                        alert(data.result)
+                    }
                 });
-    });
+            });
 
         });
     </script>
