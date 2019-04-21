@@ -1,20 +1,23 @@
 {% extends "home.html" %}
 {% block content %}
-<div class="unselected-field row" id="select">
+<div id="select" class="col-md-12">
     <label>Transport Type<select id="transport_type" name="transport_type" class="form-control">
+        <option value="">All</option>
             <option value="MARTA">MARTA</option>
             <option value="Bus">Bus</option>
             <option value="Bike">Bike</option>
         </select>
     </label>
     <label>Contain Site<select id="contain_site" name="contain_site" class="form-control">
+
+    <option value="">All</option>
             {% for site in sites %}
                 <option value="{{ site }}">{{ site }}</option>
             {% endfor %}
         </select>
     </label>
 </div>​
-<div class="row">
+<div class="col-md-12">
 <label>Route<select id="contain_route" name="contain_route" class="form-control">
             {% for route in routes %}
                 <option value="{{ route }}">{{ route }}</option>
@@ -22,7 +25,7 @@
         </select>
     </label>
 </div>
-<div class="row">
+<div class="col-md-12">
     <table id="transit_history" class="display" cellspacing="0" width="100%">
         <thead>
             <tr>
@@ -34,8 +37,8 @@
         </thead>
     </table>
 </div>
-<div class="row">
-    <button type="button" class="btn btn-outline-info" href="javascript:history.back()">Back</button>
+<div class="col-md-12">
+    <button type="button" class="btn btn-outline-info" onclick="goBack()">Back</button>
 </div>
     <script>
        $(document).ready(function () {

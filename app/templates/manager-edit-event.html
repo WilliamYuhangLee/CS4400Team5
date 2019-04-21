@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
+
+{% block content %}
+    <div class="content-section">
+        <form method="post" action="">
+            {{ form.hidden_tag() }}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">
+                    {{ title }}
+                </legend>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        {{ render_field(form.name) }}
+                    </div>
+                    <div class="form-group col-md-6">
+                        {{ render_field(form.price) }}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        {{ render_field(form.start_date) }}
+                    </div>
+                    <div class="form-group col-md-6">
+                        {{ render_field(form.end_date) }}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        {{ render_field(form.staff_assigned) }}
+                    </div>
+                </div>
+                <div class="form-row">
+                    {{ render_field(form.description) }}
+                </div>
+            </fieldset>
+            <div class="form-group">
+                {{ form.submit(class="btn btn-outline-info") }}
+            </div>
+
+            <div class="col-md-12">
+                <table>
+                    <tbody>
+                    <tr>
+                        <td>Daily Visits Range</td>
+                        <td><input type="text" class="form-control" id="daily_visit_min" name="min"></td>
+                        <td><input type="text" class="form-control" id="daily_visit_max" name="max"></td>
+                    </tr>
+                    </tbody>
+                </table>
+                <table>
+                    <tbody>
+                    <tr>
+                        <td>Daily Revenue Range</td>
+                        <td><input type="text" class="form-control" id="daily_revenue_min" name="min"></td>
+                        <td><input type="text" class="form-control" id="daily_revenue_max" name="max"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-12">
+                <table id="event_list" class="display" cellspacing="0" width="100%">
+                    <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Daily Visits</th>
+                        <th>Daily Revenue($)</th>
+                    </tr>
+                    </thead>
+                </table>
+            </div>
+
+            <button type="button" class="btn btn-outline-info"
+                    onclick="window.location.href='{{ url_for('main.nav_register') }}';">Back
+            </button>
+        </form>
+    </div>
+    <div class="border-top pt-2">
+        <small class="text-muted">
+            Already have an account? <a class="ml-2" href="{{ url_for('main.login') }}">Log in</a>
+        </small>
+    </div>
+    <script>
+    $(document).ready(function () {
+      var table = $('#event_list').DataTable({
+                ajax: {
+                    url: "{{ url_for('manager.edit_event_get_table_data') }}",
+                    type: "GET",
+                    data: function () {
+                        return {}
+                    }
+                },
+                columns: [
+                    {
+                        data: "date"
+                    },
+                    {
+                        data: "daily_visits",
+                    },
+                    {
+                        data: "daily_revenue"
+                    }
+                ]
+            });
+
+      $.fn.dataTable.ext.search.push(
+            function (settings, data, dataIndex) {
+                var min = parseInt($('#daily_visit_min').val(), 10);
+                var max = parseInt($('#daily_visit_max').val(), 10);
+                var visit = parseFloat(data[1]) || 0;
+
+                if ((isNaN(min) && isNaN(max)) ||
+                    (isNaN(min) && visit <= max) ||
+                    (min <= visit && isNaN(max)) ||
+                    (min <= visit && visit <= max)) {
+                    return true;
+                }
+                return false;
+            }
+        );
+
+      $.fn.dataTable.ext.search.push(
+            function (settings, data, dataIndex) {
+                var min = parseInt($('#daily_revenue_min').val(), 10);
+                var max = parseInt($('#daily_revenue_max').val(), 10);
+                var revenue = parseFloat(data[2]) || 0;
+
+                if ((isNaN(min) && isNaN(max)) ||
+                    (isNaN(min) && revenue <= max) ||
+                    (min <= revenue && isNaN(max)) ||
+                    (min <= revenue && revenue <= max)) {
+                    return true;
+                }
+                return false;
+            }
+        );
+
+        $('#daily_visit_min, #daily_visit_max').keyup(function () {
+            table.draw();
+        });
+        $('#daily_revenue_min, #daily_revenue_max').keyup(function () {
+            table.draw();
+        });
+    })
+    </script>
+{% endblock content %}

@@ -1,0 +1,103 @@
+{% extends "home.html" %}
+{% block content %}
+    <div class="col-md-12">
+        <label>Site<select id="contain_site" name="contain_site" class="form-control">
+            {% for site in sites %}
+                <option value="{{ site }}">{{ site }}</option>
+            {% endfor %}
+        </select>
+        </label>
+    </div>​
+    <div class="col-md-12">
+        <label>First Name<input type="text" id="first_name_search" class="form-control">
+        </label>
+        <label>Last Name<input type="text" id="last_name_search" class="form-control">
+        </label>
+    </div>
+    <div class="col-md-12">
+        <label>Start Date<input type="text" id="date_min" class="form-control">
+        </label>
+        <label>End Date<input type="text" id="date_max" class="form-control">
+        </label>
+    </div>
+    <div class="col-md-12">
+        <table id="take_transit" class="display" cellspacing="0" width="100%">
+            <thead>
+            <tr>
+                <th>Staff Name</th>
+                <th>#Event Shifts</th>
+                <th style="display:none;"></th>
+                <th style="display:none;"></th>
+                <th style="display:none;"></th>
+                <th style="display:none;"></th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+    <div class="col-md-12">
+        <button type="button" class="btn btn-outline-info" onclick="goBack()">Back</button>
+    </div>
+    <script>
+        $(document).ready(function () {
+            var table = $('#staff_list').DataTable({
+                ajax: {
+                    url: "{{ url_for('manager.manage_staff_get_table_data') }}",
+                    type: "GET",
+                    data: function () {
+                        return {site_name: $("#contain_site option:selected").text()}
+                    }
+                },
+                columns: [
+                    {
+                        data: "name"
+                    },
+                    {
+                        data: "event_shifts",
+                    },
+                    {
+                        data: "first_name",
+                    },
+                    {
+                        data: "last_name",
+                    },
+                    {
+                        data: "start_date"
+                    },
+                    {
+                        data: "end_date"
+                    },
+                ],
+            });
+
+            $('#first_name_search').on('change', function () {
+                table.columns(2).search(this.value).draw();
+            });
+
+            $('#last_name_search').on('change', function () {
+                table.columns(3).search(this.value).draw();
+            });
+
+            $.fn.dataTable.ext.search.push(
+                function (settings, data, dataIndex) {
+                    var min = parseInt($('#date_min').replace(/-/g, ' ').val(), 10);
+                    var max = parseInt($('#date_max').replace(/-/g, ' ').val(), 10);
+                    var start = parseFloat(data[5].replace(/-/g, ' ')) || 0;
+                    var end = parseFloat(data[6].replace(/-/g, ' ')) || 0;
+
+                    if ((isNaN(min) && isNaN(max)) ||
+                        (isNaN(min) && end <= max) ||
+                        (min <= start && isNaN(max)) ||
+                        (min <= start && end <= max)) {
+                        return true;
+                    }
+                    return false;
+                }
+            );
+
+            $('#date_min, #date_max').keyup(function () {
+                table.draw();
+            });
+
+        });
+    </script>
+{% endblock content %}

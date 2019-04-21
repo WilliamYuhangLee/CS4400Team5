@@ -48,13 +48,13 @@
                         <span>{{ error }}</span>
                         {% endfor %}
                     </div>
-                    {% else %}
-                    {% for subform in form.emails %}
+                    {% endif %}
+                    {% for subform in form.emails.entries %}
                     {{ subform.hidden_tag() }}
                     {{ render_field(subform.email) }}
                     {{ render_field(subform.remove) }}
                     {% endfor %}
-                    {% endif %}
+
                 </div>
             </div>
             <div class="form-row">
@@ -73,7 +73,7 @@
             {{ form.submit(class="btn btn-outline-info")}}
         </div>
     </form>
-    <button type="button" class="btn btn-outline-info" href="javascript:history.back()">Back</button>
+    <button type="button" class="btn btn-outline-info" onclick="goBack()">Back</button>
 </div>
 <div class="border-top pt-2">
     <small class="text-muted">

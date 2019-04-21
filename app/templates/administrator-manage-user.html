@@ -1,10 +1,10 @@
 {% extends "home.html" %}
 {% block content %}
-    <div class="row">
-        <div class="unselected-field row" id="select" class="form-control">
+    <div class="col-md-12">
             <label>Username<input type="text" id="username_search" class="form-control">
             </label>
             <label>Type<select id="user_type" name="user_type" class="form-control">
+                <option value="">All</option>
                 <option value="User">User</option>
                 <option value="Visitor">Visitor</option>
                 <option value="Staff">Staff</option>
@@ -12,20 +12,19 @@
             </select>
             </label>
             <label>Status<select id="user_status" name="user_status" class="form-control">
+                <option value="">All</option>
                 <option value="Approved">Approved</option>
                 <option value="Pending">Pending</option>
                 <option value="Decline">Decline</option>
             </select>
-            </label>
-        </div>
-        ​
+            </label>​
     </div>
-    <div class="row">
+    <div class="col-md-12">
         <!--Script for admin needed-->
         <button type="button" class="btn btn-outline-info" id="admin_manage_user_approve">Approve</button>
         <button type="button" class="btn btn-outline-info" id="admin_manage_user_decline">Decline</button>
     </div>
-    <div class="row">
+    <div class="col-md-12">
         <table id="user_list" class="display" cellspacing="0" width="100%">
             <thead>
             <tr>
@@ -37,18 +36,14 @@
             </thead>
         </table>
     </div>
-    <div class="row">
-        <button type="button" class="btn btn-outline-info" href="javascript:history.back()">Back</button>
+    <div class="col-md-12">
+        <button type="button" class="btn btn-outline-info" onclick="goBack()">Back</button>
     </div>
 
     <script>
         $(document).ready(function () {
             var table = $('#user_list').DataTable({
-                ajax: {
-                    url: "{{ url_for('administrator.manage_user()') }}",
-                    type: "GET",
-                    //data: function () { return {site_name: $("#contain_site option:selected").text()};},
-                },
+                data: JSON.parse({{ users|tojson|safe }}),
                 columns: [
                     {
                         data: "username"
@@ -99,76 +94,53 @@
             $('#admin_manage_user_approve').on('click', function () {
                 var user = table.cell('.selected', 0).data();
                 var status = "APPROVED";
+                console.log(user);
+                console.log(status);
                 $.ajax({
-                    url: '{{ url_for('manage_user_send_data()') }}',
-                    type: 'GET',
+                    url: '{{ url_for('administrator.manage_user_send_data') }}',
+                    type: 'POST',
                     data: function () {
                         return {
                             username: user,
                             status: status,
                         };
                     },
-                    success: response => {
-                        $('#alert_message').text(response.message);
-                        $('#alert_modal').modal();
-                        table.ajax.reload(function (json) {
-                        });
+                    success: function(data){
+                      alert(data.message);
+                        var json = JSON.parse({{ users|tojson|safe }});
+                        table.clear();
+                        table.rows.add(json).draw();
                     },
-                    error: response => {
-                        $('#alert_message').text(response.message);
-                        // show the aalert box.
-                        $('#alert_modal').modal();
-                    }
                 });
             });
 
             $('#admin_manage_user_decline').on('click', function () {
                 var user = table.cell('.selected', 0).data();
                 var status = "DECLINE";
+                var result,message;
+                console.log(result);
+                console.log(message);
                 $.ajax({
-                    url: '{{ url_for('manage_user_send_data()') }}',
-                    type: 'GET',
+                    url: '{{ url_for('administrator.manage_user_send_data') }}',
+                    type: 'POST',
                     data: function () {
                         return {
                             username: user,
                             status: status,
                         };
                     },
-                    success: response => {
-                        $('#alert_message').text(response.message);
-                        $('#alert_modal').modal();
-                        table.ajax.reload(function (json) {
-                        });
-                    },
-                    error: response => {
-                        $('#alert_message').text(response.message);
-                        // show the aalert box.
-                        $('#alert_modal').modal();
+                    success: function(data){
+                        alert(data.message);
+                        var json = JSON.parse({{ users|tojson|safe }});
+                        table.clear();
+                        table.rows.add(json).draw();
                     }
                 });
+
             });
+
         });
 
-
     </script>
-
-    <!-- Alert Dialog -->
-    <!-- this alert is used to show succes or error -->
-    <div class="modal fade" id="alert_modal" style="margin-top: 150px;">
-        <div class="modal-body">
-
-            <h3>Alert</h3>
-
-            <h5 id="alert_message"></h5>
-
-            <div class="row-fluid">
-                <div class="span12">
-                    <button type="button" class="btn btn-danger span2" data-dismiss="modal">OK</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
 
 {% endblock content %}
