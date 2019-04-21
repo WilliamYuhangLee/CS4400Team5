@@ -1,7 +1,6 @@
-{% extends "base.html" %}
+{% extends "home.html" %}
 <!DOCTYPE html>
 <html lang="en">
-
 {% block content %}
     <div class="content-section">
             <div class="col-md-12">
@@ -9,7 +8,7 @@
                     <thead>
                     <tr>
                         <th>Event Name</th>
-                        <th>Satff Names</th>
+                        <th>Staff Names</th>
                         <th>Visits</th>
                         <th>Revenue($)</th>
                     </tr>
@@ -29,6 +28,9 @@
                     },
                     {
                         data: "staff_names",
+                        render: function(data, type, row) {
+                            return data.join('<br/>');
+                        }
                     },
                     {
                         data: "visits",
