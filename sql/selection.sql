@@ -26,9 +26,9 @@ BEGIN
         SET new_high_price = high_price;
     END IF;
     IF length(transport_type) > 0 THEN 
-        SELECT DISTINCT Route, TransportType, Price, NumConnected FROM for_transit JOIN Connects USING(Route, TransportType) WHERE SiteName LIKE new_site_name AND TransportType = transport_type AND Price >= low_price AND Price <= new_high_price AND Route LIKE new_route_;
+        SELECT DISTINCT Route, TransportType, Price, NumConnected, NumLogged FROM for_transit JOIN Connects USING(Route, TransportType) WHERE SiteName LIKE new_site_name AND TransportType = transport_type AND Price >= low_price AND Price <= new_high_price AND Route LIKE new_route_;
     ELSE 
-        SELECT DISTINCT Route, TransportType, Price, NumConnected FROM for_transit JOIN Connects USING(Route, TransportType) WHERE SiteName LIKE new_site_name AND Price >= low_price AND Price <= new_high_price AND Route LIKE new_route_;
+        SELECT DISTINCT Route, TransportType, Price, NumConnected, NumLogged  FROM for_transit JOIN Connects USING(Route, TransportType) WHERE SiteName LIKE new_site_name AND Price >= low_price AND Price <= new_high_price AND Route LIKE new_route_;
     END IF;
 END $$
 
