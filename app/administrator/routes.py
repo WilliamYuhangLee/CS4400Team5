@@ -1,6 +1,7 @@
-from flask import render_template, request, jsonify
+from flask import render_template, request, jsonify, redirect, url_for, flash
 from flask_login import login_required, current_user
 from . import bp
+from .forms import EditSiteForm
 from app.util import db_procedure, DatabaseError
 from app.models import User
 
@@ -77,16 +78,45 @@ def manage_site_send_data():
         })
     return jsonify({"result": True, "message": "Successfully deleted site.", "sites": sites})
 
-@bp.route("/edit-site")
+
+@bp.route("/edit_site", methods=["GET", "POST"])
 @login_required
 def edit_site():
-    return "Not implemented yet!"  # TODO: implement this method
+    site_name = request.args.get("site_name", type=str)
+    form = EditSiteForm()
+    if form.validate_on_submit():
+        args = (form.name.data, form.zip_code.data, form.address.data, form.manager.data, int(form.open_everyday.data))
+        result, error = db_procedure("edit_site", args)
+        if error:
+            raise DatabaseError("An error occurred when editing site: " + error)
+        flash(message="Site updated!", category="success")
+        return redirect(url_for(".manage_site"))
+    args = (site_name,)
+    result, error = db_procedure("query_site_by_site_name", args)
+    if error:
+        raise DatabaseError("An error occurred when querying site: " + error)
+    zip_code, address, open_everyday, manager = result[0]
+    form.name.data = site_name
+    form.zip_code.data = zip_code
+    form.address.data = address
+    form.manager.choices.append((manager, manager))
+    form.manager.data = manager
+    form.open_everyday.data = open_everyday
+    return render_template("administrator-edit-site.html", title="Edit Site", form=form)
 
 
-@bp.route("/create-site")
+@bp.route("/create_site")
 @login_required
 def create_site():
-    return "Not implemented yet!"  # TODO: implement this method
+    form = EditSiteForm()
+    if form.validate_on_submit():
+        args = (form.name.data, form.zip_code.data, form.address.data, form.manager.data, int(form.open_everyday.data))
+        result, error = db_procedure("create_site", args)
+        if error:
+            raise DatabaseError("An error occurred when creating site: " + error)
+        flash(message="Site created!", category="success")
+        return redirect(url_for(".manage_site"))
+    return render_template("administrator-edit-site.html", title="Create Site", form=form)
 
 
 @bp.route("/manage-transit")
