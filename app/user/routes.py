@@ -50,7 +50,27 @@ def take_transit_send_data():
 @bp.route("/transit_history")
 @login_required
 def transit_history():
-    return "Not implemented yet!"  # TODO: implement this method
+    result, error = db_procedure("get_all_sites", ())
+    if error:
+        raise DatabaseError("An error occurred when getting all sites: " + error)
+    site_names = [row[0] for row in result]
+    return render_template("user-transit-history.html", title="Take Transit", sites=site_names)
+
+
+@bp.route("/transit_history/_get_table_data")
+@login_required
+def transit_history_get_table_data():
+    site_name = request.args.get("site_name", type=str)
+    args = (current_user.username, site_name, "", "", "")
+    result, error = db_procedure("filter_transit_history", args)
+    if error:
+        raise DatabaseError("An error occurred when querying user transit history: " + error)
+    return jsonify({"data": [{
+        "route": row[0],
+        "transport_type": row[1],
+        "price": row[2],
+        "date": row[3],
+    } for row in result]})
 
 
 @bp.route("/manage_profile", methods=["GET", "POST"])
