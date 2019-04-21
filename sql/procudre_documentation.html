@@ -1,0 +1,1051 @@
+﻿<html>
+    <head>
+        <title>Procedure Documentation</title>
+        <style>
+            table, th, td {
+                border: 1px solid black;
+            }
+            td {
+                padding: 3px;
+            }
+            .name {
+                width: 10%
+            }
+            .functionality {
+                width: 20%;
+            }
+            .variable {
+                width: 35%;
+            }
+        </style>
+    </head>
+
+    <body>
+        <h1>Procedure documentation of CS4400 project</h1>
+        <p>This is a simple documentation containing a table which lists all the procedures with their functionalities, parameters, and returns.</p>
+        <p>No parameter should be empty string unless it tell you to do so.</p>
+        <hr/>
+        
+        <table>
+            <thead>
+                <td>Name</td>
+                <td>Functionality</td>
+                <td>Parameter</td>
+                <td>Return</td>
+            </thead>
+            
+            <tbody>
+                
+                <tr>
+                    <td class="name">add_email()</td>
+                    <td class="functionality">Add a new email address to a given user.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>user_name (str)</li>
+                            <li>email_address (str)</li>
+                        </ul>
+                    </td>
+                    <td class="variable"><ul>
+                            <li>Null</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name">assign_staff()</td>
+                    <td class="functionality">Assign a staff to an event.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>site_name (str) part of event's pk</li>
+                            <li>event_name (str) part of event's pk</li>
+                            <li>start_date (str) part of event's pk, 'yyyy-mm-yy'</li>
+                            <li>staff_name (str) username of a staff</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>Null</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name">cehck_email()</td>
+                    <td class="functionality">Check if an email address can be inserted into the table or not.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>email_address (str)</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>result (int) 1 for ok to insert, 0 for not</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name">check_phone()</td>
+                    <td class="functionality">Check if a phone can be inserted into the table or not.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>phone_ (str)</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>result (int) 1 for ok to insert, 0 for not</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name">check_status()</td>
+                    <td class="functionality">Check if a user has been approved or not.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>user_name (str)</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>result (int) 1 for approved, 0 for others</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name">check_username()</td>
+                    <td class="functionality">Check if a new username can be inserted into the table or not.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>user_name (str)</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>result (int) 1 for ok to insert, 0 for not</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name">connect_site()</td>
+                    <td class="functionality">Connect a transit to a site</td>
+                    <td class="variable">
+                        <ul>
+                            <li>transport_type (str\enum) part of transit's pk</li>
+                            <li>route_ (str) part of transit's pk</li>
+                            <li>site_name (str)</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>Null</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name">create_event()</td>
+                    <td class="functionality">As its name, create a new event with detail information.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>site_name (str)</li>
+                            <li>event_name (str)</li>
+                            <li>start_date (str) 'yyyy-mm-dd'</li>
+                            <li>end_date (str) 'yyyy-mm-dd'</li>
+                            <li>min_staff_req (int) at least 1</li>
+                            <li>price_ (float) cannot be negative</li>
+                            <li>capacity_ (int) at least 1</li>
+                            <li>description_ (str)</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>Null</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name">create_site()</td>
+                    <td class="functionality">As its name, create a new site with detail information</td>
+                    <td class="variable">
+                        <ul>
+                            <li>site_name (str)</li>
+                            <li>zip_code (str)</li>
+                            <li>address_ (str) can be empty string</li>
+                            <li>manager_name (str)</li>
+                            <li>open_every_day (int) 1 for yes, 0 for no</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>Null</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name">create_transit()</td>
+                    <td class="functionality">As its name, create a new transit with detail information.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>transport_type (str\enum)</li>
+                            <li>route_ (str)</li>
+                            <li>price_ (float)</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>Null</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name">delete_email()</td>
+                    <td class="functionality">Delete the specified emaill address.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>email_address (str)</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>Null</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name"><del>delete_user()</del></td>
+                    <td class="functionality">Delete a spesified user.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>user_name (str)</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>Null</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name">disconnect_site()</td>
+                    <td class="functionality">Disconnect the given site from a specified transit.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>transport_type (str\enum)</li>
+                            <li>route_ (str)</li>
+                            <li>site_name (str)</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>Null</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name">edit_event()</td>
+                    <td class="functionality">Change the description only of an esxisted event.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>site_name (str)</li>
+                            <li>event_name (str)</li>
+                            <li>start_date (str) 'yyyy-mm-dd'</li>
+                            <li>description_ (str) new description</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>Null</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name">edit_profile()</td>
+                    <td class="functionality">Edit an employee's profile, editable information includes first name, last name, if he is a visitor, and phone.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>user_name (str)</li>
+                            <li>first_name (str)</li>
+                            <li>last_name (str)</li>
+                            <li>is_visitor (int) 1 for yes, 0 for no</li>
+                            <li>phone_ (str)</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>Null</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name">edit_site()</td>
+                    <td class="functionality">Change information about a site, the editable information includes zip code, address, manager name, and if it opens everyday.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>site_name (str)</li>
+                            <li>zip_code (str)</li>
+                            <li>address (str) can be empty string</li>
+                            <li>manager_name (str)</li>
+                            <li>open_every_day (int) 1 for yes, 0 for no</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>Null</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name">edit_transit()</td>
+                    <td class="functionality">Change information about a transit, editable information includes route and price.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>transport_type (str\enum)</li>
+                            <li>old_route (str)</li>
+                            <li>new_route (str) if not changing, it shall be the same as old_route</li>
+                            <li>price_ (float) new price</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li><Null/li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name">filter_daily_event()</td>
+                    <td class="functionality">Filter daily information about events that are hosted on a specified site and on a specified day.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>site_name (str)</li>
+                            <li>date (str) 'yyyy-mm-dd', can be empty str</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>EventName (str)</li>
+                            <li>SiteName (str)</li>
+                            <li>StartDate (str\date)</li>
+                            <li>DailyVisit (int)</li>
+                            <li>DailyRevenue (float)</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name">filter_daily_site()</td>
+                    <td class="functionality">Filter daily information about site with some conditions.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>site_name (str)</li>
+                            <li>start_date (str) 'yyyy-mm-dd', can be empty string</li>
+                            <li>send_date (str) 'yyyy-mm-dd', can be empty string</li>
+                            <li>low_event (int) counting number</li>
+                            <li>high_event (int) counting number</li>
+                            <li>low_staff (int) counting number</li>
+                            <li>high_staff (int) counting number</li>
+                            <li>low_visit (int) counting number</li>
+                            <li>high_visit (int) counting number</li>
+                            <li>low_revenue (float)</li>
+                            <li>high_revenue (float)</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>Date (str\date)</li>
+                            <li>EventCount (int)</li>
+                            <li>CountStaff (int)</li>
+                            <li>DailyVisit (int)</li>
+                            <li>DailyRevenue (float)</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name">filter_event_adm()</td>
+                    <td class="functionality">Filter detail information about events, and used by administrator.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>event_name (str) can be empty string</li>
+                            <li>key_word (str) can be empty string</li>
+                            <li>start_date (str) 'yyyy-mm-dd', can be empty string</li>
+                            <li>end_date (str) 'yyyy-mm-dd', can be empty string</li>
+                            <li>short_duration (int)</li>
+                            <li>long_duration (int)</li>
+                            <li>low_visit (int)</li>
+                            <li>high_visit (int)</li>
+                            <li>low_revenue (int)</li>
+                            <li>high_revenue (int)</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>EventName (str)</li>
+                            <li>CountStaff (int)</li>
+                            <li>Duration (int)</li>
+                            <li>TotalVisit (int)</li>
+                            <li>TotalRevenue (int)</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name">filter_event_daily()</td>
+                    <td class="functionality">Filter daily information about a specified event.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>site_name (str)</li>
+                            <li>event_name (str)</li>
+                            <li>start_date (str) 'yyyy-mm-dd'</li>
+                            <li>low_visit (int)</li>
+                            <li>high_visit (int)</li>
+                            <li>low_revenue (float)</li>
+                            <li>high_revenue (float)</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>Date (str\date)</li>
+                            <li>DailyVisit (int)</li>
+                            <li>DailyRevenue (float)</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name">filter_event_vis()</td>
+                    <td class="functionality">Filter events' information from a visitor's view.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>user_name (str) visitor's username</li>
+                            <li>event_name (str) can be empty string</li>
+                            <li>key_word (str) can be empty string</li>
+                            <li>site_name (str) can be empty string</li>
+                            <li>start_date (str) 'yyyy-mm-dd', can be empty string</li>
+                            <li>end_date (str) 'yyyy-mm-dd', can be empty string</li>
+                            <li>low_visit (int)</li>
+                            <li>high_visit (int)</li>
+                            <li>low_price (float)</li>
+                            <li>high_price (float)</li>
+                            <li>is_visited (int) 0 for switch off (hide visited event), 1 for switch on</li>
+                            <li>sold_out (int) 0 for switch off (hide event without ticket), 1 for switch on</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>EventName (str)</li>
+                            <li>SiteName (str)</li>
+                            <li>Price (float)</li>
+                            <li>TicketRem (int)</li>
+                            <li>TotalVisit (int)</li>
+                            <li>MyVisit (int)</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name">filter_schedule()</td>
+                    <td class="functionality">Filter event's information from a staff's view.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>user_name (str) staff's username</li>
+                            <li>event_name (str) can be empty string</li>
+                            <li>key_word (str) can be empty string</li>
+                            <li>start_date (str) 'yyyy-mm-dd', can be empty string</li>
+                            <li>end_date (str) 'yyyy-mm-dd', can be empty string</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>EventName (str)</li>
+                            <li>SiteName (str)</li>
+                            <li>StartDate (str\date)</li>
+                            <li>EndDate (str\date)</li>
+                            <li>CountStaff (int)</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name">filter_site_adm()</td>
+                    <td class="functionality">Filter detail information about sites by administrator.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>site_name (str) can be empty string</li>
+                            <li>manager_name (str) can be empty string</li>
+                            <li>open_every_date (int) <strong>0 for not apply, 1 for no, 2 for yes</strong></li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>SiteName (str)</li>
+                            <li>ManagerName (str)</li>
+                            <li>EveryDay (str\enum)</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name">filter_site_vis()</td>
+                    <td class="functionality">Filter information about sites from a visitor's view.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>user_name (str) visitor's username</li>
+                            <li>site_name (str) can be empty string</li>
+                            <li>open_everyday (int) <strong>0 for not apply, 1 for no, 2 for yes</strong><</li>
+                            <li>start_date (str) 'yyyy-mm-dd', can be empty string</li>
+                            <li>end_date (str) 'yyyy-mm-dd', can be empty string</li>
+                            <li>low_visit (int)</li>
+                            <li>high_visit (int)</li>
+                            <li>low_event (int)</li>
+                            <li>high_event (int)</li>
+                            <li>is_visited (int) 0 for switch off (hide visited site), 1 for switch on</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>SiteName (str)</li>
+                            <li>CountEvent (int)</li>
+                            <li>TotalVisit (int)</li>
+                            <li>MyVisits (int)</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name">filter_staff()</td>
+                    <td class="functionality">Filter information about staff. Result is defined by 'the staff assigned to a specified site during a given time period'.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>site_name (str) can be empty</li>
+                            <li>first_name (str) can be empty</li>
+                            <li>last_name (str) can be empty</li>
+                            <li>start_date (str) 'yyyy-mm-dd', can be empty</li>
+                            <li>start_date (str) 'yyyy-mm-dd', can be empty</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>StaffName (str) combination of first name and last name</li>
+                            <li>NumEventShifts (int)</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name">filter_transit()</td>
+                    <td class="functionality">Filter detail information about transit.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>site_name (str) if contains this site, can be empty string</li>
+                            <li>route_ (str)</li>
+                            <li>transport_type (str\enum)</li>
+                            <li>low_price (float)</li>
+                            <li>high_price (float)</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>Route (str)</li>
+                            <li>TransportType (str)</li>
+                            <li>Price (float)</li>
+                            <li>NumConnected (int)</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name">filter_transit_history()</td>
+                    <td class="functionality">Filter one's history about taking transit.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>user_name (str)</li>
+                            <li>site_name (str) can be empty string</li>
+                            <li>transport_type (str\enum)</li>
+                            <li>start_date (str) 'yyyy-mm-dd', can be empty string</li>
+                            <li>end_date (str) 'yyyy-mm-dd', can be empty string</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>Route (str)</li>
+                            <li>TransportType (str)</li>
+                            <li>Price (float)</li>
+                            <li>Date (str\date)</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name">filter_user()</td>
+                    <td class="functionality">Filter information about users.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>user_name (str) can be empty string</li>
+                            <li>type_ (str) User,Visitor, Staff, Employee, Administrator</li>
+                            <li>status_ (str/enum)</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>UserName (str)</li>
+                            <li>Type (str) User,Visitor, Staff, Employee, Administrator</li>
+                            <li>Status (str)</li>
+                            <li>NumEmailCount (int)</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name">get_all_sites()</td>
+                    <td class="functionality">Return information about all sites.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>Null</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>SiteName (str)</li>
+                            <li>ZipCode (str)</li>
+                            <li>Address (str)</li>
+                            <li>OpenEveryDay (int) 1 for yes, 0 for no</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name">get_all_transit()</td>
+                    <td class="functionality">Return information about all transit.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>Null</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>Route (str)</li>
+                            <li>TransportType (str)</li>
+                            <li>Price (float)</li>
+                            <li>CountSite (int)</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name">log_event()</td>
+                    <td class="functionality">Log one visitor to visit an event.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>site_name (str) part of event's pk</li>
+                            <li>event_name (str) part of event's pk</li>
+                            <li>start_date (str) 'yyyy-mm-dd',part of event's pk</li>
+                            <li>user_name (str)</li>
+                            <li>log_date (str) 'yyyy-mm-dd', the date that visitor visit the event</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>Null</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name">log_site()</td>
+                    <td class="functionality">Log one visitor to visit an site.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>site_name (str)</li>
+                            <li>user_name (str)</li>
+                            <li>log_date (str) 'yyyy-mm-dd', the date that visitor visit the site</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>Null</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name">login()</td>
+                    <td class="functionality">Get one's hashed password by email address.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>email_address (str)</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>result (str) the hashed password</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name">manage_user()</td>
+                    <td class="functionality">Update one's status.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>user_name (str)</li>
+                            <li>new_status (str)</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>Null</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name">query_email_by_username()</td>
+                    <td class="functionality">Get one's all email address.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>user_name (str)</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>EmailAddress (str)</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name">query_employee_by_email()</td>
+                    <td class="functionality">Get an employee's information by his email address.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>email_address (str)</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>user_name (str)</li>
+                            <li>phone_ (str)</li>
+                            <li>address_ (str)</li>
+                            <li>city_ (str)</li>
+                            <li>state_ (str)</li>
+                            <li>zip_code (str)</li>
+                            <li>title_ (str\enum)</li>
+                            <li>employee_id (str) may be null</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name">query_employee_by_username	()</td>
+                    <td class="functionality">Get an employee's information by his username</td>
+                    <td class="variable">
+                        <ul>
+                            <li>user_name (str)</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>phone_ (str)</li>
+                            <li>address_ (str)</li>
+                            <li>city_ (str)</li>
+                            <li>state_ (str)</li>
+                            <li>zip_code (str)</li>
+                            <li>title_ (str\enum)</li>
+                            <li>employee_id (str) may be null</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name">query_employee_sitename()</td>
+                    <td class="functionality">Return a site if the employee is a manager and manages a site, otherwise return empty string.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>user_name (str) employee's username</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>site_name (str) may be empty string</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name">query_event_by_pk()</td>
+                    <td class="functionality">Get an event's detail information by its primary key.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>site_name (str)</li>
+                            <li>event_name (str)</li>
+                            <li>start_date (str) 'yyyy-mm-dd'</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>end_date (str/date)</li>
+                            <li>min_staff_req (int)</li>
+                            <li>capacity_ (int)</li>
+                            <li>description_ (str)</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name">query_site_by_site_name()</td>
+                    <td class="functionality">Get a site's detail information by its name.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>site_name (str)</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>zip_code (str)</li>
+                            <li>address_ (str) may be empty</li>
+                            <li>manager_name (str)</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name">query_staff_by_event()</td>
+                    <td class="functionality">Get list of staff that working on an event by the event's primary key.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>site_name (str)</li>
+                            <li>event_name (str)</li>
+                            <li>start_date (str) 'yyyy-mm-dd'</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>StraffName (str) staff's username</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name">query_transit_by_pk()</td>
+                    <td class="functionality">Get a transit's detail information by its primary key.This is a list.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>route_ (str)</li>
+                            <li>transport_type (str\enum)</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>Route (str)</li>
+                            <li>TransportType (str)</li>
+                            <li>Price (float)</li>
+                            <li>SiteName (str) the site that connected by the transit</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name">query_transit_by_site()</td>
+                    <td class="functionality">Get a list of transit that connects to this site.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>site_name (str)</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>Route (str)</li>
+                            <li>TransportType (str)</li>
+                            <li>Price (float)</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name">query_user_by_email()</td>
+                    <td class="functionality">Get user's information by his email address.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>email_address (str)</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>user_name (str)</li>
+                            <li>pass_word (str)</li>
+                            <li>first_name (str)</li>
+                            <li>last_name (str)</li>
+                            <li>is_visitor (int) 1 for yes, 0 for no</li>
+                            <li>status_ (str)</li>
+                            <li>is_employee (int) 1 for yes, 0 for no</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name">query_user_by_username()</td>
+                    <td class="functionality">Get user's information by username.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>user_name (str)</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>pass_word (str)</li>
+                            <li>first_name (str)</li>
+                            <li>last_name (str)</li>
+                            <li>is_visitor (int) 1 for yes, 0 for no</li>
+                            <li>status_ (str)</li>
+                            <li>is_employee (int) 1 for yes, 0 for no</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name">register_employee()</td>
+                    <td class="functionality">Create a new employee record, this must be caled after a `register_user()` being called.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>user_name (str)</li>
+                            <li>phone_ (str)</li>
+                            <li>address_ (str)</li>
+                            <li>city_ (str)</li>
+                            <li>state_ (str\enum)</li>
+                            <li>zip_code (str)</li>
+                            <li>title_ (str\enum)</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>Null</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name"><del>register_employee_aft()</del></td>
+                    <td class="functionality">Create a new employee record after the account had been approved.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>user_name (str)</li>
+                            <li>employee_id (str)</li>
+                            <li>phone_ (str)</li>
+                            <li>address_ (str)</li>
+                            <li>city_ (str)</li>
+                            <li>state_ (str\enum)</li>
+                            <li>zip_code (str)</li>
+                            <li>title_ (str\enum)</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>Null</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name">register_user()</td>
+                    <td class="functionality">Create a new user record.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>user_name (str)</li>
+                            <li>pass_word (str)</li>
+                            <li>first_name (str)</li>
+                            <li>last_name (str)</li>
+                            <li>is_visitor (int) 1 for yes, 0 for no</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>Null</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name">remove_staff()</td>
+                    <td class="functionality">Remove a staff from an event which the staff has been assigned to.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>site_name (str) part of event's pk</li>
+                            <li>evnet_name (str) part of event's pk</li>
+                            <li>start_date (str) 'yyyy-mm-dd',part of event's pk</li>
+                            <li>staff_name (str) staff's username</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>Null</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name">switch_visitor()</td>
+                    <td class="functionality">Change if a user a visitor or not.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>user_name (str)</li>
+                            <li>new_visitor (int) 1 for yes, 0 for no</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>Null</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name">take_transit()</td>
+                    <td class="functionality">Log a user to take a transit.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>user_name (str)</li>
+                            <li>route_ (str)</li>
+                            <li>transport_type (str\enum)</li>
+                            <li>take_date (str) 'yyyy-mm-dd'</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>Null</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name">()</td>
+                    <td class="functionality"></td>
+                    <td class="variable">
+                        <ul>
+                            <li></li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li></li>
+                        </ul>
+                    </td>
+                </tr>
+                
+            </tbody>
+        </table>        
+    </body>
+</html>
