@@ -1,43 +1,192 @@
 {% extends "home.html" %}
 {% block content %}
-<div class="content-section">
-    <form method="post" action="" title="Manage-Transit">
-        {{ form.hidden_tag() }}
-        <fieldset class="form-group">
-            <legend class="border-bottom mb-4">
-                Manage Transit
-            </legend>
-            <div class="form-group">
-                {{ render_field(form.transport_type)}}
-            </div>
-            <div class="form-group">
-                {{ render_field(form.route)}}
-            </div>
-            <div class="form-group">
-                {{ render_field(form.contain_site)}}
-            </div>
-            <div class="form-group">
-                {{ render_field(form.price_range)}}
-            </div>
-        </fieldset>
-        <div class="form-group">
-            {{ form.submit(class="btn btn-outline-info") }}
-        </div>
-        <div class="form-group">
-            {{ form.submit(class="btn btn-outline-info") }}
-        </div>
-        <div class="form-group">
-            {{ form.submit(class="btn btn-outline-info") }}
-        </div>
-        <div class="form-group">
-            {{ form.submit(class="btn btn-outline-info") }}
-        </div>
-    </form>
-    <button type="button" class="btn btn-outline-info" href="javascript:history.back()">Back</button>
-</div>
-<div class="border-top pt-2">
-    <small class="text-muted">
-        Sign out now? <a class="ml-2" href="{{ url_for('main.logout') }}">Sign out</a>
-    </small>>
-</div>
+    <div class="row">
+        <label>Transport Type<select id="transport_type" name="transport_type" class="form-control">
+            <option value="">ALL</option>
+            <option value="MARTA">MARTA</option>
+            <option value="Bus">Bus</option>
+            <option value="Bike">Bike</option>
+        </select>
+        </label>
+        <label>Route<input type="text" id="route_search" class="form-control">
+        </label>
+    </div>
+
+    <div class="row">
+        <label>Contain Site<select id="contain_site" name="contain_site" class="form-control">
+            {% for site in sites %}
+                <option value="{{ site }}">{{ site }}</option>
+            {% endfor %}
+        </select>
+        </label>
+        <table>
+            <tbody>
+            <tr>
+                <td>Price Range</td>
+                <td>Min<input type="text" id="min" name="min" class="form-control"></td>
+                <td>Max<input type="text" id="max" name="max" class="form-control"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="row">
+        <!--Script for admin needed-->
+        <button type="button" class="btn btn-outline-info" id="transit_edit">Edit</button>
+        <button type="button" class="btn btn-outline-info" id="transit_create">Create</button>
+        <button type="button" class="btn btn-outline-info" id="transit_delete">Delete</button>
+    </div>
+    <div class="row">
+        <table id="transit_list" class="display" cellspacing="0" width="100%">
+            <thead>
+            <tr>
+                <th>Route</th>
+                <th>Transport Type</th>
+                <th>Price</th>
+                <th># Connected Sites</th>
+                <th># Transit Logged</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+    <div class="row">
+        <button type="button" class="btn btn-outline-info" href="javascript:history.back()">Back</button>
+    </div>
+    <script>
+        $(document).ready(function () {
+            var table = $('#transit_list').DataTable({
+                ajax: {
+                    url: "{{ url_for('administrator.manage_transit_get_table_data') }}",
+                    type: "GET",
+                    data: function () {
+                        return {
+                            site_name: $("#contain_site option:selected").text()
+                        }
+                    }
+                },
+                columns: [
+                    {
+                        data: "route"
+                    },
+                    {
+                        data: "transport_type",
+                    },
+                    {
+                        data: "price"
+                    },
+                    {
+                        data: "num_of_connected_sites"
+                    },
+                    {
+                        data: "num_of_transit_logged"
+                    }
+                ],
+                columnDefs: [{
+                    orderable: false,
+                    className: 'select-checkbox',
+                    targets: 0
+                }],
+                select: {
+                    style: 'os',
+                    selector: 'td:first-child'
+                },
+                order: [
+                    [1, 'asc']
+                ]
+            });
+
+            $('#transport_type').on('change', function () {
+                table.columns(1).search(this.value).draw();
+            });
+
+            table.columns(0).every(function () {
+                var that = this;
+                $('#route_search').on('keyup change', function () {
+                    if (that.search() !== this.value) {
+                        that
+                            .search(this.value)
+                            .draw();
+                    }
+                });
+            });
+
+
+            $('#transit_edit').on('click', function () {
+                var name = table.cell('.selected', 0).data();
+                var action = "EDIT"
+                $.ajax({
+                    url: '{{ url_for('administrator.manage_transit_send_data') }}',
+                    type: 'POST',
+                    data: function () {
+                        return {
+                            transit_name: name,
+                            action: action,
+                        };
+                    },
+                    success: response => {
+                        window.location.replace("{{ url_for('administrator.edit_transit') }}");
+                    }
+                });
+            });
+
+            $('#transit_create').on('click', function () {
+                var name = table.cell('.selected', 0).data();
+                var action = "CREATE"
+                $.ajax({
+                    url: '{{ url_for('administrator.manage_transit_send_data') }}',
+                    type: 'POST',
+                    data: function () {
+                        return {
+                            transit_name: name,
+                            action: action,
+                        };
+                    },
+                    success: response => {
+                        window.location.replace("{{ url_for('administrator.create_transit') }}");
+                    }
+                });
+            });
+
+            $('#transit_delete').on('click', function () {
+                var name = table.cell('.selected', 0).data();
+                var action = "DELETE"
+                $.ajax({
+                    url: '{{ url_for('administrator.manage_transit_send_data') }}',
+                    type: 'POST',
+                    data: function () {
+                        return {
+                            transit_name: name,
+                            action: action,
+                        };
+                    },
+                    success: response => {
+                        table.ajax.reload(function (json) {
+                            console.log(json)
+                        });
+                    }
+                });
+            });
+
+        });
+
+        $.fn.dataTable.ext.search.push(
+            function (settings, data, dataIndex) {
+                var min = parseInt($('#min').val(), 10);
+                var max = parseInt($('#max').val(), 10);
+                var price = parseFloat(data[2]) || 0;
+
+                if ((isNaN(min) && isNaN(max)) ||
+                    (isNaN(min) && price <= max) ||
+                    (min <= price && isNaN(max)) ||
+                    (min <= price && price <= max)) {
+                    return true;
+                }
+                return false;
+            }
+        );
+
+        $('#min, #max').keyup(function () {
+            table.draw();
+        });
+
+    </script>
 {% endblock content %}

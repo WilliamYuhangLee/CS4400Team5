@@ -1,42 +1,174 @@
 {% extends "home.html" %}
 {% block content %}
-<div class="row">
-        <div class="unselected-field row" id="select">
-                <label>Username<input type="text" id="username_search">
-                </label>
-            <label>Type<select id="user_type" name="user_type">
-                    <option value="User">User</option>
-                    <option value="Visitor">Visitor</option>
-                    <option value="Staff">Staff</option>
-                    <option value="Manager">Manager</option>
-                </select>
+    <div class="row">
+        <div class="unselected-field row" id="select" class="form-control">
+            <label>Username<input type="text" id="username_search" class="form-control">
             </label>
-            <label>Status<select id="user_status" name="user_status">
-                    <option value="Approved">Approved</option>
-                    <option value="Pending">Pending</option>
-                    <option value="Decline">Decline</option>
-                </select>
+            <label>Type<select id="user_type" name="user_type" class="form-control">
+                <option value="User">User</option>
+                <option value="Visitor">Visitor</option>
+                <option value="Staff">Staff</option>
+                <option value="Manager">Manager</option>
+            </select>
             </label>
-        </div>​
-</div>
-<div class="row">
-    <!--Script for admin needed-->
-    <button type="button" class="btn btn-outline-info" id="admin_manage_user_approve">Approve</button>
-    <button type="button" class="btn btn-outline-info" id="admin_manage_user_decline">Approve</button>
-</div>
-<div class="row">
-<table id="user_list" class="display" cellspacing="0" width="100%">
-    <thead>
-        <tr>
-            <th>Username</th>
-            <th>Email Count</th>
-            <th>User Type</th>
-            <th>Status</th>
-        </tr>
-    </thead>
-</table>
-</div>
-<div class="row">
-<button type="button" class="btn btn-outline-info" href="javascript:history.back()">Back</button>
-</div>
+            <label>Status<select id="user_status" name="user_status" class="form-control">
+                <option value="Approved">Approved</option>
+                <option value="Pending">Pending</option>
+                <option value="Decline">Decline</option>
+            </select>
+            </label>
+        </div>
+        ​
+    </div>
+    <div class="row">
+        <!--Script for admin needed-->
+        <button type="button" class="btn btn-outline-info" id="admin_manage_user_approve">Approve</button>
+        <button type="button" class="btn btn-outline-info" id="admin_manage_user_decline">Decline</button>
+    </div>
+    <div class="row">
+        <table id="user_list" class="display" cellspacing="0" width="100%">
+            <thead>
+            <tr>
+                <th>Username</th>
+                <th>Email Count</th>
+                <th>User Type</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+    <div class="row">
+        <button type="button" class="btn btn-outline-info" href="javascript:history.back()">Back</button>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            var table = $('#user_list').DataTable({
+                ajax: {
+                    url: "{{ url_for('administrator.manage_user()') }}",
+                    type: "GET",
+                    //data: function () { return {site_name: $("#contain_site option:selected").text()};},
+                },
+                columns: [
+                    {
+                        data: "username"
+                    },
+                    {
+                        data: "email_count",
+                    },
+                    {
+                        data: "user_type"
+                    },
+                    {
+                        data: "status"
+                    }
+                ],
+                columnDefs: [{
+                    orderable: false,
+                    className: 'select-checkbox',
+                    targets: 0
+                }],
+                select: {
+                    style: 'os',
+                    selector: 'td:first-child'
+                },
+                order: [
+                    [1, 'asc']
+                ]
+            });
+
+            table.columns(0).every(function () {
+                var that = this;
+                $('#username_search').on('keyup change', function () {
+                    if (that.search() !== this.value) {
+                        that
+                            .search(this.value)
+                            .draw();
+                    }
+                });
+            });
+
+            $('#user_type').on('change', function () {
+                table.columns(2).search(this.value).draw();
+            });
+
+            $('#user_status').on('change', function () {
+                table.columns(3).search(this.value).draw();
+            });
+
+            $('#admin_manage_user_approve').on('click', function () {
+                var user = table.cell('.selected', 0).data();
+                var status = "APPROVED";
+                $.ajax({
+                    url: '{{ url_for('manage_user_send_data()') }}',
+                    type: 'GET',
+                    data: function () {
+                        return {
+                            username: user,
+                            status: status,
+                        };
+                    },
+                    success: response => {
+                        $('#alert_message').text(response.message);
+                        $('#alert_modal').modal();
+                        table.ajax.reload(function (json) {
+                        });
+                    },
+                    error: response => {
+                        $('#alert_message').text(response.message);
+                        // show the aalert box.
+                        $('#alert_modal').modal();
+                    }
+                });
+            });
+
+            $('#admin_manage_user_decline').on('click', function () {
+                var user = table.cell('.selected', 0).data();
+                var status = "DECLINE";
+                $.ajax({
+                    url: '{{ url_for('manage_user_send_data()') }}',
+                    type: 'GET',
+                    data: function () {
+                        return {
+                            username: user,
+                            status: status,
+                        };
+                    },
+                    success: response => {
+                        $('#alert_message').text(response.message);
+                        $('#alert_modal').modal();
+                        table.ajax.reload(function (json) {
+                        });
+                    },
+                    error: response => {
+                        $('#alert_message').text(response.message);
+                        // show the aalert box.
+                        $('#alert_modal').modal();
+                    }
+                });
+            });
+        });
+
+
+    </script>
+
+    <!-- Alert Dialog -->
+    <!-- this alert is used to show succes or error -->
+    <div class="modal fade" id="alert_modal" style="margin-top: 150px;">
+        <div class="modal-body">
+
+            <h3>Alert</h3>
+
+            <h5 id="alert_message"></h5>
+
+            <div class="row-fluid">
+                <div class="span12">
+                    <button type="button" class="btn btn-danger span2" data-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
 {% endblock content %}
