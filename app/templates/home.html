@@ -1,22 +1,27 @@
 {% extends "base.html" %}
-{% block navbar_item2 %}
+{% block navbar_item1 %}
+    <li class="nav-item active">
+        <a class="nav-link" href="{{ url_for('main.login') }}">Home</a>
+    </li>
+{% endblock %}
+{% block navbar_item3 %}
     <li class="nav-item active">
         <a class="nav-link" href="{{ url_for('user.take_transit') }}">Take Transit</a>
     </li>
 {% endblock %}
-{% block navbar_item3 %}
+{% block navbar_item4 %}
     <li class="nav-item">
         <a class="nav-link" href="{{ url_for('user.transit_history') }}">View Transit History</a>
     </li>
 {% endblock %}
-{% block navbar_item1 %}
+{% block navbar_item2 %}
     {% if current_user.is_employee() %}
         <li class="nav-item">
             <a class="nav-link" href="{{ url_for('user.manage_profile') }}">Account</a>
         </li>
     {% endif %}
 {% endblock %}
-{% block navbar_item4 %}
+{% block navbar_item5 %}
     <li class="nav-item">
         <a class="nav-link" href="{{ url_for('main.logout') }}">Sign out</a>
     </li>

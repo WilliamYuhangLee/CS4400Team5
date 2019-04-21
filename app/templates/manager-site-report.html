@@ -1,13 +1,6 @@
 {% extends "home.html" %}
 {% block content %}
     <div class="col-md-12">
-        <label>Name<input type="text" id="name_search" class="form-control">
-        </label>
-        <label>Description<input type="text" id="description_search" class="form-control">
-        </label>
-    </div>
-
-    <div class="col-md-12">
         <label>Start Date<input type="text" id="date_min" class="form-control">
         </label>
         <label>End Date<input type="text" id="date_max" class="form-control">
@@ -17,23 +10,34 @@
         <table>
             <tbody>
             <tr>
-                <td>Duration Range</td>
-                <td><input type="text" class="form-control" id="duration_min" name="min"></td>
-                <td><input type="text" class="form-control" id="duration_max" name="max"></td>
+                <td>Event Count Range</td>
+                <td><input type="text" class="form-control" id="event_count_min" name="min"></td>
+                <td><input type="text" class="form-control" id="event_count_max" name="max"></td>
             </tr>
             </tbody>
         </table>
         <table>
             <tbody>
             <tr>
-                <td>Total Visit Range</td>
+                <td>Staff Count Range</td>
+                <td><input type="text" class="form-control" id="staff_count_min" name="min"></td>
+                <td><input type="text" class="form-control" id="staff_count_max" name="max"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="col-md-12">
+        <table>
+            <tbody>
+            <tr>
+                <td>Total Visits Range</td>
                 <td><input type="text" class="form-control" id="total_visit_min" name="min"></td>
                 <td><input type="text" class="form-control" id="total_visit_max" name="max"></td>
             </tr>
             </tbody>
         </table>
     </div>
-    <div class="col-md-12">
+        <div class="col-md-12">
         <table>
             <tbody>
             <tr>
@@ -44,22 +48,16 @@
             </tbody>
         </table>
     </div>
+    <button type="button" class="btn btn-outline-info" id="daily_detail">Daily Detail</button>
     <div class="col-md-12">
-        <!--Script for admin needed-->
-        <button type="button" class="btn btn-outline-info" id="event_edit">View/Edit</button>
-        <button type="button" class="btn btn-outline-info" id="event_create">Create</button>
-        <button type="button" class="btn btn-outline-info" id="event_delete">Delete</button>
-    </div>
-    <div class="col-md-12">
-        <table id="event_list" class="display" cellspacing="0" width="100%">
+        <table id="site_report" class="display" cellspacing="0" width="100%">
             <thead>
             <tr>
-                <th>Name</th>
+                <th>Date</th>
+                <th>Event Count</th>
                 <th>Staff Count</th>
-                <th>Duration(days)</th>
                 <th>Total Visits</th>
                 <th>Total Revenue</th>
-                <th style="display:none;"></th>
                 <th style="display:none;"></th>
                 <th style="display:none;"></th>
             </tr>
@@ -71,17 +69,17 @@
     </div>
     <script>
         $(document).ready(function () {
-            var table = $('#event_list').DataTable({
-                data: {{ event }},
+            var table = $('#site_report').DataTable({
+                data: {{ site }},
                 columns: [
                     {
-                        data: "name"
+                        data: "date"
                     },
                     {
-                        data: "staff_count",
+                        data: "event_count",
                     },
                     {
-                        data: "duration"
+                        data: "staff_count"
                     },
                     {
                         data: "total_visits"
@@ -95,9 +93,6 @@
                     {
                         data: "end_date"
                     },
-                    {
-                        data: "description"
-                    }
                 ],
                 columnDefs: [{
                     orderable: false,
@@ -111,18 +106,6 @@
                 order: [
                     [1, 'asc']
                 ]
-            });
-
-            $('#name_search').on('change', function () {
-                table.columns(0).search(this.value).draw();
-            });
-            $('#description_search').on('change', function () {
-                table.columns(7).search(this.value).draw();
-            });
-
-            $('#event_edit').on('click', function () {
-                var name = table.cell('.selected', 0).data();
-                window.location.replace("{{ url_for('manager.edit_event' , name) }}");
             });
 
             $('#event_create').on('click', function () {

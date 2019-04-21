@@ -1,6 +1,6 @@
 {% extends "home.html" %}
 {% block content %}
-    <div class="row">
+    <div class="col-md-12">
         <label>Transport Type<select id="transport_type" name="transport_type" class="form-control">
             <option value="">ALL</option>
             <option value="MARTA">MARTA</option>
@@ -12,7 +12,7 @@
         </label>
     </div>
 
-    <div class="row">
+    <div class="col-md-12">
         <label>Contain Site<select id="contain_site" name="contain_site" class="form-control">
             {% for site in sites %}
                 <option value="{{ site }}">{{ site }}</option>
@@ -29,13 +29,13 @@
             </tbody>
         </table>
     </div>
-    <div class="row">
+    <div class="col-md-12">
         <!--Script for admin needed-->
         <button type="button" class="btn btn-outline-info" id="transit_edit">Edit</button>
         <button type="button" class="btn btn-outline-info" id="transit_create">Create</button>
         <button type="button" class="btn btn-outline-info" id="transit_delete">Delete</button>
     </div>
-    <div class="row">
+    <div class="col-md-12">
         <table id="transit_list" class="display" cellspacing="0" width="100%">
             <thead>
             <tr>
@@ -48,8 +48,8 @@
             </thead>
         </table>
     </div>
-    <div class="row">
-        <button type="button" class="btn btn-outline-info" href="javascript:history.back()">Back</button>
+    <div class="col-md-12">
+        <button type="button" class="btn btn-outline-info" onclick="goBack()">Back</button>
     </div>
     <script>
         $(document).ready(function () {
@@ -112,38 +112,11 @@
 
             $('#transit_edit').on('click', function () {
                 var name = table.cell('.selected', 0).data();
-                var action = "EDIT"
-                $.ajax({
-                    url: '{{ url_for('administrator.manage_transit_send_data') }}',
-                    type: 'POST',
-                    data: function () {
-                        return {
-                            transit_name: name,
-                            action: action,
-                        };
-                    },
-                    success: response => {
-                        window.location.replace("{{ url_for('administrator.edit_transit') }}");
-                    }
-                });
+                window.location.replace("{{ url_for('administrator.edit_transit', name) }}");
             });
 
             $('#transit_create').on('click', function () {
-                var name = table.cell('.selected', 0).data();
-                var action = "CREATE"
-                $.ajax({
-                    url: '{{ url_for('administrator.manage_transit_send_data') }}',
-                    type: 'POST',
-                    data: function () {
-                        return {
-                            transit_name: name,
-                            action: action,
-                        };
-                    },
-                    success: response => {
-                        window.location.replace("{{ url_for('administrator.create_transit') }}");
-                    }
-                });
+                window.location.replace("{{ url_for('administrator.create_transit') }}");
             });
 
             $('#transit_delete').on('click', function () {
@@ -160,7 +133,7 @@
                     },
                     success: response => {
                         table.ajax.reload(function (json) {
-                            console.log(json)
+                            console.log(json.transit)
                         });
                     }
                 });

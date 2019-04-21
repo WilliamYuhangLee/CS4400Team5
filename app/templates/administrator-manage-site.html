@@ -1,6 +1,6 @@
 {% extends "home.html" %}
 {% block content %}
-    <div class="row">
+    <div class="col-md-12">
         <label>Site<select id="contain_site" name="contain_site" class="form-control">
             {% for site in sites %}
                 <option value="{{ site }}">{{ site }}</option>
@@ -14,20 +14,20 @@
         </select>
         </label>
     </div>
-    <div class="row">
+    <div class="col-md-12">
         <label>Open Everyday<select id="open_everyday" name="open_everyday" class="form-control">
             <option value="Yes">Yes</option>
             <option value="No">No</option>
         </select>
         </label>
     </div>
-    <div class="row">
+    <div class="col-md-12">
         <!--Script for admin needed-->
         <button type="button" class="btn btn-outline-info" id="site_edit">Edit</button>
         <button type="button" class="btn btn-outline-info" id="site_create">Create</button>
         <button type="button" class="btn btn-outline-info" id="site_delete">Delete</button>
     </div>
-    <div class="row">
+    <div class="col-md-12">
         <table id="site_list" class="display" cellspacing="0" width="100%">
             <thead>
             <tr>
@@ -38,8 +38,8 @@
             </thead>
         </table>
     </div>
-    <div class="row">
-        <button type="button" class="btn btn-outline-info" href="javascript:history.back()">Back</button>
+    <div class="col-md-12">
+        <button type="button" class="btn btn-outline-info" onclick="goBack()">Back</button>
     </div>
     <script>
         $(document).ready(function () {
@@ -89,8 +89,7 @@
             });
 
             $('#site_create').on('click', function () {
-                var name = table.cell('.selected', 0).data();
-                window.location.replace("{{ url_for('administrator.create_site', name) }}");
+                window.location.replace("{{ url_for('administrator.create_site') }}");
             });
 
             $('#site_delete').on('click', function () {
@@ -104,13 +103,9 @@
                         };
                     },
                     success: response => {
-                        table.ajax.reload(function(json) {
-                            console.log(json);
-                            json["result"]
-                            json["message"]
-                            json["sites"]
+                            table.ajax.reload(function (json) {
+                            console.log(json.site)
                         });
-                    },
                 });
             });
 

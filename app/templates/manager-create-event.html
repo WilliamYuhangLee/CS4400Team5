@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+{% block content %}
+    <div class="content-section">
+        <form method="post" action="">
+            {{ form.hidden_tag() }}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">
+                    {{ title }}
+                </legend>
+                <div class="form-row">
+                    <div class="form-group">
+                        {{ render_field(form.name) }}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        {{ render_field(form.price) }}
+                    </div>
+                    <div class="form-group">
+                        {{ render_field(form.capacity) }}
+                    </div>
+                    <div class="form-group">
+                        {{ render_field(form.minimun_staff_required) }}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        {{ render_field(form.start_date) }}
+                    </div>
+                    <div class="form-group">
+                        {{ render_field(form.end_date) }}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        {{ render_field(form.description) }}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        {{ render_field(form.assign_staff) }}
+                    </div>
+                </div>
+            </fieldset>
+            <div class="form-group">
+                {{ form.submit(class="btn btn-outline-info") }}
+            </div>
+        </form>
+    </div>
+    <div class="border-top pt-2">
+        <small class="text-muted">
+            Don't have an account? <a class="ml-2" href="{{ url_for('main.nav_register') }}">Sign up now</a>
+        </small>
+    </div>
+{% endblock content %}

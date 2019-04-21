@@ -3,79 +3,80 @@
 <html lang="en">
 
 {% block content %}
-<div class="content-section">
-    <form method="post" action="">
-        {{ form.hidden_tag() }}
-        <fieldset class="form-group">
-            <legend class="border-bottom mb-4">
-                Welcome to {{ config.APP_NAME }}
-            </legend>
-            <div class="form-row">
-                <div class="form-group col-md-6">
-                    {{ render_field(form.first_name) }}
+    <div class="content-section">
+        <form method="post" action="">
+            {{ form.hidden_tag() }}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">
+                    Welcome to {{ config.APP_NAME }}
+                </legend>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        {{ render_field(form.first_name) }}
+                    </div>
+                    <div class="form-group col-md-6">
+                        {{ render_field(form.last_name) }}
+                    </div>
                 </div>
-                <div class="form-group col-md-6">
-                    {{ render_field(form.last_name) }}
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        {{ render_field(form.username) }}
+                    </div>
+                    {% block employee_register %}{% endblock %}
                 </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group col-md-6">
-                    {{ render_field(form.username) }}
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        {{ render_field(form.password) }}
+                    </div>
+                    <div class="form-group col-md-6">
+                        {{ render_field(form.confirm_password) }}
+                    </div>
                 </div>
-                {% block employee_register %}{% endblock %}
-            </div>
-            <div class="form-row">
-                <div class="form-group col-md-6">
-                    {{ render_field(form.password) }}
-                </div>
-                <div class="form-group col-md-6">
-                    {{ render_field(form.confirm_password) }}
-                </div>
-            </div>
-            {% block container %}
-            {% endblock container %}
+                {% block container %}
+                {% endblock container %}
 
-            <div class="form-row">
-                <div class="form-group col-md-6">
-                    {% if form.emails.errors %}
-                    {{ form.emails(class="form-control form-control-lg is-invalid") }}
-                    <div class="invalid-feedback">
-                        {% for error in form.emails.errors %}
-                        <span>{{ error }}</span>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        {% if form.emails.errors %}
+                            {{ form.emails(class="form-control form-control-lg is-invalid") }}
+                            <div class="invalid-feedback">
+                                {% for error in form.emails.errors %}
+                                    <span>{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        {% for subform in form.emails %}
+                            {{ subform.hidden_tag() }}
+                            {{ render_field(subform.email) }}
+                            {{ render_field(subform.remove) }}
                         {% endfor %}
                     </div>
-                    {% else %}
-                    {% for subform in form.emails %}
-                    {{ subform.hidden_tag() }}
-                    {{ render_field(subform.email) }}
-                    {{ render_field(subform.remove) }}
-                    {% endfor %}
-                    {% endif %}
                 </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group col-md-6">
-                    {{ render_field(form.email) }}
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        {{ render_field(form.email) }}
+                    </div>
+                    <div class="form-group col-md-4">
+                        {{ render_field(form.add) }}
+                    </div>
                 </div>
-                <div class="form-group col-md-4">
-                    {{ render_field(form.add) }}
+                <div class="form-row">
+                    {{ render_field(form.visitor) }}
                 </div>
+            </fieldset>
+            <div class="form-group">
+                {{ form.submit(class="btn btn-outline-info") }}
+                <button type="button" class="btn btn-outline-info"
+                        onclick="window.location.href='{{ url_for('main.nav_register') }}';">Back
+                </button>
             </div>
-            <div class="form-row">
-                    {{ render_field(form.visitor)}}
-            </div>
-        </fieldset> 
-        <div class="form-group">
-            {{ form.submit(class="btn btn-outline-info") }}
-            <button type="button" class="btn btn-outline-info" onclick="window.location.href='{{ url_for('main.nav_register') }}';">Back</button>
-        </div>
     </div>
     </form>
-</div>
-<div class="border-top pt-2">
-    <small class="text-muted">
-        Already have an account? <a class="ml-2" href="{{ url_for('main.login') }}">Log in</a>
-    </small>
-</div>
+    </div>
+    <div class="border-top pt-2">
+        <small class="text-muted">
+            Already have an account? <a class="ml-2" href="{{ url_for('main.login') }}">Log in</a>
+        </small>
+    </div>
 
 {% endblock content %}
