@@ -30,17 +30,21 @@ def manage_user():
 def manage_user_send_data():
     username = request.args.get("username")
     status = request.args.get("status", type=User.Status.coerce)
-    if current_user.status == status:
+    result, error = db_procedure("query_user_by_username", (username,))
+    if error:
+        return jsonify(
+            {"result": False, "message": "An internal error stopped fetching of the user's status: " + error})
+    current_status = User.Status.coerce(result[0][4])
+    if current_status == status:
         return jsonify({"result": False, "message": "The user status has not been changed."})
     if status == User.Status.PENDING.value:
         return jsonify({"result": False, "message": "You can not change a user's status to PENDING!"})
-    if current_user.status == User.Status.APPROVED.value:
+    if current_status == User.Status.APPROVED.value:
         return jsonify({"result": False, "message": "You can not change an approved user's status!"})
     args = (username, status)
     result, error = db_procedure("manage_user", args)
     if error:
         return jsonify({"result": False, "message": "An internal error prevented the user's status from being updated: " + error})
-    current_user.status = User.Status[status]
     return jsonify({"result": True, "message": "Successfully updated the user's status."})
 
 
