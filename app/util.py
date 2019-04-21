@@ -1,9 +1,28 @@
+from enum import Enum
 from datetime import datetime
 from app import db
 
 
 class DatabaseError(Exception):
     pass
+
+
+class EnumAttribute(Enum):
+    def __str__(self):
+        return self.value
+
+    @classmethod
+    def choices(cls):
+        return [(choice, choice.value) for choice in cls]
+
+    @classmethod
+    def coerce(cls, item):
+        if isinstance(item, cls):
+            return item.value
+        elif isinstance(item, str) and item.upper() in cls.__members__:
+            return item.upper()
+        else:
+            raise ValueError("The coerced value is not a member of %s class." % cls.__name__)
 
 
 def db_procedure(procedure_name, args):
