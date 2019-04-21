@@ -1,5 +1,5 @@
-import json
 from flask import render_template, request, jsonify, redirect, url_for, flash
+from flask.json import dumps
 from flask_login import login_required, current_user
 from . import bp
 from .forms import EditSiteForm
@@ -22,7 +22,7 @@ def manage_user():
     users = []
     for row in result:
         users.append({"username": row[0], "email_count": row[1], "user_type": row[2], "status": row[3]})
-    return render_template("administrator-manage-user.html", title="Manage Users", users=json.dumps(users))
+    return render_template("administrator-manage-user.html", title="Manage Users", users=dumps(users))
 
 
 @bp.route("/manage_user/_send_data", methods=["POST"])
@@ -57,7 +57,7 @@ def manage_site():
             "manager_name": row[1],
             "open_every_date": row[2]
         })
-    return render_template("administrator-manage-site.html", title="Manage Sites", sites=json.dumps(sites))
+    return render_template("administrator-manage-site.html", title="Manage Sites", sites=dumps(sites))
 
 
 @bp.route("/manage_site/_send_data", methods=["DELETE"])
