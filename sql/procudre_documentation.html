@@ -320,7 +320,7 @@
                     </td>
                     <td class="variable">
                         <ul>
-                            <li><Null/li>
+                            <li>Null</li>
                         </ul>
                     </td>
                 </tr>
@@ -351,8 +351,8 @@
                     <td class="variable">
                         <ul>
                             <li>site_name (str)</li>
-                            <li>start_date (str) 'yyyy-mm-dd', can be empty string</li>
-                            <li>send_date (str) 'yyyy-mm-dd', can be empty string</li>
+                            <li>start_date (str) 'yyyy-mm-dd', not apply shall be '0000-00-00'</li>
+                            <li>send_date (str) 'yyyy-mm-dd', not apply shall be '0000-00-00'</li>
                             <li>low_event (int) counting number</li>
                             <li>high_event (int) counting number</li>
                             <li>low_staff (int) counting number</li>
@@ -376,13 +376,13 @@
                 
                 <tr>
                     <td class="name">filter_event_adm()</td>
-                    <td class="functionality">Filter detail information about events, and used by administrator.</td>
+                    <td class="functionality">Filter detail information about events, and used by a manager.</td>
                     <td class="variable">
                         <ul>
                             <li>event_name (str) can be empty string</li>
                             <li>key_word (str) can be empty string</li>
-                            <li>start_date (str) 'yyyy-mm-dd', can be empty string</li>
-                            <li>end_date (str) 'yyyy-mm-dd', can be empty string</li>
+                            <li>start_date (str) 'yyyy-mm-dd', not apply shall be '0000-00-00'</li>
+                            <li>end_date (str) 'yyyy-mm-dd', not apply shall be '0000-00-00'</li>
                             <li>short_duration (int)</li>
                             <li>long_duration (int)</li>
                             <li>low_visit (int)</li>
@@ -434,8 +434,8 @@
                             <li>event_name (str) can be empty string</li>
                             <li>key_word (str) can be empty string</li>
                             <li>site_name (str) can be empty string</li>
-                            <li>start_date (str) 'yyyy-mm-dd', can be empty string</li>
-                            <li>end_date (str) 'yyyy-mm-dd', can be empty string</li>
+                            <li>start_date (str) 'yyyy-mm-dd', not apply shall be '0000-00-00'</li>
+                            <li>end_date (str) 'yyyy-mm-dd', not apply shall be '0000-00-00'</li>
                             <li>low_visit (int)</li>
                             <li>high_visit (int)</li>
                             <li>low_price (float)</li>
@@ -464,8 +464,8 @@
                             <li>user_name (str) staff's username</li>
                             <li>event_name (str) can be empty string</li>
                             <li>key_word (str) can be empty string</li>
-                            <li>start_date (str) 'yyyy-mm-dd', can be empty string</li>
-                            <li>end_date (str) 'yyyy-mm-dd', can be empty string</li>
+                            <li>start_date (str) 'yyyy-mm-dd', not apply shall be '0000-00-00'</li>
+                            <li>end_date (str) 'yyyy-mm-dd', not apply shall be '0000-00-00'</li>
                         </ul>
                     </td>
                     <td class="variable">
@@ -506,8 +506,8 @@
                             <li>user_name (str) visitor's username</li>
                             <li>site_name (str) can be empty string</li>
                             <li>open_everyday (int) <strong>0 for not apply, 1 for no, 2 for yes</strong><</li>
-                            <li>start_date (str) 'yyyy-mm-dd', can be empty string</li>
-                            <li>end_date (str) 'yyyy-mm-dd', can be empty string</li>
+                            <li>start_date (str) 'yyyy-mm-dd', not apply shall be '0000-00-00'</li>
+                            <li>end_date (str) 'yyyy-mm-dd', not apply shall be '0000-00-00'</li>
                             <li>low_visit (int)</li>
                             <li>high_visit (int)</li>
                             <li>low_event (int)</li>
@@ -575,8 +575,8 @@
                             <li>user_name (str)</li>
                             <li>site_name (str) can be empty string</li>
                             <li>transport_type (str\enum)</li>
-                            <li>start_date (str) 'yyyy-mm-dd', can be empty string</li>
-                            <li>end_date (str) 'yyyy-mm-dd', can be empty string</li>
+                            <li>start_date (str) 'yyyy-mm-dd', not apply shall be '0000-00-00'</li>
+                            <li>end_date (str) 'yyyy-mm-dd', not apply shall be '0000-00-00'</li>
                         </ul>
                     </td>
                     <td class="variable">
