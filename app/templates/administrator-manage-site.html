@@ -94,14 +94,12 @@
 
             $('#site_delete').on('click', function () {
                 var name = table.cell('.selected', 0).data();
+                var data = JSON.stringify({site_name:name})
                 $.ajax({
                     url: '{{ url_for('administrator.manage_site_send_data') }}',
                     type: 'DELETE',
-                    data: function () {
-                        return {
-                            site_name: name,
-                        };
-                    },
+                    datatype: 'json',
+                    data: data,
                     success: response => {
                             table.ajax.reload(function (json) {
                             console.log(json.site)

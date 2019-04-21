@@ -115,15 +115,12 @@
             $('#event_delete').on('click', function () {
                 var name = table.cell('.selected', 0).data();
                 var action = "DELETE"
+                var data = JSON.stringify({site_name:name, action:action})
                 $.ajax({
-                    url: '{{ url_for('manager.manage_event_send_data') }}',
+                    url: '{{ url_for('manager.site_report_send_data') }}',
                     type: 'POST',
-                    data: function () {
-                        return {
-                            transit_name: name,
-                            action: action,
-                        };
-                    },
+                    datatype: 'json',
+                    data: data,
                     success: response => {
                         table.ajax.reload(function (json) {
                             console.log(json.event)
