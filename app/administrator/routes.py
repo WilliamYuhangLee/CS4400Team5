@@ -4,7 +4,7 @@ from flask_login import login_required, current_user
 from . import bp
 from .forms import EditSiteForm, EditTransitForm, CreateTransitForm
 from app.util import db_procedure, DatabaseError
-from app.models import User, Transit
+from app.models import User, Transit, Site
 
 
 @bp.route("/home")
@@ -206,6 +206,7 @@ def edit_transit():
     form.old_route.data = route
     form.transport_type.data = transport_type
     form.price.data = price
+    form.connected_sites.choices = [(site, site) for site in Site.get_all_sites()]
     form.connected_sites.data = sites
     return render_template("administrator-edit-transit.html", title="Edit Transit", form=form)
 
@@ -228,4 +229,5 @@ def create_transit():
                 raise DatabaseError("An error occurred when connecting site: " + error)
         flash(message="Transit created!", category="success")
         return redirect(url_for(".manage_transit"))
+    form.connected_sites.choices = [(site, site) for site in Site.get_all_sites()]
     return render_template("administrator-edit-transit.html", title="Create Transit", form=form)

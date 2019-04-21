@@ -1,8 +1,8 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField, BooleanField, SubmitField, DecimalField, SelectMultipleField, HiddenField
+from wtforms import StringField, SelectField, BooleanField, DecimalField, SelectMultipleField, HiddenField
 from wtforms.validators import InputRequired, Length, NumberRange, ValidationError
 from app.util import db_procedure, DatabaseError
-from app.models import Site, Transit
+from app.models import Transit
 
 class EditSiteForm(FlaskForm):
 
@@ -26,7 +26,7 @@ class EditTransitForm(FlaskForm):
     route = StringField(label="Route", validators=[InputRequired()])
     old_route = HiddenField()
     price = DecimalField(label="Price ($)", validators=[InputRequired(), NumberRange(min=0, message="The price must not be nagative!")])
-    connected_sites = SelectMultipleField(label="Connected Sites", choices=[(site, site) for site in Site.get_all_sites()])
+    connected_sites = SelectMultipleField(label="Connected Sites")
 
     def validate_route(self, route_field):
         if route_field.data != self.old_route.data:
@@ -46,7 +46,7 @@ class CreateTransitForm(FlaskForm):
     route = StringField(label="Route", validators=[InputRequired()])
     price = DecimalField(label="Price ($)",
                          validators=[InputRequired(), NumberRange(min=0, message="The price must not be nagative!")])
-    connected_sites = SelectMultipleField(label="Connected Sites", choices=[(site, site) for site in Site.get_all_sites()])
+    connected_sites = SelectMultipleField(label="Connected Sites")
 
     def validate_route(self, route_field):
         result, error = db_procedure("check_transit", (route_field.data, self.transport_type.data))
