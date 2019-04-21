@@ -92,9 +92,9 @@ BEGIN
         SET new_type_ = '%';
     END IF;
     IF length(status_) > 0 THEN 
-        SELECT UserName, NumEmailCount, Type, `Status`, NumEmailCount FROM for_users WHERE UserName LIKE new_user_name AND Type LIKE new_type_ AND `Status` = status_;
+        SELECT UserName, Type, `Status`, NumEmailCount FROM for_users WHERE UserName LIKE new_user_name AND Type LIKE new_type_ AND `Status` = status_;
     ELSE 
-        SELECT UserName, NumEmailCount, Type, `Status`, NumEmailCount  FROM for_users WHERE UserName LIKE new_user_name AND Type LIKE new_type_;
+        SELECT UserName, Type, `Status`, NumEmailCount  FROM for_users WHERE UserName LIKE new_user_name AND Type LIKE new_type_;
     END IF;
 END $$
 
@@ -123,7 +123,7 @@ BEGIN
 END $$
 
 
-CREATE PROCEDURE filter_event_adm(in event_name varchar(50), in key_word varchar(100), in start_date date, in end_date date, in short_duration int, in long_duration int, in low_visit int, in high_visit int, in low_revenue float, in high_revenue float )
+CREATE PROCEDURE filter_event_adm(in manager_name varchar(100), in event_name varchar(50), in key_word varchar(100), in start_date date, in end_date date, in short_duration int, in long_duration int, in low_visit int, in high_visit int, in low_revenue float, in high_revenue float )
 -- order of parameter
 -- event nane, key word in description, start date, end date, lower bondary of duration, higher bondary of duration, lower bondary of visit, higher bondary of visit, lower bondary of revenue, higher bondary of revenue
 BEGIN 
@@ -134,6 +134,7 @@ BEGIN
     DECLARE new_long_duration int;
     DECLARE new_high_visit int;
     DECLARE new_high_revenue float;
+    DECLARE site_name varchar(50);
     
     IF length(event_name) > 0 THEN 
         SET new_event_name = event_name;
@@ -171,8 +172,9 @@ BEGIN
         SET new_high_revenue = high_revenue;
     END IF;   
     
+    SELECT SiteName INTO site_name FROM Site WHERE ManagerName = manager_name;    
     
-    SELECT EventName, CountStaff, Duration, TotalVisit, TotalRevenue FROM for_event WHERE EventName LIKE new_event_name AND Description LIKE new_key_word AND StartDate >= new_start_date AND EndDate <= new_end_date AND Duration >= short_duration AND Duration <= new_long_duration AND TotalVisit >= low_visit AND TotalVisit <= new_high_visit AND TotalRevenue >= low_revenue AND TotalRevenue <= new_high_revenue;
+    SELECT EventName, CountStaff, Duration, TotalVisit, TotalRevenue FROM for_event WHERE SiteName = site_name AND EventName LIKE new_event_name AND Description LIKE new_key_word AND StartDate >= new_start_date AND EndDate <= new_end_date AND Duration >= short_duration AND Duration <= new_long_duration AND TotalVisit >= low_visit AND TotalVisit <= new_high_visit AND TotalRevenue >= low_revenue AND TotalRevenue <= new_high_revenue;
     
 END $$
 
@@ -240,7 +242,7 @@ BEGIN
         SET new_start_date = start_date;
     END IF;
     
-    SELECT concat(FirstName, LastName) AS `Staff Name`, NumEventShifts FROM for_staff 
+    SELECT concat(FirstName, LastName) AS `StaffName`, NumEventShifts FROM for_staff 
     WHERE SiteName LIKE new_site_name AND FirstName LIKE new_first_name AND LastName LIKE new_last_name AND StartDate >= new_start_date AND EndDate <= new_end_date;
 
 END $$
@@ -492,7 +494,7 @@ CREATE PROCEDURE query_email_by_username(in user_name varchar(100) )
 BEGIN   
      
     IF length(user_name) > 0 THEN
-        SELECT EmailAddress, UserName FROM Email WHERE UserName = user_name;
+        SELECT EmailAddress FROM Email WHERE UserName = user_name;
     ELSE 
         SET @error = 'Username cannot be null.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
@@ -521,7 +523,7 @@ CREATE PROCEDURE query_staff_by_event (in site_name varchar(50), in event_name v
 BEGIN
      
     IF length(site_name) > 0 AND length(event_name) > 0 AND start_date != '0000-00-00' THEN
-        SELECT StaffName, SiteName FROM AssignTo WHERE SiteName = site_name AND EventName = event_name AND StartDate = start_date;
+        SELECT StaffName FROM AssignTo WHERE SiteName = site_name AND EventName = event_name AND StartDate = start_date;
     ELSE 
         SET @error = 'Primary key cannot have null value.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;

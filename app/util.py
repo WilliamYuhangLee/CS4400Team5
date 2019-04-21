@@ -13,7 +13,7 @@ class EnumAttribute(Enum):
 
     @classmethod
     def choices(cls):
-        return [(choice, choice.value) for choice in cls]
+        return [(choice.value, choice.value) for choice in cls]
 
     @classmethod
     def coerce(cls, item):

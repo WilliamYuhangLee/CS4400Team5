@@ -306,6 +306,7 @@ CREATE TABLE IF NOT EXISTS AssignTo (
 
 ) ENGINE INNODB CHARACTER SET utf8 COLLATE utf8_general_ci;
 
+
 USE atlbeltline;
 DELIMITER $$
 
@@ -695,6 +696,7 @@ END $$
 DELIMITER ;
 
 
+
 USE atlbeltline;
 
 -- SET GLOBAL log_bin_trust_function_creators = 1;
@@ -857,6 +859,8 @@ SELECT x.SiteName AS Site, x.SiteName, x.StartDate, x.EndDate, x.TicketRem, x.Pr
 CREATE VIEW explore_site AS
 SELECT x.UserName, x.SiteName, x.Date, y.TotalVisit, y.CountEvent, y.EveryDay, IF(x.SiteName = y.SiteName, 1, 0) AS MyVisit FROM VisitSite AS x, for_site as y;
 
+
+
 USE atlbeltline;
 DELIMITER $$
 
@@ -894,7 +898,7 @@ BEGIN
         SIGNAL SQLSTATE '45000' SET message_text = @error;
 	ELSE
         SET result = (SELECT Password FROM Users WHERE UserName = user_name LIMIT 1);
-        SELECT result, email_address;
+        SELECT result;
 	END IF;
 END $$
 
@@ -1082,7 +1086,7 @@ BEGIN
 END $$
 
 
-CREATE PROCEDURE edit_eventt(in site_name varchar(50), in event_name varchar(50), in start_date date, in description_ text )
+CREATE PROCEDURE edit_event(in site_name varchar(50), in event_name varchar(50), in start_date date, in description_ text )
 -- order of parameter
 -- site name, event name, start date, new discription
 BEGIN 
@@ -1342,12 +1346,13 @@ CREATE PROCEDURE query_site_by_site_name(in site_name varchar(100))
 BEGIN   
     DECLARE zip_code varchar(5); 
     DECLARE address_ varchar(100);
+    DECLARE every_day varchar(10);
     DECLARE manager_name varchar(100);
      
     IF length(site_name) > 0 THEN
-        SELECT Zipcode, Address, ManagerName INTO zip_code, address_, manager_name FROM Site WHERE SiteName = site_name;
+        SELECT Zipcode, Address, EveryDay, ManagerName INTO zip_code, address_, every_day, manager_name FROM Site WHERE SiteName = site_name;
         IF length(zip_code) > 1 THEN 
-            SELECT zip_code, address_, manager_name;
+            SELECT zip_code, address_, every_day, manager_name;
         ELSE 
             SET @error = concat(site_name, ' does not exist.');
             SIGNAL SQLSTATE '45000' SET message_text = @error;
@@ -1408,7 +1413,28 @@ END $$
 
 
 
+CREATE PROCEDURE delete_site(in site_name varchar(50))
+BEGIN
+    DELETE FROM Site WHERE SiteName = site_name;
+END $$
+
+
+
+CREATE PROCEDURE get_free_managers()
+BEGIN
+    SELECT UserName FROM Employee WHERE Title = "MANAGER" AND UserName NOT IN (SELECT ManagerName FROM Site);
+END $$
+
+
+
+CREATE PROCEDURE get_all_events()
+BEGIN
+    SELECT SiteName, EventName, StartDate, EndDate, MinStaffReq, Price, Capacity, Description FROM Events;
+END $$
+
+
 DELIMITER ;
+
 
 DELIMITER $$
 
@@ -1504,9 +1530,9 @@ BEGIN
         SET new_type_ = '%';
     END IF;
     IF length(status_) > 0 THEN 
-        SELECT UserName, NumEmailCount, Type, `Status`, NumEmailCount FROM for_users WHERE UserName LIKE new_user_name AND Type LIKE new_type_ AND `Status` = status_;
+        SELECT UserName, Type, `Status`, NumEmailCount FROM for_users WHERE UserName LIKE new_user_name AND Type LIKE new_type_ AND `Status` = status_;
     ELSE 
-        SELECT UserName, NumEmailCount, Type, `Status`, NumEmailCount  FROM for_users WHERE UserName LIKE new_user_name AND Type LIKE new_type_;
+        SELECT UserName, Type, `Status`, NumEmailCount  FROM for_users WHERE UserName LIKE new_user_name AND Type LIKE new_type_;
     END IF;
 END $$
 
@@ -1535,7 +1561,7 @@ BEGIN
 END $$
 
 
-CREATE PROCEDURE filter_event_adm(in event_name varchar(50), in key_word varchar(100), in start_date date, in end_date date, in short_duration int, in long_duration int, in low_visit int, in high_visit int, in low_revenue float, in high_revenue float )
+CREATE PROCEDURE filter_event_adm(in manager_name varchar(100), in event_name varchar(50), in key_word varchar(100), in start_date date, in end_date date, in short_duration int, in long_duration int, in low_visit int, in high_visit int, in low_revenue float, in high_revenue float )
 -- order of parameter
 -- event nane, key word in description, start date, end date, lower bondary of duration, higher bondary of duration, lower bondary of visit, higher bondary of visit, lower bondary of revenue, higher bondary of revenue
 BEGIN 
@@ -1546,6 +1572,7 @@ BEGIN
     DECLARE new_long_duration int;
     DECLARE new_high_visit int;
     DECLARE new_high_revenue float;
+    DECLARE site_name varchar(50);
     
     IF length(event_name) > 0 THEN 
         SET new_event_name = event_name;
@@ -1583,8 +1610,9 @@ BEGIN
         SET new_high_revenue = high_revenue;
     END IF;   
     
+    SELECT SiteName INTO site_name FROM Site WHERE ManagerName = manager_name;    
     
-    SELECT EventName, CountStaff, Duration, TotalVisit, TotalRevenue FROM for_event WHERE EventName LIKE new_event_name AND Description LIKE new_key_word AND StartDate >= new_start_date AND EndDate <= new_end_date AND Duration >= short_duration AND Duration <= new_long_duration AND TotalVisit >= low_visit AND TotalVisit <= new_high_visit AND TotalRevenue >= low_revenue AND TotalRevenue <= new_high_revenue;
+    SELECT EventName, CountStaff, Duration, TotalVisit, TotalRevenue FROM for_event WHERE SiteName = site_name AND EventName LIKE new_event_name AND Description LIKE new_key_word AND StartDate >= new_start_date AND EndDate <= new_end_date AND Duration >= short_duration AND Duration <= new_long_duration AND TotalVisit >= low_visit AND TotalVisit <= new_high_visit AND TotalRevenue >= low_revenue AND TotalRevenue <= new_high_revenue;
     
 END $$
 
@@ -1652,7 +1680,7 @@ BEGIN
         SET new_start_date = start_date;
     END IF;
     
-    SELECT concat(FirstName, LastName) AS `Staff Name`, NumEventShifts FROM for_staff 
+    SELECT concat(FirstName, LastName) AS `StaffName`, NumEventShifts FROM for_staff 
     WHERE SiteName LIKE new_site_name AND FirstName LIKE new_first_name AND LastName LIKE new_last_name AND StartDate >= new_start_date AND EndDate <= new_end_date;
 
 END $$
@@ -1904,7 +1932,7 @@ CREATE PROCEDURE query_email_by_username(in user_name varchar(100) )
 BEGIN   
      
     IF length(user_name) > 0 THEN
-        SELECT EmailAddress, UserName FROM Email WHERE UserName = user_name;
+        SELECT EmailAddress FROM Email WHERE UserName = user_name;
     ELSE 
         SET @error = 'Username cannot be null.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
@@ -1933,7 +1961,7 @@ CREATE PROCEDURE query_staff_by_event (in site_name varchar(50), in event_name v
 BEGIN
      
     IF length(site_name) > 0 AND length(event_name) > 0 AND start_date != '0000-00-00' THEN
-        SELECT StaffName, SiteName FROM AssignTo WHERE SiteName = site_name AND EventName = event_name AND StartDate = start_date;
+        SELECT StaffName FROM AssignTo WHERE SiteName = site_name AND EventName = event_name AND StartDate = start_date;
     ELSE 
         SET @error = 'Primary key cannot have null value.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
@@ -1959,6 +1987,7 @@ BEGIN
 END $$
 
 DELIMITER ;
+
 
 DELIMITER ;
 
