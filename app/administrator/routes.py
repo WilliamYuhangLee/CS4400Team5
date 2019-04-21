@@ -1,10 +1,10 @@
-from flask import render_template, request, jsonify, redirect, url_for, flash
+from flask import render_template, request, jsonify, redirect, url_for, flash, session
 from flask.json import dumps
 from flask_login import login_required, current_user
 from . import bp
-from .forms import EditSiteForm
+from .forms import EditSiteForm, EditTransitForm, CreateTransitForm
 from app.util import db_procedure, DatabaseError
-from app.models import User
+from app.models import User, Transit
 
 
 @bp.route("/home")
@@ -125,19 +125,107 @@ def create_site():
     return render_template("administrator-edit-site.html", title="Create Site", form=form)
 
 
-@bp.route("/manage-transit")
+@bp.route("/manage_transit")
 @login_required
 def manage_transit():
-    return "Not implemented yet!"  # TODO: implement this method
+    result, error = db_procedure("get_all_sites", ())
+    if error:
+        raise DatabaseError("An error occurred when getting all sites: " + error)
+    site_names = [row[0] for row in result]
+    return render_template("user-take-transit.html", title="Take Transit", sites=site_names)
+
+
+@bp.route("/manage_transit/_get_table_data")
+@login_required
+def manage_transit_get_table_data():
+    site_name = request.args.get("site_name", type=str)
+    args = (site_name, "", "", 0, 0)
+    result, error = db_procedure("filter_transit", args)
+    if error:
+        raise DatabaseError("An error occurred when querying transits by site name: " + error)
+    transits = []
+    for row in result:
+        transits.append({
+            "route": row[0],
+            "transport_type": row[1],
+            "price": row[2],
+            "num_of_connected_sites": row[3],
+            "num_of_logged_transits": row[4],
+        })
+    return jsonify({"data": transits})
+
+
+@bp.route("/manage_transit/_send_data", methods=["POST"])
+@login_required
+def manage_transit_send_data():
+    route = request.json["route"]
+    transport_type = Transit.Type.coerce(request.json["transport_type"])
+    args = (route, transport_type)
+    result, error = db_procedure("delete_transit", args)
+    if error:
+        raise DatabaseError("An error occurred when deleting transit: " + error)
+    return jsonify({"result": True, "message": "Successfully deleted transit."})
 
 
 @bp.route("/edit-transit")
 @login_required
 def edit_transit():
-    return "Not implemented yet!"  # TODO: implement this method
+    form = EditTransitForm()
+    if form.validate_on_submit():
+        transport_type = form.transport_type.data
+        old_route = form.old_route.data
+        new_route = form.route.data
+        price = form.price.data
+        result, error = db_procedure("edit_transit", (transport_type, old_route, new_route, price))
+        if error:
+            raise DatabaseError("An error occurred when editing transit: " + error)
+        sites = form.connected_sites.data
+        for site in sites:
+            if site not in session[current_user.username]["sites"]:
+                result, error = db_procedure("connect_site", (transport_type, new_route, site))
+                if error:
+                    raise DatabaseError("An error occurred when connecting site: " + error)
+        for site in session[current_user.username]["sites"]:
+            if site not in sites:
+                result, error = db_procedure("disconnect_site", (transport_type, new_route, site))
+                if error:
+                    raise DatabaseError("An error occurred when disconnecting site: " + error)
+        flash(message="Transit updated!", category="success")
+        return redirect(url_for(".manage_transit"))
+    route = request.args.get("route", type=str)
+    transport_type = request.args.get("transport_type", type=Transit.Type.coerce)
+    result, error = db_procedure("query_transit_by_pk", (route, transport_type))
+    if error:
+        raise DatabaseError("An error occurred when fetching transit: " + error)
+    price = result[0][0]
+    sites = []
+    for row in result:
+        sites.append(row[1])
+    session[current_user.username]["sites"] = sites
+    form.route.data = route
+    form.old_route.data = route
+    form.transport_type.data = transport_type
+    form.price.data = price
+    form.connected_sites.data = sites
+    return render_template("administrator-edit-transit.html", title="Edit Transit", form=form)
 
 
 @bp.route("/create-transit")
 @login_required
 def create_transit():
-    return "Not implemented yet!"  # TODO: implement this method
+    form = CreateTransitForm()
+    if form.validate_on_submit():
+        transport_type = form.transport_type.data
+        route = form.route.data
+        price = form.price.data
+        result, error = db_procedure("create_transit", (transport_type, route, price))
+        if error:
+            raise DatabaseError("An error occurred when creating transit: " + error)
+        sites = form.connected_sites.data
+        for site in sites:
+            result, error = db_procedure("connect_site", (transport_type, route, site))
+            if error:
+                raise DatabaseError("An error occurred when connecting site: " + error)
+        flash(message="Transit created!", category="success")
+        return redirect(url_for(".manage_transit"))
+    return render_template("administrator-edit-transit.html", title="Create Transit", form=form)

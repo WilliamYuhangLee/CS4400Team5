@@ -259,3 +259,13 @@ class Transit:
         for row in result:
             transits.append(Transit(*row))
         return transits
+
+
+class Site:
+
+    @staticmethod
+    def get_all_sites():
+        result, error = db_procedure("get_all_sites", ())
+        if error:
+            raise DatabaseError("An error occurred when getting all sites: " + error)
+        return result
