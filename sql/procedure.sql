@@ -483,12 +483,13 @@ CREATE PROCEDURE query_site_by_site_name(in site_name varchar(100))
 BEGIN   
     DECLARE zip_code varchar(5); 
     DECLARE address_ varchar(100);
+    DECLARE every_day varchar(10);
     DECLARE manager_name varchar(100);
      
     IF length(site_name) > 0 THEN
-        SELECT Zipcode, Address, ManagerName INTO zip_code, address_, manager_name FROM Site WHERE SiteName = site_name;
+        SELECT Zipcode, Address, EveryDay, ManagerName INTO zip_code, address_, every_day, manager_name FROM Site WHERE SiteName = site_name;
         IF length(zip_code) > 1 THEN 
-            SELECT zip_code, address_, manager_name;
+            SELECT zip_code, address_, every_day, manager_name;
         ELSE 
             SET @error = concat(site_name, ' does not exist.');
             SIGNAL SQLSTATE '45000' SET message_text = @error;
@@ -547,6 +548,26 @@ BEGIN
     SELECT SiteName, ZipCode, Address, (EveryDay - 1) AS OpenEveryDay, ManagerName FROM Site;
 END $$
 
+
+
+CREATE PROCEDURE delete_site(in site_name varchar(50))
+BEGIN
+    DELETE FROM Site WHERE SiteName = site_name;
+END $$
+
+
+
+CREATE PROCEDURE get_free_managers()
+BEGIN
+    SELECT UserName FROM Employee WHERE Title = "MANAGER" AND UserName NOT IN (SELECT ManagerName FROM Site);
+END $$
+
+
+
+CREATE PROCEDURE get_all_events()
+BEGIN
+    SELECT SiteName, EventName, StartDate, EndDate, MinStaffReq, Price, Capacity, Description FROM Events;
+END $$
 
 
 DELIMITER ;
