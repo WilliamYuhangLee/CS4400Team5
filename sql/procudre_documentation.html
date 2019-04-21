@@ -115,6 +115,22 @@
                 </tr>
                 
                 <tr>
+                    <td class="name"><em>check_transit()</em></td>
+                    <td class="functionality">Check if a transit has existed or not.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>route_ (str)</li>
+                            <li>transport_type (str\enum)</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>result (int) 1 for ok to insert, 0 for not</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
                     <td class="name">check_username()</td>
                     <td class="functionality">Check if a new username can be inserted into the table or not.</td>
                     <td class="variable">
@@ -225,6 +241,22 @@
                     <td class="variable">
                         <ul>
                             <li>site_name (str)</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>Null</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name"><em>delete_transit()</em></td>
+                    <td class="functionality">Delete a specified transit.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>route_ (str)</li>
+                            <li>transport_type (str\enum)</li>
                         </ul>
                     </td>
                     <td class="variable">
