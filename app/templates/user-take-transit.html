@@ -1,66 +1,149 @@
 {% extends "home.html" %}
 {% block content %}
-<div class="row">
-<div class="unselected-field" id="select_site">
-    <label>Contain Site<select id="contain_site" name="contain_site">
+    <div class="row">
+        <label>Contain Site<select id="contain_site" name="contain_site">
             {% for site in sites %}
-            <option value="{{ site.name }}">{{site.name}}</option>
+                <option value="{{ site }}">{{ site }}</option>
             {% endfor %}
-            <button type="button" class="btn btn-outline-info" id="filter_take_transit">Filter for sites</button>
-    </label>
-    <label>Transport Type<select id="transport_type" name="transport_type">
+        </select>
+        </label>
+        <label>Transport Type<select id="transport_type" name="transport_type">
             <option value="MARTA">MARTA</option>
             <option value="Bus">Bus</option>
-            <option value="Bike">Bike</option></select>
-    </label>
-</div>​
-</div>
-<div class="row">
-<table>
-    <tbody>
-        <tr>
-            <td>Price Range</td>
-            <td>Min<input type="text" id="min" name="min"></td>
-        </tr>
-        <tr>
-            <td>Max<input type="text" id="max" name="max"></td>
-        </tr>
-    </tbody>
-</table>
+            <option value="Bike">Bike</option>
+        </select>
+        </label>
+    </div>​
+    <div class="row">
+        <table>
+            <tbody>
+            <tr>
+                <td>Price Range</td>
+                <td>Min<input type="text" id="min" name="min"></td>
+            </tr>
+            <tr>
+                <td>Max<input type="text" id="max" name="max"></td>
+            </tr>
+            </tbody>
+        </table>
     </div>
-<table id="take_transit" class="display" cellspacing="0" width="100%">
-    <thead>
+    <table id="take_transit" class="display" cellspacing="0" width="100%">
+        <thead>
         <tr>
             <th>Route</th>
             <th>Transport Type</th>
             <th>Price</th>
             <th>#Connected Sites</th>
         </tr>
-    </thead>
-</table>
-<div class="row">
-<input type="text" id="transit_date" name="transit_date">
-<button type="button" class="btn btn-outline-info" href="javascript:history.back()">Back</button>
-<button type="button" class="btn btn-outline-info" id="log_transit">Log Transit</button>
-</div>
+        </thead>
+    </table>
+    <div class="row">
+        <input type="text" id="transit_date" name="transit_date">
+        <button type="button" class="btn btn-outline-info" href="javascript:history.back()">Back</button>
+        <button type="button" class="btn btn-outline-info" id="log_transit">Log Transit</button>
+    </div>
+    <script>
+        $(document).ready(function () {
+            var table = $('#take_transit').DataTable({
+                ajax: {
+                    url: "{{ url_for('user.take_transit_get_table_data') }}",
+                    type: "GET",
+                    data: function () { return {site_name: $("#contain_site option:selected").text()};},
+                },
+                columns: [
+                    {
+                        data: "route"
+                    },
+                    {
+                        data: "transport_type",
+                    },
+                    {
+                        data: "price"
+                    },
+                    {
+                        data: "num_of_connected_sites"
+                    }
+                ],
+                columnDefs: [{
+                    orderable: false,
+                    className: 'select-checkbox',
+                    targets: 0
+                }],
+                select: {
+                    style: 'os',
+                    selector: 'td:first-child'
+                },
+                order: [
+                    [1, 'asc']
+                ]
+            });
+
+            $('#contain_site').on('change', function () {
+                console.log("Handler for .change() called.");
+                table.ajax.reload(function(json) {console.log(json)});
+            });
+
+
+            {#$('#contain_site').on('change', function () {#}
+            {#    console.log("Handler for .change() called.");#}
+            {#    var site = $("#contain_site option:selected").text();#}
+            {#    console.log(site);#}
+            {#    $.getJSON("{{url_for('user.take_transit_get_table_data')}}", (site), function (data) {#}
+            {#        console.log(data);#}
+            {#        if (!$.fn.DataTable.isDataTable('#take_transit')) {#}
+            {#            $('#take_transit').DataTable({#}
+            {#                ajax: {#}
+            {#                    url: "{{ url_for('user.take_transit_get_table_data') }}",#}
+            {#                    type: "GET",#}
+            {#                    data: {site_name: site},#}
+            {#                },#}
+            {#                data: data,#}
+            {#                columns: [{#}
+            {#                    data: "Route"#}
+            {#                },#}
+            {#                    {#}
+            {#                        data: "Transport Type"#}
+            {#                    },#}
+            {#                    {#}
+            {#                        data: "Price"#}
+            {#                    },#}
+            {#                    {#}
+            {#                        data: "#Connected Sites"#}
+            {#                    }#}
+            {#                ],#}
+            {#                columnDefs: [{#}
+            {#                    orderable: false,#}
+            {#                    className: 'select-checkbox',#}
+            {#                    targets: 0#}
+            {#                }],#}
+            {#                select: {#}
+            {#                    style: 'os',#}
+            {#                    selector: 'td:first-child'#}
+            {#                },#}
+            {#                order: [#}
+            {#                    [1, 'asc']#}
+            {#                ]#}
+            {#            });#}
+            {#        } else {#}
+            {#            $('#take_transit').dataTable().ajax.url(data).load();#}
+            {#        }#}
+            {#    });#}
+            {# });#}
+            $.fn.dataTable.ext.search.push(
+                function (settings, data, dataIndex) {
+                    var min = parseInt($('#min').val(), 10);
+                    var max = parseInt($('#max').val(), 10);
+                    var price = parseFloat(data[2]) || 0;
+
+                    if ((isNaN(min) && isNaN(max)) ||
+                        (isNaN(min) && age <= max) ||
+                        (min <= price && isNaN(max)) ||
+                        (min <= price && price <= max)) {
+                        return true;
+                    }
+                    return false;
+                }
+            );
+        });
+    </script>
 {% endblock content %}
-
-{% block scripts %}
-<script>
-    $.fn.dataTable.ext.search.push(
-        function (settings, data, dataIndex) {
-            var min = parseInt($('#min').val(), 10);
-            var max = parseInt($('#max').val(), 10);
-            var price = parseFloat(data[2]) || 0;
-
-            if ((isNaN(min) && isNaN(max)) ||
-                (isNaN(min) && age <= max) ||
-                (min <= price && isNaN(max)) ||
-                (min <= price && price <= max)) {
-                return true;
-            }
-            return false;
-        }
-    );
-</script>
-{% endblock %}
