@@ -80,7 +80,8 @@
                 data: JSON.parse({{ sites|tojson|safe }}),
                 columns: [
                     {
-                        data: "site_name"
+                        data: "site_name",
+                        render: "[</br>]".event_name
                     },
                     {
                         data: "event_count"

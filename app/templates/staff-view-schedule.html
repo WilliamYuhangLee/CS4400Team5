@@ -73,7 +73,9 @@
 
             $('#view_event').on('click', function () {
                 var name = table.cell('.selected', 0).data();
-                window.location.replace("{{ url_for('manager.view_event' , name) }}");
+                var name2 = table.cell('.selected', 1).data();
+                var name3 = table.cell('.selected', 2).data();
+                window.location.replace("{{ url_for('manager.view_event' , name,name2,name3) }}");
             });
 
             $.fn.dataTable.ext.search.push(

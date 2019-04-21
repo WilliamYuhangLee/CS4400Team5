@@ -86,7 +86,8 @@
                 data: JSON.parse({{ events|tojson|safe }}),
                 columns: [
                     {
-                        data: "event_name",
+                        data: "events_name",
+                        render: "[</br>]".event_name
                     },
                     {
                         data: "site_name"
