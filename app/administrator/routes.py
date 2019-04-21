@@ -1,6 +1,8 @@
-from flask import render_template
+from flask import render_template, request, jsonify
 from flask_login import login_required, current_user
 from . import bp
+from app.util import db_procedure, DatabaseError
+from app.models import User
 
 
 @bp.route("/home")
@@ -9,10 +11,35 @@ def home():
     return render_template("home-administrator.html", title="Home")
 
 
-@bp.route("/manage-user")
+@bp.route("/manage_user")
 @login_required
 def manage_user():
-    return "Not implemented yet!"  # TODO: implement this method
+    result, error = db_procedure("filter_user", ("", "", ""))
+    if error:
+        raise DatabaseError("An error occurred when getting all users: " + error)
+    users = []
+    for row in result:
+        users.append({"username": row[0], "email_count": row[1], "user_type": row[2], "status": row[3]})
+    return render_template("administrator-manage-user.html", title="Manage Users", users=users)
+
+
+@bp.route("/manage_user/_send_data", methods=["POST"])
+@login_required
+def manage_user_send_data():
+    username = request.args.get("username")
+    status = request.args.get("status", type=User.Status.coerce)
+    if current_user.status == status:
+        return jsonify({"result": False, "message": "The user status has not been changed."})
+    if status == User.Status.PENDING.value:
+        return jsonify({"result": False, "message": "You can not change a user's status to PENDING!"})
+    if current_user.status == User.Status.APPROVED.value:
+        return jsonify({"result": False, "message": "You can not change an approved user's status!"})
+    args = (username, status)
+    result, error = db_procedure("manage_user", args)
+    if error:
+        return jsonify({"result": False, "message": "An internal error prevented the user's status from being updated: " + error})
+    current_user.status = User.Status[status]
+    return jsonify({"result": True, "message": "Successfully updated the user's status."})
 
 
 @bp.route("/manage-site")
