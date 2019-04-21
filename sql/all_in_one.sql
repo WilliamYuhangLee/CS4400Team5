@@ -1433,6 +1433,24 @@ BEGIN
 END $$
 
 
+CREATE PROCEDURE delete_transit(in route_ varchar(20), in transport_type varchar(20))
+BEGIN
+    DELETE FROM Transit WHERE Route = route_ AND TransportType = transport_type;
+END $$
+
+
+CREATE PROCEDURE check_transit(in route_ varchar(20), in transport_type varchar(20))
+BEGIN
+    DECLARE result int;
+    IF EXISTS(SELECT * FROM Transit WHERE Route = route_ AND TransportType = transport_type) THEN 
+        SET result = 0;
+    ELSE 
+        SET result = 1;
+    END IF;
+    SELECT result;
+END $$
+
+
 DELIMITER ;
 
 
