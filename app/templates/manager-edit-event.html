@@ -71,26 +71,13 @@
                 </table>
             </div>
 
-            <button type="button" class="btn btn-outline-info"
-                    onclick="window.location.href='{{ url_for('main.nav_register') }}';">Back
-            </button>
+            <button type="button" class="btn btn-outline-info" onclick="goBack()">Back</button>
         </form>
     </div>
-    <div class="border-top pt-2">
-        <small class="text-muted">
-            Already have an account? <a class="ml-2" href="{{ url_for('main.login') }}">Log in</a>
-        </small>
-    </div>
     <script>
-    $(document).ready(function () {
-      var table = $('#event_list').DataTable({
-                ajax: {
-                    url: "{{ url_for('manager.edit_event_get_table_data') }}",
-                    type: "GET",
-                    data: function () {
-                        return {}
-                    }
-                },
+        $(document).ready(function () {
+            var table = $('#event_list').DataTable({
+                data: JSON.parse({{ events|tojson|safe }}),
                 columns: [
                     {
                         data: "date"
@@ -104,44 +91,44 @@
                 ]
             });
 
-      $.fn.dataTable.ext.search.push(
-            function (settings, data, dataIndex) {
-                var min = parseInt($('#daily_visit_min').val(), 10);
-                var max = parseInt($('#daily_visit_max').val(), 10);
-                var visit = parseFloat(data[1]) || 0;
+            $.fn.dataTable.ext.search.push(
+                function (settings, data, dataIndex) {
+                    var min = parseInt($('#daily_visit_min').val(), 10);
+                    var max = parseInt($('#daily_visit_max').val(), 10);
+                    var visit = parseFloat(data[1]) || 0;
 
-                if ((isNaN(min) && isNaN(max)) ||
-                    (isNaN(min) && visit <= max) ||
-                    (min <= visit && isNaN(max)) ||
-                    (min <= visit && visit <= max)) {
-                    return true;
+                    if ((isNaN(min) && isNaN(max)) ||
+                        (isNaN(min) && visit <= max) ||
+                        (min <= visit && isNaN(max)) ||
+                        (min <= visit && visit <= max)) {
+                        return true;
+                    }
+                    return false;
                 }
-                return false;
-            }
-        );
+            );
 
-      $.fn.dataTable.ext.search.push(
-            function (settings, data, dataIndex) {
-                var min = parseInt($('#daily_revenue_min').val(), 10);
-                var max = parseInt($('#daily_revenue_max').val(), 10);
-                var revenue = parseFloat(data[2]) || 0;
+            $.fn.dataTable.ext.search.push(
+                function (settings, data, dataIndex) {
+                    var min = parseInt($('#daily_revenue_min').val(), 10);
+                    var max = parseInt($('#daily_revenue_max').val(), 10);
+                    var revenue = parseFloat(data[2]) || 0;
 
-                if ((isNaN(min) && isNaN(max)) ||
-                    (isNaN(min) && revenue <= max) ||
-                    (min <= revenue && isNaN(max)) ||
-                    (min <= revenue && revenue <= max)) {
-                    return true;
+                    if ((isNaN(min) && isNaN(max)) ||
+                        (isNaN(min) && revenue <= max) ||
+                        (min <= revenue && isNaN(max)) ||
+                        (min <= revenue && revenue <= max)) {
+                        return true;
+                    }
+                    return false;
                 }
-                return false;
-            }
-        );
+            );
 
-        $('#daily_visit_min, #daily_visit_max').keyup(function () {
-            table.draw();
-        });
-        $('#daily_revenue_min, #daily_revenue_max').keyup(function () {
-            table.draw();
-        });
-    })
+            $('#daily_visit_min, #daily_visit_max').keyup(function () {
+                table.draw();
+            });
+            $('#daily_revenue_min, #daily_revenue_max').keyup(function () {
+                table.draw();
+            });
+        })
     </script>
 {% endblock content %}

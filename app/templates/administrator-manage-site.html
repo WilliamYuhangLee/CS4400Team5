@@ -98,6 +98,7 @@
                 $.ajax({
                     url: '{{ url_for('administrator.manage_site_send_data') }}',
                     type: 'DELETE',
+                    contentType: 'application/json;charset=UTF-8',
                     datatype: 'json',
                     data: data,
                     success: response => {

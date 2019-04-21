@@ -28,6 +28,7 @@
         <table id="user_list" class="display" cellspacing="0" width="100%">
             <thead>
             <tr>
+                <th></th>
                 <th>Username</th>
                 <th>Email Count</th>
                 <th>User Type</th>
@@ -95,9 +96,11 @@
                 var user = table.cell('.selected', 0).data();
                 var status = "APPROVED";
                 var data = JSON.stringify({username:user, status:status})
+                console.log(data)
                 $.ajax({
                     url: '{{ url_for('administrator.manage_user_send_data') }}',
                     type: 'POST',
+                    contentType: 'application/json;charset=UTF-8',
                     datatype: 'json',
                     data: data,
                     success: function(data){
@@ -111,11 +114,12 @@
 
             $('#admin_manage_user_decline').on('click', function () {
                 var user = table.cell('.selected', 0).data();
-                var status = "DECLINE";
+                var status = "DECLINED";
                 var data = JSON.stringify({username:user, status:status})
                 $.ajax({
                     url: '{{ url_for('administrator.manage_user_send_data') }}',
                     type: 'POST',
+                    contentType: 'application/json;charset=UTF-8',
                     datatype: 'json',
                     data: data,
                     success: function(data){

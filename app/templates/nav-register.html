@@ -9,7 +9,7 @@
     <div class="col-md-6 btn-group-vertical" id="registerNav_frame">
         <button type="button" class="btn btn-outline-info" onclick="window.location.href='{{ url_for('main.register', is_employee=False) }}';">User Register</button>
         <button type="button" class="btn btn-outline-info" onclick="window.location.href='{{ url_for('main.register', is_employee=True) }}';">Employee Register</button>
-        <button type="button" class="btn btn-outline-info" onclick="window.location.href='{{ url_for('main.login') }}';">Back</button>
+        <button type="button" class="btn btn-outline-info" onclick="goBack()">Back</button>
     </div>
 </div>
 {% endblock content %}

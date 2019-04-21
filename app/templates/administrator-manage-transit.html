@@ -126,6 +126,7 @@
                 $.ajax({
                     url: '{{ url_for('administrator.manage_transit_send_data') }}',
                     type: 'POST',
+                    contentType: 'application/json;charset=UTF-8',
                     datatype: 'json',
                     data: data,
                     success: response => {
