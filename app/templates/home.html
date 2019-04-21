@@ -10,9 +10,11 @@
     </li>
 {% endblock %}
 {% block navbar_item1 %}
-    <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('user.manage_profile') }}">Account</a>
-    </li>
+    {% if current_user.is_employee() %}
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('user.manage_profile') }}">Account</a>
+        </li>
+    {% endif %}
 {% endblock %}
 {% block navbar_item4 %}
     <li class="nav-item">

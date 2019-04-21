@@ -1,45 +1,119 @@
 {% extends "home.html" %}
 {% block content %}
-<div class="row">
-        <label>Site<select id="contain_site" name="contain_site">
-                {% for site in sites %}
-                <option value="{{ site.name}}">{{site.name}}</option>
-                {% endfor %}
-                <button type="button" class="btn btn-outline-info" id="filter_site">Filter for Site</button>
+    <div class="row">
+        <label>Site<select id="contain_site" name="contain_site" class="form-control">
+            {% for site in sites %}
+                <option value="{{ site }}">{{ site }}</option>
+            {% endfor %}
+        </select>
         </label>
-        <label>Manager<select id="contain_manager" name="contain_manager">
-                {% for manager in managers %}
-                <option value="{{ manager.name}}">{{ manager.name }}</option>
-                {% endfor %}
-                <button type="button" class="btn btn-outline-info" id="filter_manager">Filter for Manager</button>
+        <label>Manager<select id="contain_manager" name="contain_manager" class="form-control">
+            {% for manager in managers %}
+                <option value="{{ manager }}">{{ manager }}</option>
+            {% endfor %}
+        </select>
         </label>
-        <button type="button" class="btn btn-outline-info" id="filter_manage_site">Filter for Both</button>
-</div>
-<div class="row">
-        <label>Open Everyday<select id="open_everyday" name="open_everyday">
-                <option value="Yes">Yes</option>
-                <option value="No">No</option>
-            </select>
+    </div>
+    <div class="row">
+        <label>Open Everyday<select id="open_everyday" name="open_everyday" class="form-control">
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+        </select>
         </label>
-</div>
-<div class="row">
-    <!--Script for admin needed-->
-    <button type="button" class="btn btn-outline-info" id="admin_manage_user_approve">Approve</button>
-    <button type="button" class="btn btn-outline-info" id="admin_manage_user_decline">Approve</button>
-</div>
-<div class="row">
-<table id="user_list" class="display" cellspacing="0" width="100%">
-    <thead>
-        <tr>
-            <th>Username</th>
-            <th>Email Count</th>
-            <th>User Type</th>
-            <th>Status</th>
-        </tr>
-    </thead>
-</table>
-</div>
-<div class="row">
-<button type="button" class="btn btn-outline-info" href="javascript:history.back()">Back</button>
-</div>
+    </div>
+    <div class="row">
+        <!--Script for admin needed-->
+        <button type="button" class="btn btn-outline-info" id="site_edit">Edit</button>
+        <button type="button" class="btn btn-outline-info" id="site_create">Create</button>
+        <button type="button" class="btn btn-outline-info" id="site_delete">Delete</button>
+    </div>
+    <div class="row">
+        <table id="site_list" class="display" cellspacing="0" width="100%">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Manager</th>
+                <th>Open Everyday</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+    <div class="row">
+        <button type="button" class="btn btn-outline-info" href="javascript:history.back()">Back</button>
+    </div>
+    <script>
+        $(document).ready(function () {
+            var table = $('#site_list').DataTable({
+                ajax: {
+                    url: "{{ url_for('administrator.manage_site_get_table_data') }}",
+                    type: "GET",
+                    data: function () {
+                        return {
+                            site_name: $("#contain_site option:selected").text(),
+                            manager_name: $("#contain_manager option:selected").text()
+                        }
+                    }
+                },
+                columns: [
+                    {
+                        data: "name"
+                    },
+                    {
+                        data: "manager",
+                    },
+                    {
+                        data: "open_everyday"
+                    }
+                ],
+                columnDefs: [{
+                    orderable: false,
+                    className: 'select-checkbox',
+                    targets: 0
+                }],
+                select: {
+                    style: 'os',
+                    selector: 'td:first-child'
+                },
+                order: [
+                    [1, 'asc']
+                ]
+            });
+
+            $('#open_everyday').on('change', function () {
+                table.columns(1).search(this.value).draw();
+            });
+
+            $('#site_edit').on('click', function () {
+                var name = table.cell('.selected', 0).data();
+                window.location.replace("{{ url_for('administrator.edit_site', name) }}");
+            });
+
+            $('#site_create').on('click', function () {
+                var name = table.cell('.selected', 0).data();
+                window.location.replace("{{ url_for('administrator.create_site', name) }}");
+            });
+
+            $('#site_delete').on('click', function () {
+                var name = table.cell('.selected', 0).data();
+                $.ajax({
+                    url: '{{ url_for('administrator.manage_site_send_data') }}',
+                    type: 'DELETE',
+                    data: function () {
+                        return {
+                            site_name: name,
+                        };
+                    },
+                    success: response => {
+                        table.ajax.reload(function(json) {
+                            console.log(json);
+                            json["result"]
+                            json["message"]
+                            json["sites"]
+                        });
+                    },
+                });
+            });
+
+        });
+    </script>
 {% endblock content %}
