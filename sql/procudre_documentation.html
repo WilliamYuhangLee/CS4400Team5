@@ -70,7 +70,7 @@
                 </tr>
                 
                 <tr>
-                    <td class="name">cehck_email()</td>
+                    <td class="name">check_email()</td>
                     <td class="functionality">Check if an email address can be inserted into the table or not.</td>
                     <td class="variable">
                         <ul>
@@ -100,6 +100,21 @@
                 </tr>
                 
                 <tr>
+                    <td class="name">check_site()</td>
+                    <td class="functionality">Check if a new site can be inserted into the table or not.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>site_name (str)</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>result (int) 1 for ok to insert, 0 for not</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
                     <td class="name">check_status()</td>
                     <td class="functionality">Check if a user has been approved or not.</td>
                     <td class="variable">
@@ -119,8 +134,7 @@
                     <td class="functionality">Check if a transit has existed or not.</td>
                     <td class="variable">
                         <ul>
-                            <li>route_ (str)</li>
-                            <li>transport_type (str\enum)</li>
+                            <li>site_name (str)</li>
                         </ul>
                     </td>
                     <td class="variable">
@@ -523,6 +537,7 @@
                             <li>StartDate (str\date)</li>
                             <li>EndDate (str\date)</li>
                             <li>CountStaff (int)</li>
+                            <li>Description (str)</li>
                         </ul>
                     </td>
                 </tr>
@@ -922,6 +937,8 @@
                     <td class="variable">
                         <ul>
                             <li>StraffName (str) staff's username</li>
+                            <li>FirstName (str)</li>
+                            <li>LastName (str)</li>
                         </ul>
                     </td>
                 </tr>

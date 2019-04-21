@@ -588,4 +588,16 @@ BEGIN
 END $$
 
 
+CREATE PROCEDURE check_site(in site_name varchar(50))
+BEGIN
+    DECLARE result int;
+    IF EXISTS(SELECT * FROM Site WHERE SiteName = site_name) THEN 
+        SET result = 0;
+    ELSE 
+        SET result = 1;
+    END IF;
+    SELECT result;
+END $$
+
+
 DELIMITER ;

@@ -1451,6 +1451,18 @@ BEGIN
 END $$
 
 
+CREATE PROCEDURE check_site(in site_name varchar(50))
+BEGIN
+    DECLARE result int;
+    IF EXISTS(SELECT * FROM Site WHERE SiteName = site_name) THEN 
+        SET result = 0;
+    ELSE 
+        SET result = 1;
+    END IF;
+    SELECT result;
+END $$
+
+
 DELIMITER ;
 
 
@@ -1792,21 +1804,21 @@ BEGIN
     
     IF start_date = '0000-00-00' THEN 
         IF end_date = '0000-00-00' THEN
-            SELECT EventName, SiteName, StartDate, EndDate, CountStaff FROM for_schedule 
+            SELECT EventName, SiteName, StartDate, EndDate, CountStaff, Description FROM for_schedule 
             WHERE StaffName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key_word;
         ELSE 
-            SELECT EventName, SiteName, StartDate, EndDate, CountStaff FROM for_schedule 
+            SELECT EventName, SiteName, StartDate, EndDate, CountStaff, Description FROM for_schedule 
             WHERE StaffName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key_word AND EndDate = end_date;
         END IF;
     ELSE 
         IF end_date = '0000-00-00' THEN
-            SELECT EventName, SiteName, StartDate, EndDate, CountStaff FROM for_schedule 
+            SELECT EventName, SiteName, StartDate, EndDate, CountStaff, Description FROM for_schedule 
             WHERE StaffName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key_word AND StartDate = start_date;
         ELSE 
-            SELECT EventName, SiteName, StartDate, EndDate, CountStaff FROM for_schedule 
+            SELECT EventName, SiteName, StartDate, EndDate, CountStaff, Description FROM for_schedule 
             WHERE StaffName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key_word AND EndDate = end_date AND StartDate = start_date;
         END IF;
-    END IF;     
+    END IF; 
 END $$
 
 
@@ -1979,7 +1991,7 @@ CREATE PROCEDURE query_staff_by_event (in site_name varchar(50), in event_name v
 BEGIN
      
     IF length(site_name) > 0 AND length(event_name) > 0 AND start_date != '0000-00-00' THEN
-        SELECT StaffName FROM AssignTo WHERE SiteName = site_name AND EventName = event_name AND StartDate = start_date;
+        SELECT StaffName, FirstName, LastName) AS Name FROM AssignTo JOIN Users ON StaffName = UserName WHERE SiteName = site_name AND EventName = event_name AND StartDate = start_date;
     ELSE 
         SET @error = 'Primary key cannot have null value.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
