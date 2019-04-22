@@ -4,6 +4,9 @@
     <form method="post" action="">
         {{ form.hidden_tag() }}
         <fieldset class="form-group">
+            <legend class="border-bottom mb-4">
+                Event Detail
+            </legend>
             <div class="form-row">
                 <div class="form-group col-md-6">
                     {{ render_field(form.event_name) }}

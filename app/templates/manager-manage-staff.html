@@ -1,5 +1,8 @@
 {% extends "home.html" %}
 {% block content %}
+    <legend class="border-bottom mb-4">
+       Manage Staff
+    </legend>
     <div class="col-md-12">
         <label>Site<select id="contain_site" name="contain_site" class="form-control">
             {% for site in sites %}
@@ -79,7 +82,7 @@
 
             $.fn.dataTable.ext.search.push(
                 function (settings, data, dataIndex) {
-                   var min_test = $('#date_min').val().replace(/-/g, '');
+                    var min_test = $('#date_min').val().replace(/-/g, '');
                     var max_test = $('#date_max').val().replace(/-/g, '');
                     var min = parseInt(min_test, 10);
                     var max = parseInt(min_test, 10);

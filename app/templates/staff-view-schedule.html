@@ -1,5 +1,8 @@
 {% extends "home.html" %}
 {% block content %}
+    <legend class="border-bottom mb-4">
+        View Schedule
+    </legend>
     <div class="col-md-12">
         <label>Start Date<input type="text" id="date_min" class="form-control">
         </label>
@@ -75,12 +78,12 @@
                 var name = table.cell('.selected', 0).data();
                 var name2 = table.cell('.selected', 1).data();
                 var name3 = table.cell('.selected', 2).data();
-                window.location.replace("{{ url_for('manager.event_detail')}}" + "?event_name=" + name + "/?site_name=" + name2 + "/?start_date=" + name3);
+                window.location.replace("{{ url_for('staff.event_detail')}}" + "?event_name=" + name + "/?site_name=" + name2 + "/?start_date=" + name3);
             });
 
             $.fn.dataTable.ext.search.push(
                 function (settings, data, dataIndex) {
-                   var min_test = $('#date_min').val().replace(/-/g, '');
+                    var min_test = $('#date_min').val().replace(/-/g, '');
                     var max_test = $('#date_max').val().replace(/-/g, '');
                     var min = parseInt(min_test, 10);
                     var max = parseInt(min_test, 10);

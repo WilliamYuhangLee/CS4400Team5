@@ -2,26 +2,29 @@
 <!DOCTYPE html>
 <html lang="en">
 {% block content %}
+    <legend class="border-bottom mb-4">
+        Daily Detail
+    </legend>
     <div class="content-section">
-            <div class="col-md-12">
-                <table id="daily_detail" class="display" cellspacing="0" width="100%">
-                    <thead>
-                    <tr>
-                        <th>Event Name</th>
-                        <th>Staff Names</th>
-                        <th>Visits</th>
-                        <th>Revenue($)</th>
-                    </tr>
-                    </thead>
-                </table>
-            </div>
+        <div class="col-md-12">
+            <table id="daily_detail" class="display" cellspacing="0" width="100%">
+                <thead>
+                <tr>
+                    <th>Event Name</th>
+                    <th>Staff Names</th>
+                    <th>Visits</th>
+                    <th>Revenue($)</th>
+                </tr>
+                </thead>
+            </table>
+        </div>
 
-            <button type="button" class="btn btn-outline-info" onclick="goBack()">Back</button>
+        <button type="button" class="btn btn-outline-info" onclick="goBack()">Back</button>
     </div>
     <script>
-    $(document).ready(function () {
-      var table = $('#daily_detail').DataTable({
-          data: JSON.parse({{ detail|tojson|safe }}),
+        $(document).ready(function () {
+            var table = $('#daily_detail').DataTable({
+                data: JSON.parse({{ detail|tojson|safe }}),
                 columns: [
                     {
                         data: "event_name"
@@ -38,6 +41,6 @@
                     }
                 ]
             });
-    })
+        })
     </script>
 {% endblock content %}
