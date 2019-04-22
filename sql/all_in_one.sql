@@ -853,7 +853,7 @@ SELECT EventName, SiteName, StartDate, (StartDate + Duration - 1) AS EndDate, Co
 FROM AssignTo JOIN for_event USING(EventName, SiteName, StartDate);
 
 CREATE VIEW explore_event AS 
-SELECT x.SiteName AS Site, x.SiteName, x.StartDate, x.EndDate, x.TicketRem, x.Price, x.TotalVisit, x.Description, y.UserName, IF(x.SiteName = y.SiteName AND x.EventName = y.EventName AND x.StartDate = y.StartDate, y.MyVisit, 0) AS MyVisit FROM for_event AS x , visit_one_event AS y;
+SELECT x.SiteName AS SiteName, x.EventName, x.StartDate, x.EndDate, x.TicketRem, x.Price, x.TotalVisit, x.Description, y.UserName, IF(x.SiteName = y.SiteName AND x.EventName = y.EventName AND x.StartDate = y.StartDate, y.MyVisit, 0) AS MyVisit FROM for_event AS x , visit_one_event AS y;
 
 
 CREATE VIEW explore_site AS
