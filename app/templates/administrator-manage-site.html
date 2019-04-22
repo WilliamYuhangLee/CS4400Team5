@@ -1,5 +1,8 @@
 {% extends "home.html" %}
 {% block content %}
+    <legend class="border-bottom mb-4">
+       Manage Site
+    </legend>
     <div class="col-md-12">
         <!--Script for admin needed-->
         <button type="button" class="btn btn-outline-info" id="site_edit">Edit</button>
@@ -21,7 +24,7 @@
                 <th>Manager</th>
                 <th>Open Everyday</th>
             </tr>
-        </tfoot>
+            </tfoot>
         </table>
     </div>
     <div class="col-md-12">
@@ -82,7 +85,7 @@
 
             $('#site_edit').on('click', function () {
                 var name = table.cell('.selected', 0).data();
-                window.location.replace(   "{{ url_for('administrator.edit_site')}}?site_name=" + name);
+                window.location.replace("{{ url_for('administrator.edit_site')}}?site_name=" + name);
             });
 
             $('#site_create').on('click', function () {

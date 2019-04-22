@@ -1,33 +1,44 @@
 {% extends "home.html" %}
 {% block content %}
-    <div class="col-md-12">
-        <label>Contain Site<select id="contain_site" name="contain_site" class="form-control">
-            {% for site in sites %}
-                <option value="{{ site }}">{{ site }}</option>
-            {% endfor %}
-        </select>
-        </label>
-        <label>Transport Type<select id="transport_type" name="transport_type" class="form-control">
-            <option value="">ALL</option>
-            <option value="MARTA">MARTA</option>
-            <option value="Bus">Bus</option>
-            <option value="Bike">Bike</option>
-        </select>
-        </label>
-    </div>​
-    <div class="col-md-12">
-        <table>
-            <tbody>
-            <tr>
-                <td>Price Range</td>
-                <td>Min<input type="text" class="form-control" id="min" name="min"></td>
-                <td>Max<input type="text" class="form-control" id="max" name="max"></td>
-            </tr>
-            </tbody>
-        </table>
+    <legend class="border-bottom mb-4">
+        Take Transit
+    </legend>
+    <div class="form-group">
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label>Contain Site<select id="contain_site" name="contain_site" class="form-control">
+                    {% for site in sites %}
+                        <option value="{{ site }}">{{ site }}</option>
+                    {% endfor %}
+                </select>
+                </label>
+            </div>
+            <div class="form-group col-md-6">
+                <label>Transport Type<select id="transport_type" name="transport_type" class="form-control">
+                    <option value="">ALL</option>
+                    <option value="MARTA">MARTA</option>
+                    <option value="Bus">Bus</option>
+                    <option value="Bike">Bike</option>
+                </select>
+                </label>
+            </div>
+        </div>
+        <div class="form-group form-row">
+            <div class="form-group col-md-12">
+                <table>
+                    <tbody>
+                    <tr>
+                        <td>Price Range</td>
+                        <td>Min<input type="text" class="form-group form-control" id="min" name="min"></td>
+                        <td>Max<input type="text" class="form-group form-control" id="max" name="max"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
     <div class="col-md-12">
-        <table id="take_transit" class="display" cellspacing="0" width="100%">
+        <table id="take_transit" class="form-group display" cellspacing="0" width="100%">
             <thead>
             <tr>
                 <th>Route</th>
@@ -39,7 +50,7 @@
         </table>
     </div>
     <div class="col-md-12">
-        <input type="textbox" id="transit_date" name="transit_date" value="2019-11-11"></input>
+        <input type="textbox" id="transit_date" name="transit_date" value="2019-11-11" class="form-group"></input>
         <button type="button" class="btn btn-outline-info" onclick="goBack()">Back</button>
         <button type="button" class="btn btn-outline-info" id="log_transit">Log Transit</button>
     </div>
@@ -122,7 +133,7 @@
                     contentType: 'application/json;charset=UTF-8',
                     dataType: 'json',
                     data: data,
-                    success: function(data) {
+                    success: function (data) {
                         alert(data.result)
                     }
                 });

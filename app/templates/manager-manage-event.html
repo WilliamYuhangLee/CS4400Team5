@@ -1,5 +1,8 @@
 {% extends "home.html" %}
 {% block content %}
+    <legend class="border-bottom mb-4">
+        Manage Event
+    </legend>
     <div class="col-md-12">
         <label>Name<input type="text" id="name_search" class="form-control">
         </label>
@@ -10,9 +13,9 @@
     <div class="col-md-12">
 
     </div>       <label>Start Date<input type="text" id="date_min" class="form-control">
-        </label>
-        <label>End Date<input type="text" id="date_max" class="form-control">
-        </label>
+</label>
+    <label>End Date<input type="text" id="date_max" class="form-control">
+    </label>
     <div class="col-md-12">
         <table>
             <tbody>
@@ -132,7 +135,7 @@
             $('#event_delete').on('click', function () {
                 var name = table.cell('.selected', 0).data();
                 var action = "DELETE"
-                var data = JSON.stringify({event_name:name, action:action})
+                var data = JSON.stringify({event_name: name, action: action})
                 $.ajax({
                     url: '{{ url_for('manager.manage_event_send_data') }}',
                     contentType: 'application/json;charset=UTF-8',
@@ -151,10 +154,10 @@
 
         $.fn.dataTable.ext.search.push(
             function (settings, data, dataIndex) {
-                   var min_test = $('#date_min').val().replace(/-/g, '');
-                    var max_test = $('#date_max').val().replace(/-/g, '');
-                    var min = parseInt(min_test, 10);
-                    var max = parseInt(min_test, 10);
+                var min_test = $('#date_min').val().replace(/-/g, '');
+                var max_test = $('#date_max').val().replace(/-/g, '');
+                var min = parseInt(min_test, 10);
+                var max = parseInt(min_test, 10);
                 var start = parseFloat(data[5].replace(/-/g, ' ')) || 0;
                 var end = parseFloat(data[6].replace(/-/g, ' ')) || 0;
 

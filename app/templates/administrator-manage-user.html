@@ -1,23 +1,26 @@
 {% extends "home.html" %}
 {% block content %}
+    <legend class="border-bottom mb-4">
+        Manage User
+    </legend>
     <div class="col-md-12">
-            <label>Username<input type="text" id="username_search" class="form-control">
-            </label>
-            <label>Type<select id="user_type" name="user_type" class="form-control">
-                <option value="">All</option>
-                <option value="User">User</option>
-                <option value="Visitor">Visitor</option>
-                <option value="Staff">Staff</option>
-                <option value="Manager">Manager</option>
-            </select>
-            </label>
-            <label>Status<select id="user_status" name="user_status" class="form-control">
-                <option value="">All</option>
-                <option value="Approved">Approved</option>
-                <option value="Pending">Pending</option>
-                <option value="Decline">Decline</option>
-            </select>
-            </label>​
+        <label>Username<input type="text" id="username_search" class="form-control">
+        </label>
+        <label>Type<select id="user_type" name="user_type" class="form-control">
+            <option value="">All</option>
+            <option value="User">User</option>
+            <option value="Visitor">Visitor</option>
+            <option value="Staff">Staff</option>
+            <option value="Manager">Manager</option>
+        </select>
+        </label>
+        <label>Status<select id="user_status" name="user_status" class="form-control">
+            <option value="">All</option>
+            <option value="Approved">Approved</option>
+            <option value="Pending">Pending</option>
+            <option value="Decline">Decline</option>
+        </select>
+        </label>​
     </div>
     <div class="col-md-12">
         <!--Script for admin needed-->
@@ -94,7 +97,7 @@
             $('#admin_manage_user_approve').on('click', function () {
                 var user = table.cell('.selected', 0).data();
                 var status = "APPROVED";
-                var data = JSON.stringify({username:user, status:status})
+                var data = JSON.stringify({username: user, status: status})
                 console.log(data)
                 $.ajax({
                     url: '{{ url_for('administrator.manage_user_send_data') }}',
@@ -102,11 +105,11 @@
                     contentType: 'application/json;charset=UTF-8',
                     datatype: 'json',
                     data: data,
-                    success: function(data){
-                      alert(data.message);
-                      if(data.result == "True") {
-                          table.cell('.selected', 3).data("APPROVED");
-                      }
+                    success: function (data) {
+                        alert(data.message);
+                        if (data.result == "True") {
+                            table.cell('.selected', 3).data("APPROVED");
+                        }
                     },
                 });
             });
@@ -114,20 +117,20 @@
             $('#admin_manage_user_decline').on('click', function () {
                 var user = table.cell('.selected', 0).data();
                 var status = "DECLINED";
-                var data = JSON.stringify({username:user, status:status})
+                var data = JSON.stringify({username: user, status: status})
                 $.ajax({
                     url: '{{ url_for('administrator.manage_user_send_data') }}',
                     type: 'POST',
                     contentType: 'application/json;charset=UTF-8',
                     datatype: 'json',
                     data: data,
-                    success: function(data){
+                    success: function (data) {
                         alert(data.message);
-                        if(data.result == "True") {
+                        if (data.result == "True") {
                             table.cell('.selected', 3).data("DECLINED");
                         }
                     },
-                    error: function(data) {
+                    error: function (data) {
                         alert(data.message);
                     }
                 });

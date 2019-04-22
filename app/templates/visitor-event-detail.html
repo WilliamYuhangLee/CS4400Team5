@@ -1,6 +1,9 @@
 {% extends "home.html" %}
 <!DOCTYPE html>
 {% block content %}
+    <legend class="border-bottom mb-4">
+        Event Detail
+    </legend>
     <form method="post" action="">
         {{ form.hidden_tag() }}
         <fieldset class="form-group">
@@ -39,7 +42,7 @@
                 <div class="form-group col-md-8">
                     {{ render_field(form.visit_date) }}
                     <div class="form-group col-md-4">
-                    {{ form.submit(class="btn btn-outline-info") }}
+                        {{ form.submit(class="btn btn-outline-info") }}
                     </div>
                 </div>
             </div>
