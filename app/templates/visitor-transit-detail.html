@@ -73,7 +73,10 @@
                     dataType: 'json',
                     data: data,
                     success: function (data) {
-                        alert(data.result)
+                        alert(data.message)
+                    },
+                    error: function() {
+                        alert("Transit Duplicate!")
                     }
                 });
             });

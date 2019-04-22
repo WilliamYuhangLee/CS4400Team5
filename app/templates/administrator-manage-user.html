@@ -111,6 +111,9 @@
                             table.cell('.selected', 3).data("APPROVED");
                         }
                     },
+                    error: function (data) {
+                        alert("Please make sure your input is correct!");
+                    }
                 });
             });
 

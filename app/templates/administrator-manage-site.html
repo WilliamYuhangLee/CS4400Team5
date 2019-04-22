@@ -106,9 +106,10 @@
                     datatype: 'json',
                     data: data,
                     success: response => {
-                        table.ajax.reload(function (json) {
-                            console.log(json.site)
-                        });
+                        alert(data.message);
+                        if (data.result == "True") {
+                            table.row('.selected').remove().draw();
+                        }
                     },
                 });
             });
