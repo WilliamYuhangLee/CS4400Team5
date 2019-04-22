@@ -548,4 +548,13 @@ BEGIN
     SELECT Route, TransportType, Price, count(*) AS CountSite FROM Transit JOIN Connects USING(TransportType, Route) Group BY TransportType, Route;
 END $$
 
+
+CREATE PROCEDURE get_free_staff(in start_date date, in end_date date)
+BEGIN
+    SELECT UserName FROM Employee WHERE Title = 'STAFF' AND
+    UserName NOT IN (SELECT StaffName FROM for_schedule WHERE 
+                    EndDate >= start_date AND StartDate <= end_date);
+END $$
+
+
 DELIMITER ;

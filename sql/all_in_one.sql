@@ -786,8 +786,13 @@ SELECT SiteName, EventName, StartDate, count(*) AS CountStaff
 FROM AssignTo GROUP BY SiteName, EventName, StartDate;
 
 CREATE VIEW for_event AS 
-SELECT SiteName, EventName, StartDate, Events.Price, sum(DailyVisit) AS TotalVisit, sum(DailyRevenue) AS TotalRevenue, (Capacity - sum(DailyVisit)) AS TicketRem, (Events.EndDate - StartDate + 1) AS Duration, Description, CountStaff, daily_event.EndDate   
-FROM daily_event INNER JOIN Events USING(SiteName, EventName, StartDate) INNER JOIN for_event_pre USING (SiteName, EventName, StartDate)
+SELECT SiteName, EventName, StartDate, Events.Price, IF(DailyVisit >= 1, sum(DailyVisit), 0) AS TotalVisit, IF(DailyVisit >= 1, sum(DailyRevenue), 0) AS TotalRevenue, IF(DailyVisit >= 1, (Capacity - sum(DailyVisit)), Capacity) AS TicketRem, (Events.EndDate - StartDate + 1) AS Duration, Description, CountStaff, Events.EndDate   
+FROM daily_event RIGHT JOIN Events USING(SiteName, EventName, StartDate) INNER JOIN for_event_pre USING (SiteName, EventName, StartDate)
+GROUP BY SiteName, EventName, StartDate;
+
+CREATE VIEW for_event AS 
+SELECT SiteName, EventName, StartDate, Events.Price, IF(DailyVisit >= 1, sum(DailyVisit), 0) AS TotalVisit, IF(DailyVisit >= 1, sum(DailyRevenue), 0) AS TotalRevenue, IF(DailyVisit >= 1, Capacity - sum(DailyVisit), Capacity) AS TicketRem, (Events.EndDate - StartDate + 1) AS Duration, Description, CountStaff, Capacity, Events.EndDate   
+FROM daily_event RIGHT JOIN Events USING(SiteName, EventName, StartDate) INNER JOIN for_event_pre USING (SiteName, EventName, StartDate)
 GROUP BY SiteName, EventName, StartDate;
 
 CREATE VIEW daily_visit_site AS 
@@ -849,8 +854,8 @@ SELECT `Date`, EventName, SiteName, Price, UserName
 FROM VisitEvent FULL JOIN visit_hisotry_pre USING(`Date`, SiteName, UserName) LEFT JOIN `EVENTS` USING(SiteName, EventName, StartDate);
 
 CREATE VIEW for_schedule AS
-SELECT EventName, SiteName, StartDate, (StartDate + Duration - 1) AS EndDate, CountStaff, StaffName, Description 
-FROM AssignTo JOIN for_event USING(EventName, SiteName, StartDate);
+SELECT EventName, SiteName, StartDate, EndDate, CountStaff, StaffName, Description 
+FROM AssignTo LEFT JOIN for_event USING(EventName, SiteName, StartDate);
 
 CREATE VIEW explore_event AS 
 SELECT x.SiteName AS SiteName, x.EventName, x.StartDate, x.EndDate, x.TicketRem, x.Price, x.TotalVisit, x.Description, y.UserName, IF(x.SiteName = y.SiteName AND x.EventName = y.EventName AND x.StartDate = y.StartDate, y.MyVisit, 0) AS MyVisit FROM for_event AS x , visit_one_event AS y;
@@ -858,6 +863,7 @@ SELECT x.SiteName AS SiteName, x.EventName, x.StartDate, x.EndDate, x.TicketRem,
 
 CREATE VIEW explore_site AS
 SELECT x.UserName, x.SiteName, x.Date, y.TotalVisit, y.CountEvent, y.EveryDay, IF(x.SiteName = y.SiteName, 1, 0) AS MyVisit FROM VisitSite AS x, for_site as y;
+
 
 
 USE atlbeltline;
@@ -2034,7 +2040,17 @@ BEGIN
     SELECT Route, TransportType, Price, count(*) AS CountSite FROM Transit JOIN Connects USING(TransportType, Route) Group BY TransportType, Route;
 END $$
 
+
+CREATE PROCEDURE get_free_staff(in start_date date, in end_date date)
+BEGIN
+    SELECT UserName FROM Employee WHERE Title = 'STAFF' AND
+    UserName NOT IN (SELECT StaffName FROM for_schedule WHERE 
+                    EndDate >= start_date AND StartDate <= end_date);
+END $$
+
+
 DELIMITER ;
+
 
 DELIMITER ;
 
