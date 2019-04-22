@@ -4,6 +4,7 @@ from wtforms.validators import InputRequired, Length, NumberRange, ValidationErr
 from app.util import db_procedure, DatabaseError
 from app.models import Transit
 
+
 class EditSiteForm(FlaskForm):
 
     @staticmethod
