@@ -121,11 +121,11 @@
 
             $('#site_detail').on('click', function () {
                 var name = table.cell('.selected', 0).data();
-                window.location.replace("{{ url_for('visitor.site_detail' , name) }}");
+                window.location.replace("{{ url_for('visitor.site_detail') }}" + "?site_name=" + name);
             });
             $('#transit_detail').on('click', function () {
                 var name = table.cell('.selected', 0).data();
-                window.location.replace("{{ url_for('visitor.transit_detail' , name) }}");
+                window.location.replace("{{ url_for('visitor.transit_detail')}}"+"?site_name="+name);
             });
 
             $.fn.dataTable.ext.search.push(
