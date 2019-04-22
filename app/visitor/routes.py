@@ -21,6 +21,8 @@ def explore_event():
             "ticket_remaining": row[3],
             "total_visits": row[4],
             "my_visits": row[5],
+            "start_date": row[6],
+            "end_date": row[7],
         })
     return render_template("visitor-explore-event.html", title="Explore Event", events=json.dumps(events))
 
@@ -64,7 +66,21 @@ def event_detail():
 @bp.route("/explore-site")
 @login_required
 def explore_site():
-    return "Not implemented yet!"  # TODO: implement this method
+    args = (current_user.username, "", 0,) + ("0000-00-00",) * 2 + (0,) * 4 + (1,)
+    result, error = db_procedure("filter_site_vis", args)
+    if error:
+        raise DatabaseError("An error occurred when getting all sites for visitor: " + error)
+    sites = []
+    for row in result:
+        sites.append({
+            "site_name": row[0],
+            "event_count": row[1],
+            "total_visits": row[2],
+            "my_visits": row[3],
+            "date": row[4],
+            "open_everyday": row[5],
+        })
+    return render_template("visitor-explore-site.html", title="Explore Site", sites=json.dumps(sites))
 
 
 @bp.route("/transit-detail")
