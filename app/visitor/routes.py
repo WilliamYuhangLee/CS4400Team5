@@ -136,4 +136,15 @@ def site_detail():
 @bp.route("/visit_history")
 @login_required
 def visit_history():
-    return "Not implemented yet!"  # TODO: implement this method
+    result, error = db_procedure("filter_visit_history", (current_user.username,))
+    if error:
+        raise DatabaseError("An error occurred when getting visit history: " + error)
+    visits = []
+    for row in result:
+        visits.append({
+            "date": row[1],
+            "site_name": row[2],
+            "event": row[3],
+            "price": row[4],
+        })
+    return render_template("visitor-visit-history.html", title="Visit History", visits=json.dumps(visits))
