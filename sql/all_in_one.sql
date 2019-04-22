@@ -1374,11 +1374,12 @@ BEGIN
     DECLARE capacity_ int;
     DECLARE description_ text;
     DECLARE duration_ int;
+    DECLARE price_ int;
      
     IF length(site_name) > 0 AND length(event_name) > 0 AND start_date != '0000-00-00' THEN
-        SELECT EndDate, MinStaffReq, Capacity, Description, Duration INTO end_date, min_staff_req, capacity_, description_, duration_ FROM for_event WHERE SiteName = site_name AND EventName = event_name AND StartDate = start_date LIMIT 1;        
+        SELECT EndDate, MinStaffReq, Capacity, Description, Duration, Price INTO end_date, min_staff_req, capacity_, description_, duration_, price_ FROM for_event WHERE SiteName = site_name AND EventName = event_name AND StartDate = start_date LIMIT 1;        
         IF length(description_) > 1 THEN 
-            SELECT end_date, min_staff_req, capacity_, description_, duration_;
+            SELECT end_date, min_staff_req, capacity_, description_, duration_, price_;
         ELSE 
             SET @error = concat(event_name, ' does not exist.');
             SIGNAL SQLSTATE '45000' SET message_text = @error;
@@ -1992,7 +1993,7 @@ CREATE PROCEDURE query_staff_by_event (in site_name varchar(50), in event_name v
 BEGIN
      
     IF length(site_name) > 0 AND length(event_name) > 0 AND start_date != '0000-00-00' THEN
-        SELECT StaffName, FirstName, LastName) AS Name FROM AssignTo JOIN Users ON StaffName = UserName WHERE SiteName = site_name AND EventName = event_name AND StartDate = start_date;
+        SELECT StaffName, FirstName, LastName AS Name FROM AssignTo JOIN Users ON StaffName = UserName WHERE SiteName = site_name AND EventName = event_name AND StartDate = start_date;
     ELSE 
         SET @error = 'Primary key cannot have null value.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
