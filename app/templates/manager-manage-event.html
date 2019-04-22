@@ -125,6 +125,10 @@
 
             $('#event_edit').on('click', function () {
                 var name = table.cell('.selected', 0).data();
+                if ( name == undefined) {
+                    alert("You must Select a event first!");
+                    return false;
+                }
                 window.location.replace("{{ url_for('manager.edit_event')}}" + "?event_name" + name);
             });
 

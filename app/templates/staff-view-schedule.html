@@ -78,6 +78,18 @@
                 var name = table.cell('.selected', 0).data();
                 var name2 = table.cell('.selected', 1).data();
                 var name3 = table.cell('.selected', 2).data();
+                if ( name == undefined) {
+                    alert("You must Select a event first!");
+                    return false;
+                }
+                if ( name2 == undefined) {
+                    alert("You must Select a site first!");
+                    return false;
+                }
+                if ( name3 == undefined) {
+                    alert("You must Select a start date first!");
+                    return false;
+                }
                 window.location.replace("{{ url_for('staff.event_detail')}}" + "?event_name=" + name + "/?site_name=" + name2 + "/?start_date=" + name3);
             });
 

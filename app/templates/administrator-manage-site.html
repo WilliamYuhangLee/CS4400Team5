@@ -85,6 +85,10 @@
 
             $('#site_edit').on('click', function () {
                 var name = table.cell('.selected', 0).data();
+                if ( name == undefined) {
+                    alert("You must Select a site first!");
+                    return false;
+                }
                 window.location.replace("{{ url_for('administrator.edit_site')}}?site_name=" + name);
             });
 
