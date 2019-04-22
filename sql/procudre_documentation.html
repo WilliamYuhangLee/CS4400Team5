@@ -250,6 +250,23 @@
                 </tr>
                 
                 <tr>
+                    <td class="name">delete_event()</td>
+                    <td class="functionality">Delete the specified event.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>site_name (str)</li>
+                            <li>event_name (str)</li>
+                            <li>start_date (str/date)</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>Null</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
                     <td class="name">delete_site()</td>
                     <td class="functionality">Delete the specified site.</td>
                     <td class="variable">
@@ -460,6 +477,9 @@
                             <li>Duration (int)</li>
                             <li>TotalVisit (int)</li>
                             <li>TotalRevenue (int)</li>
+                            <li>Description (str)</li>
+                            <li>StartDate (str/date)</li>
+                            <li>EndDate (str/date)</li>
                         </ul>
                     </td>
                 </tr>
@@ -608,6 +628,10 @@
                         <ul>
                             <li>StaffName (str) combination of first name and last name</li>
                             <li>NumEventShifts (int)</li>
+                            <li>SiteName (str)</li>
+                            <li>EventName (str)</li>
+                            <li>StartDate (str/date)</li>
+                            <li>EndDate (str/date)</li>
                         </ul>
                     </td>
                 </tr>
@@ -673,6 +697,25 @@
                             <li>Type (str) User,Visitor, Staff, Employee, Administrator</li>
                             <li>Status (str)</li>
                             <li>NumEmailCount (int)</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name">filter_visit_history()</td>
+                    <td class="functionality">Filter information about one's visit history.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>user_name (str) cannot be empty string</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>UserName (str)</li>
+                            <li>Date (str/date) 'yyyy-mm-dd'</li>
+                            <li>SiteName (str)</li>
+                            <li>EventName (int)</li>
+                            <li>Price (float)</li>
                         </ul>
                     </td>
                 </tr>
