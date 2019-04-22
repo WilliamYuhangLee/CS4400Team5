@@ -1,4 +1,4 @@
-from flask import render_template, request, jsonify
+from flask import render_template, request, jsonify, json
 from flask_login import login_required, current_user
 from . import bp
 from app.util import validate_date, db_procedure, DatabaseError
@@ -10,10 +10,38 @@ def home():
     return render_template("home-manager.html", title="Home")
 
 
-@bp.route("/manage-event")
+@bp.route("/manage_event")
 @login_required
 def manage_event():
-    return "Not implemented yet!"  # TODO: implement this method
+    args = (current_user.username, "", "",) + ("0000-00-00",) * 2 + (0,) * 6
+    result, error = db_procedure("filter_event_adm", args)
+    if error:
+        raise DatabaseError("An error occurred when querying events for manager: " + error)
+    events = []
+    for row in result:
+        events.append({
+            "name": row[0],
+            "staff_count": row[1],
+            "duration": row[2],
+            "total_visits": row[3],
+            "total_revenue": row[4],
+            "description": row[5],
+            "start_date": row[6],
+            "end_date": row[7],
+        })
+    return render_template("manager-manage-event.html", title="Manage Event", events=json.dumps(events))
+
+
+@bp.route("/manage_event/_send_data", methods=["POST", "DELETE"])
+@login_required
+def manage_event_send_data():
+    site_name = request.json["site_name"]
+    event_name = request.json["event_name"]
+    start_date = request.json["start_date"]
+    result, error = db_procedure("delete_event", (site_name, event_name, start_date))
+    if error:
+        raise DatabaseError("An error occurred when deleting event: " + error)
+    return jsonify({"result": True, "message": "Successfully deleted event."})
 
 
 @bp.route("/edit-event")
