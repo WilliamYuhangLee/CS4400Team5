@@ -82,7 +82,7 @@
 
             $('#site_edit').on('click', function () {
                 var name = table.cell('.selected', 0).data();
-                window.location.replace("{{ url_for('administrator.edit_site', site_name=name) }}");
+                window.location.replace(   "{{ url_for('administrator.edit_site')}}?site_name=" + name);
             });
 
             $('#site_create').on('click', function () {

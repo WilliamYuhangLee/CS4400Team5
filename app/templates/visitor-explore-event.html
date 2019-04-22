@@ -134,8 +134,11 @@
                 ]
             });
 
+            ////need restruction
             $('#event_detail').on('click', function () {
                 var name = table.cell('.selected', 0).data();
+                var eventname
+                var startdate
                 window.location.replace("{{ url_for('visitor.event_detail' , name) }}");
             });
 
