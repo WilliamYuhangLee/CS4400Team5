@@ -397,18 +397,18 @@ BEGIN
     IF length(user_name) > 0 THEN
         IF start_date = '0000-00-00' THEN 
             IF end_date = '0000-00-00' THEN
-                SELECT EventName, SiteName, Price, TicketRem, TotalVisit, MyVisit FROM explore _event
+                SELECT EventName, SiteName, Price, TicketRem, TotalVisit, MyVisit, StartDate, EndDate FROM explore_event
                 WHERE UserName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key AND TotalVisit <= new_high_visit AND TotalVisit >= low_visit AND Price >= low_price AND Price <= new_high_price AND MyVisit < new_visited AND TicketRem >= new_sold ;
             ELSE 
-                SELECT EventName, SiteName, Price, TicketRem, TotalVisit, MyVisit FROM explore _event
+                SELECT EventName, SiteName, Price, TicketRem, TotalVisit, MyVisit, StartDate, EndDate FROM explore_event
                 WHERE UserName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key AND TotalVisit <= new_high_visit AND TotalVisit >= low_visit AND Price >= low_price AND Price <= new_high_price AND MyVisit < new_visited AND TicketRem >= new_sold AND EndDate = end_date;
             END IF;
         ELSE 
             IF end_date = '0000-00-00' THEN
-                SELECT EventName, SiteName, Price, TicketRem, TotalVisit, MyVisit FROM explore _event
+                SELECT EventName, SiteName, Price, TicketRem, TotalVisit, MyVisit, StartDate, EndDate  FROM explore _event
                 WHERE UserName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key AND TotalVisit <= new_high_visit AND TotalVisit >= low_visit AND Price >= low_price AND Price <= new_high_price AND MyVisit < new_visited AND TicketRem >= new_sold AND StartDate = start_date;
             ELSE 
-                SELECT EventName, SiteName, Price, TicketRem, TotalVisit, MyVisit FROM explore _event
+                SELECT EventName, SiteName, Price, TicketRem, TotalVisit, MyVisit, StartDate, EndDate FROM explore _event
                 WHERE UserName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key AND TotalVisit <= new_high_visit AND TotalVisit >= low_visit AND Price >= low_price AND Price <= new_high_price AND MyVisit < new_visited AND TicketRem >= new_sold AND EndDate = end_date AND StartDate = start_date;
             END IF;
         END IF;     
@@ -466,11 +466,11 @@ BEGIN
     
     IF length(user_name) > 0 THEN 
         IF open_everyday = 0 THEN
-            SELECT SiteName, CountEvent, TotalVist, sum(MyVisit) AS MyVisits FROM explore_site 
+            SELECT SiteName, CountEvent, TotalVist, sum(MyVisit) AS MyVisits, `Date`, EveryDay FROM explore_site 
             WHERE UserName = user_name AND SiteName LIKE new_site_name AND `Date` >= new_start_date AND `Date` <= new_end_date AND
             TotalVisit >= low_visit AND TotalVisit <= new_high_visit GROUP BY SiteName, UserName HAVING MyVisits < new_visited;
         ELSE 
-            SELECT SiteName, CountEvent, TotalVist, sum(MyVisit) AS MyVisits FROM explore_site 
+            SELECT SiteName, CountEvent, TotalVist, sum(MyVisit) AS MyVisits, `Date`, EveryDay FROM explore_site 
             WHERE UserName = user_name AND SiteName LIKE new_site_name AND `Date` >= new_start_date AND `Date` <= new_end_date AND
             TotalVisit >= low_visit AND TotalVisit <= new_high_visit GROUP BY SiteName, UserName HAVING MyVisits < new_visited AND 
             EveryDay = open_everyday;
