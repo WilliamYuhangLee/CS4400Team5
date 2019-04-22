@@ -122,7 +122,7 @@
 
             $('#event_edit').on('click', function () {
                 var name = table.cell('.selected', 0).data();
-                window.location.replace("{{ url_for('manager.edit_event' , name) }}");
+                window.location.replace("{{ url_for('manager.edit_event')}}" + "?event_name" + name);
             });
 
             $('#event_create').on('click', function () {

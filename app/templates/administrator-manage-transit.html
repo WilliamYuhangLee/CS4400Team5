@@ -111,7 +111,8 @@
 
             $('#transit_edit').on('click', function () {
                 var name = table.cell('.selected', 0).data();
-                window.location.replace("{{ url_for('administrator.edit_transit', name) }}");
+                var type = table.cell('.selected', 1).data();
+                window.location.replace("{{ url_for('administrator.edit_transit')}}?site_name=" + name + "/?transport_type=" + type );
             });
 
             $('#transit_create').on('click', function () {

@@ -74,12 +74,12 @@ class UserRegistrationForm(FlaskForm):
 
     def add_email(self):
         form = EmailEntryForm()
-        form.email = self.email.data
+        form.email.data = self.email.data
         self.email.data = None
         self.emails.append_entry(form)
 
     def delete_email(self):
-        for form in self.emails:
+        for form in self.emails.entries:
             if form.remove.data:
                 self.emails.entries.remove(form)
                 break

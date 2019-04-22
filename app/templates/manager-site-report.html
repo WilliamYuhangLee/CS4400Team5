@@ -128,7 +128,7 @@
 
             $('#daily_detail').on('click', function () {
                 var date = table.cell('.selected', 0).data();
-                window.location.replace("{{ url_for('manager.daily_detail' , date) }}");
+                window.location.replace("{{ url_for('manager.daily_detail')}}"+"?date="+date);
             });
 
             $.fn.dataTable.ext.search.push(
