@@ -1494,7 +1494,7 @@ CREATE PROCEDURE filter_transit(in site_name varchar(50), in route_ varchar(20),
 BEGIN
     DECLARE new_site_name varchar(100);
     DECLARE new_route_ varchar(20);
-    DECLARE new_high_price int;
+    DECLARE new_high_price float;
     
     IF length(site_name) > 0 THEN
         SET new_site_name = site_name;
@@ -1618,7 +1618,7 @@ BEGIN
     DECLARE new_start_date date;
     DECLARE new_end_date date;
     DECLARE new_long_duration int;
-    DECLARE new_high_visit int;
+    DECLARE new_high_visit bigint;
     DECLARE new_high_revenue float;
     DECLARE site_name varchar(50);
     
@@ -1669,7 +1669,7 @@ CREATE PROCEDURE filter_event_daily(in site_name varchar(50), in event_name varc
 -- order of parameter
 -- site name, manager name, if open every day
 BEGIN 
-    DECLARE new_high_visit int;
+    DECLARE new_high_visit bigint;
     DECLARE new_high_revenue float;
     
     IF high_visit = 0 THEN
@@ -1739,9 +1739,9 @@ CREATE PROCEDURE filter_daily_site(in site_name varchar(50), in start_date date,
 BEGIN
     DECLARE new_start_date date;
     DECLARE new_end_date date;
-    DECLARE new_high_event int;
-    DECLARE new_high_staff int;
-    DECLARE new_high_visit int;
+    DECLARE new_high_event bigint;
+    DECLARE new_high_staff bigint;
+    DECLARE new_high_visit bigint;
     DECLARE new_high_revenue float;
     
      
@@ -1797,7 +1797,7 @@ BEGIN
         SET @error = 'Site name or date cannot be null.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     ELSE 
-        SELECT EventName, SiteName, StartDate, DailyVisit, DailyRevenue, `Date` FROM daily_event WHERE SiteName = site_name AND `Date` = date_;
+        SELECT EventName, SiteName, StartDate, DailyVisit, DailyRevenue,`Date` FROM daily_event WHERE SiteName = site_name AND `Date` = date_;
     END IF;
 END $$
 
@@ -1847,7 +1847,7 @@ BEGIN
     DECLARE new_site_name varchar(100);
     DECLARE new_event_name varchar(100);
     DECLARE new_key varchar(200);
-    DECLARE new_high_visit int;
+    DECLARE new_high_visit bigint;
     DECLARE new_high_price float;
     DECLARE new_visited int;
     DECLARE new_sold int;
@@ -1915,8 +1915,8 @@ BEGIN
     DECLARE new_site_name varchar(50);
     DECLARE new_start_date date;
     DECLARE new_end_date date;
-    DECLARE new_high_visit int;
-    DECLARE new_high_event int;
+    DECLARE new_high_visit bigint;
+    DECLARE new_high_event bigint;
     DECLARE new_visited int;
     
     IF length(site_name) > 0 THEN
@@ -2035,7 +2035,6 @@ BEGIN
 END $$
 
 DELIMITER ;
-
 
 DELIMITER ;
 
