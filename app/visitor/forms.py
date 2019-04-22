@@ -14,5 +14,16 @@ class EventDetailForm(FlaskForm):
     visit_date = DateField(label="Visit Date", validators=[InputRequired()])
     submit = SubmitField(label="Log Visit")
 
-    def validate_on_submit(self):
-        pass # TODO: implement validation logic
+    def validate_visit_date(self):
+        pass  # TODO: implement validation logic
+
+
+class SiteDetailForm(FlaskForm):
+    site = StringField(label="Site", render_kw={"readonly": True})
+    open_everyday = StringField(label="Open Everyday", render_kw={"readonly": True})
+    address = StringField(label="Address", render_kw={"readonly": True})
+    visit_date = DateField(label="Visit Date", validators=[InputRequired()])
+    submit = SubmitField(label="Log Visit")
+
+    def validate_visit_date(self):
+        pass  # TODO: implement validation logic
