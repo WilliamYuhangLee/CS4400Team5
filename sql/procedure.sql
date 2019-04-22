@@ -602,4 +602,21 @@ BEGIN
 END $$
 
 
+CREATE PROCEDURE filter_visit_history(in user_name varchar(100))
+BEGIN
+    IF length(user_name) > 0 THEN
+        (SELECT UserName, Date, SiteName, EventName, Price FROM visit_history WHERE UserName = user_name) UNION (SELECT UserName, Date, SiteName, "Null", 0.00 FROM visitsite WHERE UserName = user_name);
+    ELSE 
+        SET @error = 'Username cannot be null.';
+        SIGNAL SQLSTATE '45000' SET message_text = @error;
+    END IF;
+END $$
+
+
+CREATE PROCEDURE delete_event(in site_name varchar(50), in event_site varchar(50), in start_date date)
+BEGIN
+    DELETE FROM Events WHERE SiteName = site_name AND EventName = event_name AND StartDate = start_date;
+END $$
+
+
 DELIMITER ;
