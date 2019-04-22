@@ -28,7 +28,6 @@
         <table id="user_list" class="display" cellspacing="0" width="100%">
             <thead>
             <tr>
-                <th></th>
                 <th>Username</th>
                 <th>Email Count</th>
                 <th>User Type</th>
@@ -105,9 +104,9 @@
                     data: data,
                     success: function(data){
                       alert(data.message);
-                        var json = JSON.parse({{ users|tojson|safe }});
-                        table.clear();
-                        table.rows.add(json).draw();
+                      if(data.result == "True") {
+                          table.cell('.selected', 3).data("APPROVED");
+                      }
                     },
                 });
             });
@@ -124,9 +123,12 @@
                     data: data,
                     success: function(data){
                         alert(data.message);
-                        var json = JSON.parse({{ users|tojson|safe }});
-                        table.clear();
-                        table.rows.add(json).draw();
+                        if(data.result == "True") {
+                            table.cell('.selected', 3).data("DECLINED");
+                        }
+                    },
+                    error: function(data) {
+                        alert(data.message);
                     }
                 });
 

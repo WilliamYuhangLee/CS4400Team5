@@ -151,8 +151,10 @@
 
         $.fn.dataTable.ext.search.push(
             function (settings, data, dataIndex) {
-                var min = parseInt($('#date_min').replace(/-/g, ' ').val(), 10);
-                var max = parseInt($('#date_max').replace(/-/g, ' ').val(), 10);
+                   var min_test = $('#date_min').val().replace(/-/g, '');
+                    var max_test = $('#date_max').val().replace(/-/g, '');
+                    var min = parseInt(min_test, 10);
+                    var max = parseInt(min_test, 10);
                 var start = parseFloat(data[5].replace(/-/g, ' ')) || 0;
                 var end = parseFloat(data[6].replace(/-/g, ' ')) || 0;
 

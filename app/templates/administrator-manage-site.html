@@ -1,27 +1,6 @@
 {% extends "home.html" %}
 {% block content %}
     <div class="col-md-12">
-        <label>Site<select id="contain_site" name="contain_site" class="form-control">
-            {% for site in sites %}
-                <option value="{{ site }}">{{ site }}</option>
-            {% endfor %}
-        </select>
-        </label>
-        <label>Manager<select id="contain_manager" name="contain_manager" class="form-control">
-            {% for manager in managers %}
-                <option value="{{ manager }}">{{ manager }}</option>
-            {% endfor %}
-        </select>
-        </label>
-    </div>
-    <div class="col-md-12">
-        <label>Open Everyday<select id="open_everyday" name="open_everyday" class="form-control">
-            <option value="Yes">Yes</option>
-            <option value="No">No</option>
-        </select>
-        </label>
-    </div>
-    <div class="col-md-12">
         <!--Script for admin needed-->
         <button type="button" class="btn btn-outline-info" id="site_edit">Edit</button>
         <button type="button" class="btn btn-outline-info" id="site_create">Create</button>
@@ -36,6 +15,13 @@
                 <th>Open Everyday</th>
             </tr>
             </thead>
+            <tfoot>
+            <tr>
+                <th>Name</th>
+                <th>Manager</th>
+                <th>Open Everyday</th>
+            </tr>
+        </tfoot>
         </table>
     </div>
     <div class="col-md-12">
@@ -44,27 +30,38 @@
     <script>
         $(document).ready(function () {
             var table = $('#site_list').DataTable({
-                ajax: {
-                    url: "{{ url_for('administrator.manage_site_get_table_data') }}",
-                    type: "GET",
-                    data: function () {
-                        return {
-                            site_name: $("#contain_site option:selected").text(),
-                            manager_name: $("#contain_manager option:selected").text()
-                        }
-                    }
-                },
+                data: JSON.parse({{ sites|tojson|safe }}),
                 columns: [
                     {
-                        data: "name"
+                        data: "site_name"
                     },
                     {
-                        data: "manager",
+                        data: "manager_name",
                     },
                     {
-                        data: "open_everyday"
+                        data: "open_every_date"
                     }
                 ],
+                initComplete: function () {
+                    this.api().columns().every(function () {
+                        var column = this;
+                        var select = $('<select><option value=""></option></select>')
+                            .appendTo($(column.footer()).empty())
+                            .on('change', function () {
+                                var val = $.fn.dataTable.util.escapeRegex(
+                                    $(this).val()
+                                );
+
+                                column
+                                    .search(val ? '^' + val + '$' : '', true, false)
+                                    .draw();
+                            });
+
+                        column.data().unique().sort().each(function (d, j) {
+                            select.append('<option value="' + d + '">' + d + '</option>')
+                        });
+                    });
+                },
                 columnDefs: [{
                     orderable: false,
                     className: 'select-checkbox',
@@ -85,7 +82,7 @@
 
             $('#site_edit').on('click', function () {
                 var name = table.cell('.selected', 0).data();
-                window.location.replace("{{ url_for('administrator.edit_site', name) }}");
+                window.location.replace("{{ url_for('administrator.edit_site', site_name=name) }}");
             });
 
             $('#site_create').on('click', function () {
@@ -94,7 +91,7 @@
 
             $('#site_delete').on('click', function () {
                 var name = table.cell('.selected', 0).data();
-                var data = JSON.stringify({site_name:name})
+                var data = JSON.stringify({site_name: name});
                 $.ajax({
                     url: '{{ url_for('administrator.manage_site_send_data') }}',
                     type: 'DELETE',
@@ -102,12 +99,12 @@
                     datatype: 'json',
                     data: data,
                     success: response => {
-                            table.ajax.reload(function (json) {
+                        table.ajax.reload(function (json) {
                             console.log(json.site)
                         });
+                    },
                 });
             });
-
         });
     </script>
 {% endblock content %}
