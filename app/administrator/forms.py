@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField, BooleanField, DecimalField, SelectMultipleField, HiddenField
+from wtforms import StringField, SelectField, BooleanField, DecimalField, SelectMultipleField, HiddenField, SubmitField
 from wtforms.validators import InputRequired, Length, NumberRange, ValidationError
 from app.util import db_procedure, DatabaseError
 from app.models import Transit
@@ -19,6 +19,7 @@ class EditSiteForm(FlaskForm):
     address = StringField(label="Address", default="")
     manager = SelectField(label="Manager", validators=[InputRequired()], coerce=str)
     open_everyday = BooleanField(label="Open Everyday")
+    submit = SubmitField("Submit")
 
 
 class EditTransitForm(FlaskForm):
@@ -27,6 +28,7 @@ class EditTransitForm(FlaskForm):
     old_route = HiddenField()
     price = DecimalField(label="Price ($)", validators=[InputRequired(), NumberRange(min=0, message="The price must not be nagative!")])
     connected_sites = SelectMultipleField(label="Connected Sites")
+    submit = SubmitField(label="Update")
 
     def validate_route(self, route_field):
         if route_field.data != self.old_route.data:
@@ -47,6 +49,7 @@ class CreateTransitForm(FlaskForm):
     price = DecimalField(label="Price ($)",
                          validators=[InputRequired(), NumberRange(min=0, message="The price must not be nagative!")])
     connected_sites = SelectMultipleField(label="Connected Sites")
+    submit = SubmitField(label="Create")
 
     def validate_route(self, route_field):
         result, error = db_procedure("check_transit", (route_field.data, self.transport_type.data))
