@@ -1,7 +1,7 @@
 from flask import render_template, json, request, flash, redirect, url_for, jsonify
 from flask_login import login_required, current_user
 from . import bp
-from .forms import EventDetailForm
+from .forms import EventDetailForm, SiteDetailForm
 from app.util import db_procedure, DatabaseError, validate_date
 
 
@@ -112,10 +112,25 @@ def transit_detail_send_data():
     return jsonify({"result": True, "message": "Successfully logged transit."})
 
 
-@bp.route("/site_detail")
+@bp.route("/site_detail", methods=["GET", "POST"])
 @login_required
 def site_detail():
-    return "Not implemented yet!"  # TODO: implement this method
+    form = SiteDetailForm()
+    if form.validate_on_submit():
+        result, error = db_procedure("log_site", (form.site.data, current_user.username, form.visit_date.data))
+        if error:
+            DatabaseError("An error occurred when logging site for visitor: " + error)
+        flash(message="You have successfully logged your visit to the site!", category="success")
+        return redirect(url_for(".explore_site"))
+    site_name = request.args.get("site_name", type=str)
+    result, error = db_procedure("query_site_by_site_name", (site_name,))
+    if error:
+        raise DatabaseError("An error occurred when getting site detail: " + error)
+    zip_code, address, open_everyday, manager_name = result[0]
+    form.site.data = site_name
+    form.open_everyday.data = open_everyday
+    form.address.data = address
+    return render_template("visitor-site-detail.html", title="Site Detail", form=form)
 
 
 @bp.route("/visit_history")
