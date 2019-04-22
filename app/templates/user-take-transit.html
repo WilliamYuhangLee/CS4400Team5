@@ -49,10 +49,16 @@
             </thead>
         </table>
     </div>
+    <div class="form-row">
+    <div class="col-md-12"><label>Transit Date (yyyy-mm-dd)
+        <input type="textbox" id="transit_date" name="transit_date" value="2019-11-11" class="form-group"></input></label>
+    </div>
+    </div>
+    <div class="form-row">
     <div class="col-md-12">
-        <input type="textbox" id="transit_date" name="transit_date" value="2019-11-11" class="form-group"></input>
         <button type="button" class="btn btn-outline-info" onclick="goBack()">Back</button>
         <button type="button" class="btn btn-outline-info" id="log_transit">Log Transit</button>
+    </div>
     </div>
     <script>
         $(document).ready(function () {

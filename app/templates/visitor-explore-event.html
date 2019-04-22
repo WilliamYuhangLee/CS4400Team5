@@ -141,6 +141,18 @@
                 var name = table.cell('.selected', 1).data();
                 var eventname = table.cell('.selected', 0).data();
                 var startdate = table.cell('.selected', 5).data();
+                if ( name == undefined) {
+                    alert("You must Select a site first!");
+                    return false;
+                }
+                if ( eventname == undefined) {
+                    alert("You must Select a event first!");
+                    return false;
+                }
+                if ( startdate == undefined) {
+                    alert("You must Select a start date first!");
+                    return false;
+                }
                 window.location.replace("{{ url_for('visitor.event_detail')}}" + "?site_name=" + name + "/?event_name=" + eventname + "/?start_date=" + startdate);
             });
 
