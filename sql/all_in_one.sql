@@ -853,12 +853,11 @@ SELECT EventName, SiteName, StartDate, (StartDate + Duration - 1) AS EndDate, Co
 FROM AssignTo JOIN for_event USING(EventName, SiteName, StartDate);
 
 CREATE VIEW explore_event AS 
-SELECT x.SiteName AS Site, x.SiteName, x.StartDate, x.EndDate, x.TicketRem, x.Price, x.TotalVisit, x.Description, y.UserName, IF(x.SiteName = y.SiteName AND x.EventName = y.EventName AND x.StartDate = y.StartDate, y.MyVisit, 0) AS MyVisit FROM for_event AS x , visit_one_event AS y;
+SELECT x.SiteName AS SiteName, x.EventName, x.StartDate, x.EndDate, x.TicketRem, x.Price, x.TotalVisit, x.Description, y.UserName, IF(x.SiteName = y.SiteName AND x.EventName = y.EventName AND x.StartDate = y.StartDate, y.MyVisit, 0) AS MyVisit FROM for_event AS x , visit_one_event AS y;
 
 
 CREATE VIEW explore_site AS
 SELECT x.UserName, x.SiteName, x.Date, y.TotalVisit, y.CountEvent, y.EveryDay, IF(x.SiteName = y.SiteName, 1, 0) AS MyVisit FROM VisitSite AS x, for_site as y;
-
 
 
 USE atlbeltline;
@@ -1465,6 +1464,23 @@ BEGIN
 END $$
 
 
+CREATE PROCEDURE filter_visit_history(in user_name varchar(100))
+BEGIN
+    IF length(user_name) > 0 THEN
+        (SELECT UserName, Date, SiteName, EventName, Price FROM visit_history WHERE UserName = user_name) UNION (SELECT UserName, Date, SiteName, "Null", 0.00 FROM visitsite WHERE UserName = user_name);
+    ELSE 
+        SET @error = 'Username cannot be null.';
+        SIGNAL SQLSTATE '45000' SET message_text = @error;
+    END IF;
+END $$
+
+
+CREATE PROCEDURE delete_event(in site_name varchar(50), in event_site varchar(50), in start_date date)
+BEGIN
+    DELETE FROM Events WHERE SiteName = site_name AND EventName = event_name AND StartDate = start_date;
+END $$
+
+
 DELIMITER ;
 
 
@@ -1496,7 +1512,7 @@ BEGIN
         SET new_high_price = high_price;
     END IF;
     IF length(transport_type) > 0 THEN 
-        SELECT DISTINCT Route, TransportType, Price, NumConnected, NumLogged  FROM for_transit JOIN Connects USING(Route, TransportType) WHERE SiteName LIKE new_site_name AND TransportType = transport_type AND Price >= low_price AND Price <= new_high_price AND Route LIKE new_route_;
+        SELECT DISTINCT Route, TransportType, Price, NumConnected, NumLogged FROM for_transit JOIN Connects USING(Route, TransportType) WHERE SiteName LIKE new_site_name AND TransportType = transport_type AND Price >= low_price AND Price <= new_high_price AND Route LIKE new_route_;
     ELSE 
         SELECT DISTINCT Route, TransportType, Price, NumConnected, NumLogged  FROM for_transit JOIN Connects USING(Route, TransportType) WHERE SiteName LIKE new_site_name AND Price >= low_price AND Price <= new_high_price AND Route LIKE new_route_;
     END IF;
@@ -1644,7 +1660,7 @@ BEGIN
     
     SELECT SiteName INTO site_name FROM Site WHERE ManagerName = manager_name;    
     
-    SELECT EventName, CountStaff, Duration, TotalVisit, TotalRevenue FROM for_event WHERE SiteName = site_name AND EventName LIKE new_event_name AND Description LIKE new_key_word AND StartDate >= new_start_date AND EndDate <= new_end_date AND Duration >= short_duration AND Duration <= new_long_duration AND TotalVisit >= low_visit AND TotalVisit <= new_high_visit AND TotalRevenue >= low_revenue AND TotalRevenue <= new_high_revenue;
+    SELECT EventName, CountStaff, Duration, TotalVisit, TotalRevenue, Description, StartDate, EndDate FROM for_event WHERE SiteName = site_name AND EventName LIKE new_event_name AND Description LIKE new_key_word AND StartDate >= new_start_date AND EndDate <= new_end_date AND Duration >= short_duration AND Duration <= new_long_duration AND TotalVisit >= low_visit AND TotalVisit <= new_high_visit AND TotalRevenue >= low_revenue AND TotalRevenue <= new_high_revenue;
     
 END $$
 
@@ -1712,7 +1728,7 @@ BEGIN
         SET new_start_date = start_date;
     END IF;
     
-    SELECT concat(FirstName, LastName) AS `StaffName`, NumEventShifts FROM for_staff 
+    SELECT concat(FirstName, LastName) AS `StaffName`, NumEventShifts, SiteName, EventName, StartDate, EndDate FROM for_staff 
     WHERE SiteName LIKE new_site_name AND FirstName LIKE new_first_name AND LastName LIKE new_last_name AND StartDate >= new_start_date AND EndDate <= new_end_date;
 
 END $$
@@ -1781,7 +1797,7 @@ BEGIN
         SET @error = 'Site name or date cannot be null.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     ELSE 
-        SELECT EventName, SiteName, StartDate, DailyVisit, DailyRevenue FROM daily_event WHERE SiteName = site_name AND `Date` = date_;
+        SELECT EventName, SiteName, StartDate, DailyVisit, DailyRevenue, `Date` FROM daily_event WHERE SiteName = site_name AND `Date` = date_;
     END IF;
 END $$
 
@@ -1820,7 +1836,7 @@ BEGIN
             SELECT EventName, SiteName, StartDate, EndDate, CountStaff, Description FROM for_schedule 
             WHERE StaffName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key_word AND EndDate = end_date AND StartDate = start_date;
         END IF;
-    END IF; 
+    END IF;     
 END $$
 
 
@@ -1881,7 +1897,7 @@ BEGIN
                 SELECT EventName, SiteName, Price, TicketRem, TotalVisit, MyVisit, StartDate, EndDate FROM explore _event
                 WHERE UserName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key AND TotalVisit <= new_high_visit AND TotalVisit >= low_visit AND Price >= low_price AND Price <= new_high_price AND MyVisit < new_visited AND TicketRem >= new_sold AND EndDate = end_date AND StartDate = start_date;
             END IF;
-        END IF; 
+        END IF;     
     ELSE
         SET @error = 'Username cannot be null.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
@@ -1936,11 +1952,11 @@ BEGIN
     
     IF length(user_name) > 0 THEN 
         IF open_everyday = 0 THEN
-            SELECT SiteName, CountEvent, TotalVist, sum(MyVisit) AS MyVisits, `Date`, EveryDay FROM explore_site 
+            SELECT SiteName, CountEvent, TotalVisit, sum(MyVisit) AS MyVisits, `Date`, EveryDay FROM explore_site 
             WHERE UserName = user_name AND SiteName LIKE new_site_name AND `Date` >= new_start_date AND `Date` <= new_end_date AND
             TotalVisit >= low_visit AND TotalVisit <= new_high_visit GROUP BY SiteName, UserName HAVING MyVisits < new_visited;
         ELSE 
-            SELECT SiteName, CountEvent, TotalVist, sum(MyVisit) AS MyVisits, `Date`, EveryDay FROM explore_site 
+            SELECT SiteName, CountEvent, TotalVisit, sum(MyVisit) AS MyVisits, `Date`, EveryDay FROM explore_site 
             WHERE UserName = user_name AND SiteName LIKE new_site_name AND `Date` >= new_start_date AND `Date` <= new_end_date AND
             TotalVisit >= low_visit AND TotalVisit <= new_high_visit GROUP BY SiteName, UserName HAVING MyVisits < new_visited AND 
             EveryDay = open_everyday;

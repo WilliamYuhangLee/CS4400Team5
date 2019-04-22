@@ -174,7 +174,7 @@ BEGIN
     
     SELECT SiteName INTO site_name FROM Site WHERE ManagerName = manager_name;    
     
-    SELECT EventName, CountStaff, Duration, TotalVisit, TotalRevenue FROM for_event WHERE SiteName = site_name AND EventName LIKE new_event_name AND Description LIKE new_key_word AND StartDate >= new_start_date AND EndDate <= new_end_date AND Duration >= short_duration AND Duration <= new_long_duration AND TotalVisit >= low_visit AND TotalVisit <= new_high_visit AND TotalRevenue >= low_revenue AND TotalRevenue <= new_high_revenue;
+    SELECT EventName, CountStaff, Duration, TotalVisit, TotalRevenue, Description, StartDate, EndDate FROM for_event WHERE SiteName = site_name AND EventName LIKE new_event_name AND Description LIKE new_key_word AND StartDate >= new_start_date AND EndDate <= new_end_date AND Duration >= short_duration AND Duration <= new_long_duration AND TotalVisit >= low_visit AND TotalVisit <= new_high_visit AND TotalRevenue >= low_revenue AND TotalRevenue <= new_high_revenue;
     
 END $$
 
@@ -242,7 +242,7 @@ BEGIN
         SET new_start_date = start_date;
     END IF;
     
-    SELECT concat(FirstName, LastName) AS `StaffName`, NumEventShifts FROM for_staff 
+    SELECT concat(FirstName, LastName) AS `StaffName`, NumEventShifts, SiteName, EventName, StartDate, EndDate FROM for_staff 
     WHERE SiteName LIKE new_site_name AND FirstName LIKE new_first_name AND LastName LIKE new_last_name AND StartDate >= new_start_date AND EndDate <= new_end_date;
 
 END $$
@@ -311,7 +311,7 @@ BEGIN
         SET @error = 'Site name or date cannot be null.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     ELSE 
-        SELECT EventName, SiteName, StartDate, DailyVisit, DailyRevenue FROM daily_event WHERE SiteName = site_name AND `Date` = date_;
+        SELECT EventName, SiteName, StartDate, DailyVisit, DailyRevenue,`Date` FROM daily_event WHERE SiteName = site_name AND `Date` = date_;
     END IF;
 END $$
 
@@ -466,11 +466,11 @@ BEGIN
     
     IF length(user_name) > 0 THEN 
         IF open_everyday = 0 THEN
-            SELECT SiteName, CountEvent, TotalVist, sum(MyVisit) AS MyVisits, `Date`, EveryDay FROM explore_site 
+            SELECT SiteName, CountEvent, TotalVisit, sum(MyVisit) AS MyVisits, `Date`, EveryDay FROM explore_site 
             WHERE UserName = user_name AND SiteName LIKE new_site_name AND `Date` >= new_start_date AND `Date` <= new_end_date AND
             TotalVisit >= low_visit AND TotalVisit <= new_high_visit GROUP BY SiteName, UserName HAVING MyVisits < new_visited;
         ELSE 
-            SELECT SiteName, CountEvent, TotalVist, sum(MyVisit) AS MyVisits, `Date`, EveryDay FROM explore_site 
+            SELECT SiteName, CountEvent, TotalVisit, sum(MyVisit) AS MyVisits, `Date`, EveryDay FROM explore_site 
             WHERE UserName = user_name AND SiteName LIKE new_site_name AND `Date` >= new_start_date AND `Date` <= new_end_date AND
             TotalVisit >= low_visit AND TotalVisit <= new_high_visit GROUP BY SiteName, UserName HAVING MyVisits < new_visited AND 
             EveryDay = open_everyday;
