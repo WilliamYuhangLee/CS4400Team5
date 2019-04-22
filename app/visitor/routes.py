@@ -1,11 +1,11 @@
-from flask import render_template, json, request, flash, redirect, url_for
+from flask import render_template, json, request, flash, redirect, url_for, jsonify
 from flask_login import login_required, current_user
 from . import bp
 from .forms import EventDetailForm
 from app.util import db_procedure, DatabaseError, validate_date
 
 
-@bp.route("/explore-event")
+@bp.route("/explore_event")
 @login_required
 def explore_event():
     args = (current_user.username,) + ("",) * 3 + ("0000-00-00",) * 2 + (0,) * 4 + (1,) * 2
@@ -27,7 +27,7 @@ def explore_event():
     return render_template("visitor-explore-event.html", title="Explore Event", events=json.dumps(events))
 
 
-@bp.route("/event-detail")
+@bp.route("/event_detail")
 @login_required
 def event_detail():
     form = EventDetailForm()
@@ -63,7 +63,7 @@ def event_detail():
     return render_template("visitor-event-detail.html", title="Event Detail", form=form)
 
 
-@bp.route("/explore-site")
+@bp.route("/explore_site")
 @login_required
 def explore_site():
     args = (current_user.username, "", 0,) + ("0000-00-00",) * 2 + (0,) * 4 + (1,)
@@ -83,19 +83,42 @@ def explore_site():
     return render_template("visitor-explore-site.html", title="Explore Site", sites=json.dumps(sites))
 
 
-@bp.route("/transit-detail")
+@bp.route("/transit_detail")
 @login_required
 def transit_detail():
-    return "Not implemented yet!"  # TODO: implement this method
+    site_name = request.args.get("site_name", type=str)
+    result, error = db_procedure("query_transit_by_site", (site_name,))
+    if error:
+        raise DatabaseError("An error occurred when getting all transits for site: " + error)
+    transits = []
+    for row in result:
+        transits.append({
+            "route": row[0],
+            "transport_type": row[1],
+            "price": row[2],
+        })
+    return render_template("visitor-transit-detail.html", title="Transit Detail", transits=json.dumps(transits))
 
 
-@bp.route("/site-detail")
+@bp.route("/transit_detail/_send_data", methods=["POST"])
+@login_required
+def transit_detail_send_data():
+    route = request.json["route"]
+    transport_type = request.json["transport_type"]
+    date = request.json["date"]
+    result, error = db_procedure("take_transit", (current_user.username, route, transport_type, date))
+    if error:
+        raise DatabaseError("An error occurred when logging transit for visitor: " + error)
+    return jsonify({"result": True, "message": "Successfully logged transit."})
+
+
+@bp.route("/site_detail")
 @login_required
 def site_detail():
     return "Not implemented yet!"  # TODO: implement this method
 
 
-@bp.route("/visit-history")
+@bp.route("/visit_history")
 @login_required
 def visit_history():
     return "Not implemented yet!"  # TODO: implement this method
