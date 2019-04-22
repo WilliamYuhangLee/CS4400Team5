@@ -115,11 +115,11 @@
             $('#transit_edit').on('click', function () {
                 var name = table.cell('.selected', 0).data();
                 var type = table.cell('.selected', 1).data();
-                if ( name == undefined) {
+                if (name == undefined) {
                     alert("You must Select a site first!");
                     return false;
                 }
-                if ( type == undefined) {
+                if (type == undefined) {
                     alert("You must Select a transport type first!");
                     return false;
                 }
@@ -141,9 +141,10 @@
                     datatype: 'json',
                     data: data,
                     success: response => {
-                        table.ajax.reload(function (json) {
-                            console.log(json.transit)
-                        });
+                        alert(data.message);
+                        if (data.result == "True") {
+                            table.row('.selected').remove().draw();
+                        }
                     }
                 });
             });

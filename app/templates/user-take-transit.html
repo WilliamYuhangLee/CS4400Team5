@@ -141,6 +141,9 @@
                     data: data,
                     success: function (data) {
                         alert(data.result)
+                    },
+                    error: function(data) {
+                        alter("Transit Duplicate!")
                     }
                 });
             });
