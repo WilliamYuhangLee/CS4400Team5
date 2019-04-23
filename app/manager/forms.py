@@ -31,6 +31,7 @@ class CreateEventForm(FlaskForm):
     end_date = DateField(label="End Date", validators=[InputRequired()])
     description = TextAreaField(label="Description", validators=[DataRequired()])
     assign_staff = SelectMultipleField(label="Assign Staff", validators=[InputRequired()])
+    submit = SubmitField(label="Create")
 
     def valid_name_date(self):
         result, error = db_procedure("check_event", (self.site_name.data, self.name.data, self.start_date.data))
