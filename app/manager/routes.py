@@ -51,7 +51,7 @@ def manage_event_send_data():
     return jsonify({"result": True, "message": "Successfully deleted event."})
 
 
-@bp.route("/edit-event")
+@bp.route("/edit_event")
 @login_required
 def edit_event():
     form = EditEventForm()
@@ -121,7 +121,7 @@ def edit_event():
     return render_template("manager-edit-event.html", title="Edit Event", form=form, days=json.dumps(days))
 
 
-@bp.route("/create-event")
+@bp.route("/create_event")
 @login_required
 def create_event():
     form = CreateEventForm()
@@ -155,7 +155,7 @@ def create_event():
     return render_template("manager-create-event.html", title="Create Event", form=form)
 
 
-@bp.route("/manage-staff")
+@bp.route("/manage_staff")
 @login_required
 def manage_staff():
     result, error = db_procedure("filter_staff", ("",) * 5)

@@ -13,7 +13,7 @@ def home():
     return render_template("home-staff.html", title="Home")
 
 
-@bp.route("/view-schedule")
+@bp.route("/view_schedule")
 @login_required
 def view_schedule():
     username = current_user.username
@@ -33,7 +33,7 @@ def view_schedule():
     return render_template("staff-view-schedule.html", title="View Schedule", events=dumps(events))
 
 
-@bp.route("/event-detail")
+@bp.route("/event_detail")
 @login_required
 def event_detail():
     event_name = request.args.get("event_name")

@@ -168,7 +168,7 @@ def manage_transit_send_data():
     return jsonify({"result": True, "message": "Successfully deleted transit."})
 
 
-@bp.route("/edit-transit")
+@bp.route("/edit_transit")
 @login_required
 def edit_transit():
     form = EditTransitForm()
@@ -212,7 +212,7 @@ def edit_transit():
     return render_template("administrator-edit-transit.html", title="Edit Transit", form=form)
 
 
-@bp.route("/create-transit")
+@bp.route("/create_transit")
 @login_required
 def create_transit():
     form = CreateTransitForm()

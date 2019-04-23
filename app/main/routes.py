@@ -84,26 +84,21 @@ def logout():
     return redirect(url_for(".login"))
 
 
-@bp.route("/register-options/", methods=["GET"])
+@bp.route("/register_options/", methods=["GET"])
 def nav_register():
     return render_template("nav-register.html", title="Registration Options")
 
 
 @bp.app_errorhandler(404)
 def error_404(e):
-    return "<h1>Page Not Found (404)</h1>", 404
+    return render_template("main-error-404.html", title="Page Not Found")
 
 
 @bp.app_errorhandler(403)
 def error_403(e):
-    return "<h1>Forbidden (403)</h1>", 403
+    return render_template("main-error-403.html", title="Permission Required")
 
 
 @bp.app_errorhandler(500)
 def error_500(e):
-    return "<h1>Internal Error (500)</h1>", 500
-
-
-# @bp.route("/", methods=["GET", "POST"])
-def test():
-    return ""
+    return render_template("main-error-500.html", title="Internal Error")
