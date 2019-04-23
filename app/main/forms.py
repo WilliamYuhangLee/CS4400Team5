@@ -75,24 +75,19 @@ class UserRegistrationForm(FlaskForm):
     def add_email(self):
         form = EmailEntryForm()
         form.email = self.email.data
-        result, error = db_procedure("add_email", (self.username.data, self.email.data))
-        if error:
-            raise DatabaseError(error, "add_email")
         self.email.data = None
         self.emails.append_entry(form)
 
     def delete_email(self):
         for form in self.emails.entries:
             if form.remove.data:
-                result, error = db_procedure("delete_email", (self.email.data,))
-                if error:
-                    raise DatabaseError(error, "delete_email")
                 self.emails.entries.remove(form)
                 break
 
 
 class EmployeeRegistrationForm(UserRegistrationForm):
-    title = SelectField(label="User Type", validators=[DataRequired()], choices=Employee.Title.choices(),
+    title = SelectField(label="User Type", validators=[DataRequired()],
+                        choices=[title for title in Employee.Title.choices() if title != "ADMINISTRATOR"],
                         coerce=Employee.Title.coerce)
     phone = StringField(label="Phone",
                         validators=[DataRequired("Please enter your phone number."),

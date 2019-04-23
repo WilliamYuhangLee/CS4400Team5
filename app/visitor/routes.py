@@ -8,7 +8,7 @@ from app.util import db_procedure, DatabaseError, validate_date
 @bp.route("/explore_event")
 @login_required
 def explore_event():
-    args = (current_user.username,) + ("",) * 3 + ("0000-00-00",) * 2 + (0,) * 4 + (1,) * 2
+    args = (current_user.username,) + ("",) * 3 + (None,) * 2 + (0,) * 4 + (1,) * 2
     result, error = db_procedure("filter_event_vis", args)
     if error:
         raise DatabaseError(error, "getting all events for a visitor")
@@ -48,7 +48,7 @@ def event_detail():
     if error:
         raise DatabaseError(error, "getting event detail for visitor")
     end_date, _, _, description, _, price = result[0]
-    args = (current_user.username, event_name, "", site_name, start_date, "0000-00-00") + (0,) * 4 + (1,) * 2
+    args = (current_user.username, event_name, "", site_name, start_date, None) + (0,) * 4 + (1,) * 2
     result, error = db_procedure("filter_event_vis", args)
     if error:
         raise DatabaseError(error, "querying event for visitor")
@@ -66,7 +66,7 @@ def event_detail():
 @bp.route("/explore_site")
 @login_required
 def explore_site():
-    args = (current_user.username, "", 0,) + ("0000-00-00",) * 2 + (0,) * 4 + (1,)
+    args = (current_user.username, "", 0,) + (None,) * 2 + (0,) * 4 + (1,)
     result, error = db_procedure("filter_site_vis", args)
     if error:
         raise DatabaseError(error, "getting all sites for visitor")

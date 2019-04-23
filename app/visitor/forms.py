@@ -1,6 +1,8 @@
+from flask_login import current_user
 from flask_wtf import FlaskForm
 from wtforms import StringField, IntegerField, DateField, SubmitField
-from wtforms.validators import InputRequired
+from wtforms.validators import InputRequired, ValidationError
+from app.util import db_procedure, DatabaseError
 
 
 class EventDetailForm(FlaskForm):
@@ -14,8 +16,13 @@ class EventDetailForm(FlaskForm):
     visit_date = DateField(label="Visit Date", validators=[InputRequired()])
     submit = SubmitField(label="Log Visit")
 
-    def validate_visit_date(self):
-        pass  # TODO: implement validation logic
+    def validate_visit_date(self, field):
+        result, error = db_procedure("check_log_event", (current_user.username, self.site.data, self.event.data,
+                                                         self.start_date.data, field.data))
+        if error:
+            raise DatabaseError(error, "check_log_event")
+        if not result[0][0]:
+            raise ValidationError("You have logged this visit already!")
 
 
 class SiteDetailForm(FlaskForm):
@@ -25,5 +32,9 @@ class SiteDetailForm(FlaskForm):
     visit_date = DateField(label="Visit Date", validators=[InputRequired()])
     submit = SubmitField(label="Log Visit")
 
-    def validate_visit_date(self):
-        pass  # TODO: implement validation logic
+    def validate_visit_date(self, field):
+        result, error = db_procedure("check_log_site", (current_user.username, self.site.data, field.data))
+        if error:
+            raise DatabaseError(error, "check_log_site")
+        if not result[0][0]:
+            raise ValidationError("You have logged this visit already!")

@@ -117,7 +117,6 @@ class Employee(User):
         MANAGER = "MANAGER"
         STAFF = "STAFF"
 
-
     class State(EnumAttribute):
         AL = 'AL'
         AK = 'AK'
@@ -171,7 +170,6 @@ class Employee(User):
         WY = 'WY'
         OTHER = 'OTHER'
 
-
     def __init__(self, user, phone, address, city, state, zip_code, title, employee_id=None):
         """
         Construct an Employee object with an existing User object and some additional parameters.
@@ -224,13 +222,20 @@ class Employee(User):
         if error:
             raise DatabaseError(error, "updating user profile")
 
+    @staticmethod
+    def get_free_managers():
+        args = ()
+        result, error = db_procedure("get_free_managers", args)
+        if error:
+            raise DatabaseError(error, "getting all free managers")
+        return [row[0] for row in result]
+
 
 class Transit:
     class Type(EnumAttribute):
         BUS = "BUS"
         MARTA = "MARTA"
         BIKE = "BIKE"
-
 
     def __init__(self, route, transport_type, price, num_of_connected_sites=None):
         self.route = route

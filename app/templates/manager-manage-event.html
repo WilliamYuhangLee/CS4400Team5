@@ -3,60 +3,71 @@
     <legend class="border-bottom mb-4">
         Manage Event
     </legend>
-    <div class="col-md-12">
-        <label>Name<input type="text" id="name_search" class="form-control">
-        </label>
-        <label>Description Keyword<input type="text" id="description_search" class="form-control">
-        </label>
+    <div class="row">
+        <div class="col-md-6">
+            <label>Name<input type="text" id="name_search" class="form-control">
+            </label>
+        </div>
+        <div class="col-md-6">
+            <label>Description Keyword<input type="text" id="description_search" class="form-control">
+            </label>
+        </div>
     </div>
-
-    <div class="col-md-12">
-
-    </div>       <label>Start Date<input type="text" id="date_min" class="form-control">
-</label>
-    <label>End Date<input type="text" id="date_max" class="form-control">
-    </label>
-    <div class="col-md-12">
-        <table>
-            <tbody>
-            <tr>
-                <td>Duration Range</td>
-                <td><input type="text" class="form-control" id="duration_min" name="min"></td>
-                <td><input type="text" class="form-control" id="duration_max" name="max"></td>
-            </tr>
-            </tbody>
-        </table>
-        <table>
-            <tbody>
-            <tr>
-                <td>Total Visit Range</td>
-                <td><input type="text" class="form-control" id="total_visit_min" name="min"></td>
-                <td><input type="text" class="form-control" id="total_visit_max" name="max"></td>
-            </tr>
-            </tbody>
-        </table>
+    <div class="row">
+        <div class="col-md-6">
+            <label>Start Date<input type="text" id="date_min" class="form-control">
+            </label>
+        </div>
+        <div class="col-md-6">
+            <label>End Date<input type="text" id="date_max" class="form-control">
+            </label>
+        </div>
     </div>
-    <div class="col-md-12">
-        <table>
-            <tbody>
-            <tr>
-                <td>Total Revenue Range</td>
-                <td><input type="text" class="form-control" id="total_revenue_min" name="min"></td>
-                <td><input type="text" class="form-control" id="total_revenue_max" name="max"></td>
-            </tr>
-            </tbody>
-        </table>
+    <div class="row">
+        <div class="col-md-6">
+            <label>Minimum Duration<input type="text" class="form-control" id="duration_min" name="min">
+            </label>
+        </div>
+        <div class="col-md-6">
+            <label>Maximum Duration<input type="text" class="form-control" id="duration_max" name="max">
+            </label>
+        </div>
     </div>
-    <div class="col-md-12">
-        <!--Script for admin needed-->
+    <div class="row">
+        <div class="col-md-6">
+            <label>Minimum Visit<input type="text" class="form-control" id="total_visit_min" name="min">
+            </label>
+        </div>
+        <div class="col-md-6">
+            <label>Maximum visit<input type="text" class="form-control" id="total_visit_max" name="max">
+            </label>
+        </div>
+    </div>
+    <div class="row">
+    <div class="col-md-6">
+            <label>Minimum Revenue<input type="text" class="form-control" id="total_revenue_min" name="min">
+            </label>
+        </div>
+        <div class="col-md-6">
+            <label>Maximum Revenue<input type="text" class="form-control" id="total_revenue_max" name="max">
+            </label>
+        </div>
+    </div>
+    <div class="row">
+        <div class="btn-group col-md-6" role="group" aria-label="First group">
         <button type="button" class="btn btn-outline-info" id="event_edit">View/Edit</button>
         <button type="button" class="btn btn-outline-info" id="event_create">Create</button>
         <button type="button" class="btn btn-outline-info" id="event_delete">Delete</button>
+        </div>
     </div>
+    <div class="row">
+    </div>
+    <div class="row">
     <div class="col-md-12">
-        <table id="event_list" class="display" cellspacing="0" width="100%">
+        <table id="event_list" class="table table-striped table-bordered" style="width:100%">
             <thead>
             <tr>
+                <th></th>
                 <th>Name</th>
                 <th>Staff Count</th>
                 <th>Duration(days)</th>
@@ -69,14 +80,23 @@
             </thead>
         </table>
     </div>
+    </div>
+    <div class="row">
     <div class="col-md-12">
-        <button type="button" class="btn btn-outline-info" onclick="goBack()">Back</button>
+        <button type="button" class="btn btn-outline-info" onclick="location.href='{{ url_for('main.login') }}'">
+            Back
+        </button>
+    </div>
     </div>
     <script>
         $(document).ready(function () {
             var table = $('#event_list').DataTable({
                 data: JSON.parse({{ events|tojson|safe }}),
                 columns: [
+                    {
+                        "data": "null",
+                        "defaultContent": '',
+                    },
                     {
                         data: "name"
                     },
@@ -117,15 +137,15 @@
             });
 
             $('#name_search').on('change', function () {
-                table.columns(0).search(this.value).draw();
+                table.columns(1).search(this.value).draw();
             });
             $('#description_search').on('change', function () {
-                table.columns(7).search(this.value).draw();
+                table.columns(8).search(this.value).draw();
             });
 
             $('#event_edit').on('click', function () {
-                var name = table.cell('.selected', 0).data();
-                if ( name == undefined) {
+                var name = table.cell('.selected', 1).data();
+                if (name == undefined) {
                     alert("You must Select a event first!");
                     return false;
                 }
@@ -137,7 +157,7 @@
             });
 
             $('#event_delete').on('click', function () {
-                var name = table.cell('.selected', 0).data();
+                var name = table.cell('.selected', 1).data();
                 var action = "DELETE"
                 var data = JSON.stringify({event_name: name, action: action})
                 $.ajax({
@@ -162,8 +182,8 @@
                 var max_test = $('#date_max').val().replace(/-/g, '');
                 var min = parseInt(min_test, 10);
                 var max = parseInt(min_test, 10);
-                var start = parseFloat(data[5].replace(/-/g, ' ')) || 0;
-                var end = parseFloat(data[6].replace(/-/g, ' ')) || 0;
+                var start = parseFloat(data[6].replace(/-/g, ' ')) || 0;
+                var end = parseFloat(data[7].replace(/-/g, ' ')) || 0;
 
                 if ((isNaN(min) && isNaN(max)) ||
                     (isNaN(min) && end <= max) ||
@@ -179,7 +199,7 @@
             function (settings, data, dataIndex) {
                 var min = parseInt($('#duration_min').val(), 10);
                 var max = parseInt($('#duration_max').val(), 10);
-                var duration = parseFloat(data[2]) || 0;
+                var duration = parseFloat(data[3]) || 0;
 
                 if ((isNaN(min) && isNaN(max)) ||
                     (isNaN(min) && duration <= max) ||
@@ -195,7 +215,7 @@
             function (settings, data, dataIndex) {
                 var min = parseInt($('#total_revenue_min').val(), 10);
                 var max = parseInt($('#total_revenue_max').val(), 10);
-                var revenue = parseFloat(data[4]) || 0;
+                var revenue = parseFloat(data[5]) || 0;
 
                 if ((isNaN(min) && isNaN(max)) ||
                     (isNaN(min) && revenue <= max) ||
@@ -211,7 +231,7 @@
             function (settings, data, dataIndex) {
                 var min = parseInt($('#total_visit_min').val(), 10);
                 var max = parseInt($('#total_visit_max').val(), 10);
-                var visit = parseFloat(data[3]) || 0;
+                var visit = parseFloat(data[4]) || 0;
 
                 if ((isNaN(min) && isNaN(max)) ||
                     (isNaN(min) && visit <= max) ||

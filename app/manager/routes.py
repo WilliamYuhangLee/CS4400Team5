@@ -20,7 +20,7 @@ def home():
 @bp.route("/manage_event")
 @login_required
 def manage_event():
-    args = (current_user.username, "", "",) + ("0000-00-00",) * 2 + (0,) * 6
+    args = (current_user.username, "", "",) + (None,) * 2 + (0,) * 6
     result, error = db_procedure("filter_event_adm", args)
     if error:
         raise DatabaseError(error, "querying events for manager")
@@ -51,7 +51,7 @@ def manage_event_send_data():
     return jsonify({"result": True, "message": "Successfully deleted event."})
 
 
-@bp.route("/edit-event")
+@bp.route("/edit_event")
 @login_required
 def edit_event():
     form = EditEventForm()
@@ -106,7 +106,7 @@ def edit_event():
     form.capacity.data = capacity
     form.staff_assigned.data = old_staffs.keys()
     form.description.data = description
-    result, error = db_procedure("filter_daily_event", (site_name, "0000-00-00"))
+    result, error = db_procedure("filter_daily_event", (site_name, None))
     if error:
         DatabaseError(error, "getting events for site")
     days = []
@@ -121,7 +121,7 @@ def edit_event():
     return render_template("manager-edit-event.html", title="Edit Event", form=form, days=json.dumps(days))
 
 
-@bp.route("/create-event")
+@bp.route("/create_event")
 @login_required
 def create_event():
     form = CreateEventForm()
@@ -142,7 +142,7 @@ def create_event():
     if form.start_date.data and form.end_date.data:
         args = (form.start_date.data, form.end_date.data)
     else:
-        args = ("0000-00-00",) * 2
+        args = (None,) * 2
     result, error = db_procedure("get_free_staff", args)
     if error:
         raise DatabaseError(error, "get_free_staff")
@@ -155,16 +155,29 @@ def create_event():
     return render_template("manager-create-event.html", title="Create Event", form=form)
 
 
-@bp.route("/manage-staff")
+@bp.route("/manage_staff")
 @login_required
 def manage_staff():
-    return "Not implemented yet!"  # TODO: implement this method
+    result, error = db_procedure("filter_staff", ("",) * 5)
+    if error:
+        raise DatabaseError(error, "filter_staff")
+    staffs = []
+    for row in result:
+        staffs.append({
+            "first_name": row[0],
+            "last_name": row[1],
+            "num_of_event_shifts": row[2],
+            "site_name": row[3],
+            "start_date": row[4],
+            "end_date": row[5],
+        })
+    return render_template("manager-manage-staff.html", title="Manage Staff", staffs=json.dumps(staffs))
 
 
 @bp.route("/site_report")
 @login_required
 def site_report():
-    return render_template("manager-site-report.html")
+    return render_template("manager-site-report.html", title="Manage Site")
 
 
 @bp.route("/site_report/_get_data")

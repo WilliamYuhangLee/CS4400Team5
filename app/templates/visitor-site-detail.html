@@ -29,6 +29,6 @@
                 {{ form.submit(class="btn btn-outline-info") }}
             </div>
     </form>
-    <button type="button" class="btn btn-outline-info" onclick="goBack()">Back</button>
+    <button type="button" class="btn btn-outline-info" onclick="location.href='{{ url_for('visitor.explore_site') }}'">Back</button>
     </div>
 {% endblock content %}

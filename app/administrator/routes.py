@@ -4,7 +4,7 @@ from flask_login import login_required, current_user
 from . import bp
 from .forms import EditSiteForm, EditTransitForm, CreateTransitForm
 from app.util import db_procedure, DatabaseError
-from app.models import User, Transit, Site
+from app.models import User, Transit, Site, Employee
 
 
 @bp.route("/")
@@ -60,7 +60,7 @@ def manage_site():
         sites.append({
             "site_name": row[0],
             "manager_name": row[1],
-            "open_every_date": row[2]
+            "open_every_day": row[2]
         })
     return render_template("administrator-manage-site.html", title="Manage Sites", sites=dumps(sites))
 
@@ -88,7 +88,6 @@ def manage_site_send_data():
 @bp.route("/edit_site", methods=["GET", "POST"])
 @login_required
 def edit_site():
-    site_name = request.args.get("site_name", type=str)
     form = EditSiteForm()
     if form.validate_on_submit():
         args = (form.name.data, form.zip_code.data, form.address.data, form.manager.data, int(form.open_everyday.data))
@@ -97,21 +96,23 @@ def edit_site():
             raise DatabaseError(error, "editing site")
         flash(message="Site updated!", category="success")
         return redirect(url_for(".manage_site"))
+    site_name = request.args.get("site_name", type=str)
     args = (site_name,)
     result, error = db_procedure("query_site_by_site_name", args)
     if error:
         raise DatabaseError(error, "querying site")
     zip_code, address, open_everyday, manager = result[0]
     form.name.data = site_name
+    form.old_name = site_name
     form.zip_code.data = zip_code
     form.address.data = address
-    form.manager.choices = [(manager, manager) for manager in EditSiteForm.get_free_managers()] + [(manager, manager)]
+    form.manager.choices = [(manager, manager) for manager in Employee.get_free_managers()] + [(manager, manager)]
     form.manager.data = manager
     form.open_everyday.data = open_everyday
     return render_template("administrator-edit-site.html", title="Edit Site", form=form)
 
 
-@bp.route("/create_site")
+@bp.route("/create_site", methods=["GET", "POST"])
 @login_required
 def create_site():
     form = EditSiteForm()
@@ -122,7 +123,7 @@ def create_site():
             raise DatabaseError(error, "creating site")
         flash(message="Site created!", category="success")
         return redirect(url_for(".manage_site"))
-    form.manager.choices = [(manager, manager) for manager in EditSiteForm.get_free_managers()]
+    form.manager.choices = [(manager, manager) for manager in Employee.get_free_managers()]
     return render_template("administrator-edit-site.html", title="Create Site", form=form)
 
 
@@ -168,7 +169,7 @@ def manage_transit_send_data():
     return jsonify({"result": True, "message": "Successfully deleted transit."})
 
 
-@bp.route("/edit-transit")
+@bp.route("/edit_transit", methods=["GET", "POST"])
 @login_required
 def edit_transit():
     form = EditTransitForm()
@@ -212,7 +213,7 @@ def edit_transit():
     return render_template("administrator-edit-transit.html", title="Edit Transit", form=form)
 
 
-@bp.route("/create-transit")
+@bp.route("/create_transit", methods=["GET", "POST"])
 @login_required
 def create_transit():
     form = CreateTransitForm()

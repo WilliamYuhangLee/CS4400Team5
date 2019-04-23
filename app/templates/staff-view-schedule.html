@@ -20,9 +20,10 @@
     </div>
 
     <div class="col-md-12">
-        <table id="view_schedule" class="display" cellspacing="0" width="100%">
+        <table id="view_schedule" class="table table-striped table-bordered" style="width:100%">
             <thead>
             <tr>
+                <th></th>
                 <th>Event Name</th>
                 <th>Site Name</th>
                 <th>Start Date</th>
@@ -34,13 +35,17 @@
         </table>
     </div>
     <div class="col-md-12">
-        <button type="button" class="btn btn-outline-info" onclick="goBack()">Back</button>
+        <button type="button" class="btn btn-outline-info" onclick="location.href='{{ url_for('main.login') }}'">Back</button>
     </div>
     <script>
         $(document).ready(function () {
             var table = $('#site_report').DataTable({
                 data: JSON.parse({{ events|tojson|safe }}),
                 columns: [
+                    {
+                        "data": "null",
+                        "defaultContent": '',
+                    },
                     {
                         data: "event_name"
                     },
@@ -75,9 +80,9 @@
             });
 
             $('#view_event').on('click', function () {
-                var name = table.cell('.selected', 0).data();
-                var name2 = table.cell('.selected', 1).data();
-                var name3 = table.cell('.selected', 2).data();
+                var name = table.cell('.selected', 1).data();
+                var name2 = table.cell('.selected', 2).data();
+                var name3 = table.cell('.selected', 3).data();
                 if ( name == undefined) {
                     alert("You must Select a event first!");
                     return false;
@@ -99,8 +104,8 @@
                     var max_test = $('#date_max').val().replace(/-/g, '');
                     var min = parseInt(min_test, 10);
                     var max = parseInt(min_test, 10);
-                    var start = parseFloat(data[2].replace(/-/g, ' ')) || 0;
-                    var end = parseFloat(data[3].replace(/-/g, ' ')) || 0;
+                    var start = parseFloat(data[3].replace(/-/g, ' ')) || 0;
+                    var end = parseFloat(data[4].replace(/-/g, ' ')) || 0;
 
                     if ((isNaN(min) && isNaN(max)) ||
                         (isNaN(min) && end <= max) ||
@@ -118,10 +123,10 @@
             });
 
             $('#name_search').on('change', function () {
-                table.columns(0).search(this.value).draw();
+                table.columns(1).search(this.value).draw();
             });
             $('#description_search').on('change', function () {
-                table.columns(7).search(this.value).draw();
+                table.columns(8).search(this.value).draw();
             });
 
 
