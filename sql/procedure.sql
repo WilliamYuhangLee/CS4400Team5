@@ -561,7 +561,7 @@ END $$
 
 CREATE PROCEDURE get_free_managers()
 BEGIN
-    SELECT UserName FROM Employee WHERE Title = "MANAGER" AND UserName NOT IN (SELECT ManagerName FROM Site);
+    SELECT UserName, FirstName, LastName FROM Employee JOIN Users USING(UserName) WHERE Title = "MANAGER" AND UserName NOT IN (SELECT ManagerName FROM Site);
 END $$
 
 

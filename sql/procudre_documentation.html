@@ -85,6 +85,42 @@
                 </tr>
                 
                 <tr>
+                    <td class="name">check_event()</td>
+                    <td class="functionality">Check if an event can be inserted into the table or not.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>site_name (str)</li>
+                            <li>evnet_name (str)</li>
+                            <li>start_date (str/date)</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>result (int) 1 for ok to insert, 0 for not</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td class="name">check_overlapping()</td>
+                    <td class="functionality">Check if an event's time is overlapping with others that has the same site name and event name.</td>
+                    <td class="variable">
+                        <ul>
+                            <li>site_name (str)</li>
+                            <li>evnet_name (str)</li>
+                            <li>start_date (str/date)</li>
+                            <li>end_date (str/date)</li>
+                        </ul>
+                    </td>
+                    <td class="variable">
+                        <ul>
+                            <li>start_res (int) if start date is ok, 1 for ok, 0 for not</li>
+                            <li>end_res (int) if end date is ok, 1 for ok, 0 for not</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <tr>
                     <td class="name">check_phone()</td>
                     <td class="functionality">Check if a phone can be inserted into the table or not.</td>
                     <td class="variable">
@@ -627,10 +663,10 @@
                     </td>
                     <td class="variable">
                         <ul>
-                            <li>StaffName (str) combination of first name and last name</li>
+                            <li>FirstName (str)</li>
+                            <li>LastName (str)</li>
                             <li>NumEventShifts (int)</li>
                             <li>SiteName (str)</li>
-                            <li>EventName (str)</li>
                             <li>StartDate (str/date)</li>
                             <li>EndDate (str/date)</li>
                         </ul>
@@ -790,6 +826,8 @@
                     <td class="variable">
                         <ul>
                             <li>UserName (str)</li>
+                            <li>FirstName (str)</li>
+                            <li>LastName (str)</li>
                         </ul>
                     </td>
                 </tr>
@@ -806,6 +844,8 @@
                     <td class="variable">
                         <ul>
                             <li>UserName (str)</li>
+                            <li>FirstName (str)</li>
+                            <li>LastName (str)</li>
                         </ul>
                     </td>
                 </tr>

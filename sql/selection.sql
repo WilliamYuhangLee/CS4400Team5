@@ -242,7 +242,7 @@ BEGIN
         SET new_start_date = start_date;
     END IF;
     
-    SELECT concat(FirstName, LastName) AS `StaffName`, NumEventShifts, SiteName, EventName, StartDate, EndDate FROM for_staff 
+    SELECT FirstName, LastName, NumEventShifts, SiteName, StartDate, EndDate FROM for_staff 
     WHERE SiteName LIKE new_site_name AND FirstName LIKE new_first_name AND LastName LIKE new_last_name AND StartDate >= new_start_date AND EndDate <= new_end_date;
 
 END $$
@@ -551,10 +551,43 @@ END $$
 
 CREATE PROCEDURE get_free_staff(in start_date date, in end_date date)
 BEGIN
-    SELECT UserName FROM Employee WHERE Title = 'STAFF' AND
+    SELECT UserName, FirstName, LastName FROM Employee JOIN Users USING (UserName) WHERE Title = 'STAFF' AND
     UserName NOT IN (SELECT StaffName FROM for_schedule WHERE 
                     EndDate >= start_date AND StartDate <= end_date);
 END $$
 
+
+CREATE PROCEDURE check_event(in site_name varchar(50), in event_name varchar(50), in start_date date)
+BEGIN
+    DECLARE result int;
+    IF EXISTS(SELECT * FROM Events WHERE SiteName = site_name AND EventName = event_name AND StartDate = start_date) THEN
+        SET result = 0;
+    ELSE 
+        SET result = 1;
+    END IF;
+    SELECT result;
+END $$
+
+
+CREATE PROCEDURE check_overlapping(in site_name varchar(50), in event_name varchar(50), in start_date date, in end_date date)
+BEGIN
+    DECLARE start_res int;
+    DECLARE end_res int;
+    
+    IF EXISTS(SELECT * FROM Events WHERE SiteName = site_name AND EventName = event_name) THEN 
+        SET start_res = 1;
+        SET end_res = 1;
+        IF start_date <= ANY (SELECT EndDate FROM `Events` WHERE SiteName = site_name AND EventName = event_name AND StartDate <= start_date) THEN
+            SET start_res = 0;
+        END IF;
+        IF end_date >= ANY (SELECT StartDate FROM `Events` WHERE SiteName = site_name AND EventName = event_name AND EndDate >= end_date) THEN
+            SET end_res = 0;
+        END IF;
+    ELSE
+        SET start_res = 1;
+        SET end_res = 1;
+    END IF;
+    SELECT start_res, end_res;
+END $$
 
 DELIMITER ;
