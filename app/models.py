@@ -224,6 +224,14 @@ class Employee(User):
         if error:
             raise DatabaseError(error, "updating user profile")
 
+    @staticmethod
+    def get_free_managers():
+        args = ()
+        result, error = db_procedure("get_free_managers", args)
+        if error:
+            raise DatabaseError(error, "getting all free managers")
+        return [row[0] for row in result]
+
 
 class Transit:
     class Type(EnumAttribute):

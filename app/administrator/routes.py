@@ -4,7 +4,7 @@ from flask_login import login_required, current_user
 from . import bp
 from .forms import EditSiteForm, EditTransitForm, CreateTransitForm
 from app.util import db_procedure, DatabaseError
-from app.models import User, Transit, Site
+from app.models import User, Transit, Site, Employee
 
 
 @bp.route("/")
@@ -106,7 +106,7 @@ def edit_site():
     form.old_name = site_name
     form.zip_code.data = zip_code
     form.address.data = address
-    form.manager.choices += [(manager, manager)]
+    form.manager.choices = [(manager, manager) for manager in Employee.get_free_managers()] + [(manager, manager)]
     form.manager.data = manager
     form.open_everyday.data = open_everyday
     return render_template("administrator-edit-site.html", title="Edit Site", form=form)
@@ -123,6 +123,7 @@ def create_site():
             raise DatabaseError(error, "creating site")
         flash(message="Site created!", category="success")
         return redirect(url_for(".manage_site"))
+    form.manager.choices = [(manager, manager) for manager in Employee.get_free_managers()]
     return render_template("administrator-edit-site.html", title="Create Site", form=form)
 
 
