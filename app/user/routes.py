@@ -84,7 +84,6 @@ def transit_history_get_table_data():
              "price": row[2],
              "date": row[3],
         })
-        print(row[3])
     return jsonify({"result": True, "data": transits})
 
 
