@@ -3,48 +3,34 @@
     <legend class="border-bottom mb-4">
         Explore Site
     </legend>
-    <div class="col-md-12">
-        <label>Name<select id="contain_site" name="contain_site" class="form-control">
-            {% for site in sites %}
-                <option value="{{ site }}">{{ site }}</option>
-            {% endfor %}
-        </select>
-        </label>
-        <label>Open Everyday<select id="open_everyday" name="open_everyday" class="form-control">
-            <option value="">All</option>
-            <option value="Yes">Yes</option>
-            <option value="No">No</option>
-        </select>
-        </label>
+    <div class="row">
+        <div class="col-md-4">
+            <label>Start Date<input type="text" id="date_min" class="form-control">
+            </label>
+        </div>
+        <div class="col-md-4">
+            <label>End Date<input type="text" id="date_max" class="form-control">
+            </label>
+        </div>
+        <div class="col-md-4">
+            <label>Open Everyday<select id="open_everyday" name="open_everyday" class="form-control">
+                <option value="">All</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+            </select>
+            </label>
+        </div>
     </div>
-    <div class="col-md-12">
-        <label>Start Date<input type="text" id="date_min" class="form-control">
-        </label>
-        <label>End Date<input type="text" id="date_max" class="form-control">
-        </label>
-    </div>
-    <div class="col-md-12">
-        <table>
-            <tbody>
-            <tr>
-                <td>Total Visit Range</td>
-                <td><input type="text" class="form-control" id="total_visit_min" name="min"></td>
-                <td><input type="text" class="form-control" id="total_visit_max" name="max"></td>
-            </tr>
-            </tbody>
-        </table>
-        <table>
-            <tbody>
-            <tr>
-                <td>Event Count Range</td>
-                <td><input type="text" class="form-control" id="event_count_min" name="min"></td>
-                <td><input type="text" class="form-control" id="event_count_max" name="max"></td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-    <div class="col-md-12">
-
+    <div class="row">
+    <div class="col-md-4">
+            <label>Minimum Visit<input type="text" class="form-control" id="total_visit_min" name="min">
+            </label>
+        </div>
+        <div class="col-md-4">
+            <label>Maximum Visit<input type="text" class="form-control" id="total_visit_max" name="min">
+            </label>
+        </div>
+        <div class="col-md-4">
         <label>Visit Status<select id="visit_status" name="visit_status" class="form-control">
             <option value="">ALL</option>
             <option value="True">Only Visited</option>
@@ -52,10 +38,33 @@
         </select>
         </label>
     </div>
+    </div>
+    <div class="row">
+    <div class="col-md-4">
+            <label>Minimum Visit<input type="text" class="form-control" id="total_visit_min" name="min">
+            </label>
+        </div>
+        <div class="col-md-4">
+            <label>Maximum Visit<input type="text" class="form-control" id="total_visit_max" name="min">
+            </label>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <label>Minimum Event Count<input type="text" class="form-control" id="event_count_min" name="min">
+            </label>
+        </div>
+        <div class="col-md-4">
+            <label>Maximum Event Count<input type="text" class="form-control" id="event_count_max" name="max">
+            </label>
+        </div>
+    </div>
+<div class="row">
     <div class="col-md-12">
         <button type="button" class="btn btn-outline-info" id="site_detail">Site Detail</button>
         <button type="button" class="btn btn-outline-info" id="transit_detail">Transit Detail</button>
     </div>
+</div>
     <div class="col-md-12">
         <table id="explore_site" class="table table-striped table-bordered" style="width:100%">
             <thead>
@@ -71,10 +80,24 @@
                 <th style="display:none;"></th>
             </tr>
             </thead>
+            <tfoot>
+            <tr>
+                <th></th>
+                <th>Site Name</th>
+                <th>Event Count</th>
+                <th>Total Visits</th>
+                <th>My Visits</th>
+                <th style="display:none;"></th>
+                <th style="display:none;"></th>
+                <th style="display:none;"></th>
+                <th style="display:none;"></th>
+            </tr>
+            </tfoot>
         </table>
     </div>
     <div class="col-md-12">
-        <button type="button" class="btn btn-outline-info" onclick="location.href='{{ url_for('main.login') }}'">Back</button>
+        <button type="button" class="btn btn-outline-info" onclick="location.href='{{ url_for('main.login') }}'">Back
+        </button>
     </div>
     <script>
         $(document).ready(function () {
@@ -120,6 +143,26 @@
                     style: 'os',
                     selector: 'td:first-child'
                 },
+                initComplete: function () {
+                    this.api().columns().every(function () {
+                        var column = this;
+                        var select = $('<select><option value=""></option></select>')
+                            .appendTo($(column.footer()).empty())
+                            .on('change', function () {
+                                var val = $.fn.dataTable.util.escapeRegex(
+                                    $(this).val()
+                                );
+
+                                column
+                                    .search(val ? '^' + val + '$' : '', true, false)
+                                    .draw();
+                            });
+
+                        column.data().unique().sort().each(function (d, j) {
+                            select.append('<option value="' + d + '">' + d + '</option>')
+                        });
+                    });
+                },
                 order: [
                     [1, 'asc']
                 ]
@@ -127,7 +170,7 @@
 
             $('#site_detail').on('click', function () {
                 var name = table.cell('.selected', 1).data();
-                if ( name == undefined) {
+                if (name == undefined) {
                     alert("You must Select a site first!");
                     return false;
                 }
@@ -135,7 +178,7 @@
             });
             $('#transit_detail').on('click', function () {
                 var name = table.cell('.selected', 1).data();
-                if ( name == undefined) {
+                if (name == undefined) {
                     alert("You must Select a site first!");
                     return false;
                 }

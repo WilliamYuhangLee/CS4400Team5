@@ -3,36 +3,36 @@
     <legend class="border-bottom mb-4">
         Take Transit
     </legend>
-    <div class="form-group">
-        <div class="form-row">
-                <label>Contain Site<select id="contain_site" name="contain_site" class="form-control">
-                    {% for site in sites %}
-                        <option value="{{ site }}">{{ site }}</option>
-                    {% endfor %}
-                </select>
-                </label>
-                <label>Transport Type<select id="transport_type" name="transport_type" class="form-control">
-                    <option value="">ALL</option>
-                    <option value="MARTA">MARTA</option>
-                    <option value="Bus">Bus</option>
-                    <option value="Bike">Bike</option>
-                </select>
-                </label>
+    <div class="row">
+        <div class="col-md-4">
+            <label>Contain Site<select id="contain_site" name="contain_site" class="form-control">
+                {% for site in sites %}
+                    <option value="{{ site }}">{{ site }}</option>
+                {% endfor %}
+            </select>
+            </label>
         </div>
-        <div class="form-group form-row">
-            <div class="form-group col-md-12">
-                <table>
-                    <tbody>
-                    <tr>
-                        <td>Price Range</td>
-                        <td>Min<input type="text" class="form-group form-control" id="min" name="min"></td>
-                        <td>Max<input type="text" class="form-group form-control" id="max" name="max"></td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
+        <div class="col-md-4">
+            <label>Transport Type<select id="transport_type" name="transport_type" class="form-control">
+                <option value="">ALL</option>
+                <option value="MARTA">MARTA</option>
+                <option value="Bus">Bus</option>
+                <option value="Bike">Bike</option>
+            </select>
+            </label>
         </div>
     </div>
+    <div class="row">
+        <div class="col-md-4">
+            <label>Minimum Price<input type="text" class="form-group form-control" id="min" name="min">
+            </label>
+        </div>
+        <div class="col-md-4">
+            <label>Maximum Price<input type="text" class="form-group form-control" id="max" name="max">
+            </label>
+        </div>
+    </div>
+    <div class="row">
     <div class="col-md-12">
         <table id="take_transit" class="table table-striped table-bordered" cellspacing="0" width="100%">
             <thead>
@@ -46,109 +46,114 @@
             </thead>
         </table>
     </div>
-    <div class="form-row">
-    <div class="col-md-12"><label>Transit Date (yyyy-mm-dd)
-        <input type="textbox" id="transit_date" name="transit_date" value="2019-11-11" class="form-group"></input></label>
     </div>
+    <div class="row">
+        <div class="col-md-6">
+            <label>Transit Date (yyyy-mm-dd)
+            <input type="textbox" id="transit_date" name="transit_date" value="2019-11-11"
+                   class="form-group"></input></label>
+        </div>
     </div>
-    <div class="form-row">
-    <div class="col-md-12">
-        <button type="button" class="btn btn-outline-info" onclick="location.href='{{ url_for('main.login') }}'">Back</button>
-        <button type="button" class="btn btn-outline-info" id="log_transit">Log Transit</button>
+    <div class="row">
+        <div class="col-md-12">
+            <button type="button" class="btn btn-outline-info" onclick="location.href='{{ url_for('main.login') }}'">
+                Back
+            </button>
+            <button type="button" class="btn btn-outline-info" id="log_transit">Log Transit</button>
+        </div>
     </div>
-    </div>
-    <script>
-        $(document).ready(function () {
-            var table = $('#take_transit').DataTable({
-                ajax: {
-                    url: "{{ url_for('user.take_transit_get_table_data') }}",
-                    type: "GET",
-                    data: function () {
-                        return {site_name: $("#contain_site option:selected").text()};
+        <script>
+            $(document).ready(function () {
+                var table = $('#take_transit').DataTable({
+                    ajax: {
+                        url: "{{ url_for('user.take_transit_get_table_data') }}",
+                        type: "GET",
+                        data: function () {
+                            return {site_name: $("#contain_site option:selected").text()};
+                        },
                     },
-                },
-                columns: [
-                    {
-                        "data": "null",
-                        "defaultContent": '',
+                    columns: [
+                        {
+                            "data": "null",
+                            "defaultContent": '',
+                        },
+                        {
+                            data: "route",
+                        },
+                        {
+                            data: "transport_type",
+                        },
+                        {
+                            data: "price"
+                        },
+                        {
+                            data: "num_of_connected_sites"
+                        }
+                    ],
+                    columnDefs: [{
+                        orderable: false,
+                        className: 'select-checkbox',
+                        targets: 0
+                    }],
+                    select: {
+                        style: 'os',
+                        selector: 'td:first-child'
                     },
-                    {
-                        data: "route"
-                    },
-                    {
-                        data: "transport_type",
-                    },
-                    {
-                        data: "price"
-                    },
-                    {
-                        data: "num_of_connected_sites"
-                    }
-                ],
-                columnDefs: [{
-                    orderable: false,
-                    className: 'select-checkbox',
-                    targets: 0
-                }],
-                select: {
-                    style: 'os',
-                    selector: 'td:first-child'
-                },
-                order: [
-                    [1, 'asc']
-                ]
-            });
-
-            $('#contain_site').on('change', function () {
-                table.ajax.reload(function (json) {
+                    order: [
+                        [1, 'asc']
+                    ]
                 });
-            });
 
-            $('#transport_type').on('change', function () {
-                table.columns(2).search(this.value).draw();
-            });
-
-            $.fn.dataTable.ext.search.push(
-                function (settings, data, dataIndex) {
-                    var min = parseInt($('#min').val(), 10);
-                    var max = parseInt($('#max').val(), 10);
-                    var price = parseFloat(data[3]) || 0;
-
-                    if ((isNaN(min) && isNaN(max)) ||
-                        (isNaN(min) && price <= max) ||
-                        (min <= price && isNaN(max)) ||
-                        (min <= price && price <= max)) {
-                        return true;
-                    }
-                    return false;
-                }
-            );
-
-            $('#min, #max').keyup(function () {
-                table.draw();
-            });
-
-            $('#log_transit').on('click', function () {
-                var route = table.cell('.selected', 1).data();
-                var type = table.cell('.selected', 2).data();
-                var date = $('#transit_date').val();
-                var data = JSON.stringify({route: route, transport_type: type, date: date});
-                console.log(data);
-                $.ajax({
-                    url: '{{ url_for('user.take_transit_send_data') }}',
-                    type: 'POST',
-                    contentType: 'application/json;charset=UTF-8',
-                    dataType: 'json',
-                    data: data,
-                    success: function (data) {
-                        alert(data.message)
-                    },
-                    error: function(data) {
-                        alter("Transit Duplicate!")
-                    }
+                $('#contain_site').on('change', function () {
+                    table.ajax.reload(function (json) {
+                    });
                 });
-            });
 
-        });
-    </script>
+                $('#transport_type').on('change', function () {
+                    table.columns(2).search(this.value).draw();
+                });
+
+                $.fn.dataTable.ext.search.push(
+                    function (settings, data, dataIndex) {
+                        var min = parseInt($('#min').val(), 10);
+                        var max = parseInt($('#max').val(), 10);
+                        var price = parseFloat(data[3]) || 0;
+
+                        if ((isNaN(min) && isNaN(max)) ||
+                            (isNaN(min) && price <= max) ||
+                            (min <= price && isNaN(max)) ||
+                            (min <= price && price <= max)) {
+                            return true;
+                        }
+                        return false;
+                    }
+                );
+
+                $('#min, #max').keyup(function () {
+                    table.draw();
+                });
+
+                $('#log_transit').on('click', function () {
+                    var route = table.cell('.selected', 1).data();
+                    var type = table.cell('.selected', 2).data();
+                    var date = $('#transit_date').val();
+                    var data = JSON.stringify({route: route, transport_type: type, date: date});
+                    console.log(data);
+                    $.ajax({
+                        url: '{{ url_for('user.take_transit_send_data') }}',
+                        type: 'POST',
+                        contentType: 'application/json;charset=UTF-8',
+                        dataType: 'json',
+                        data: data,
+                        success: function (data) {
+                            alert(data.message)
+                        },
+                        error: function (data) {
+                            alter("Transit Duplicate!")
+                        }
+                    });
+                });
+
+            });
+        </script>
 {% endblock content %}
