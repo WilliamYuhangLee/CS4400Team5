@@ -20,7 +20,7 @@ def home():
 @bp.route("/manage_event")
 @login_required
 def manage_event():
-    args = (current_user.username, "", "",) + ("0000-00-00",) * 2 + (0,) * 6
+    args = (current_user.username, "", "",) + ("",) * 2 + (0,) * 6
     result, error = db_procedure("filter_event_adm", args)
     if error:
         raise DatabaseError(error, "querying events for manager")
@@ -106,7 +106,7 @@ def edit_event():
     form.capacity.data = capacity
     form.staff_assigned.data = old_staffs.keys()
     form.description.data = description
-    result, error = db_procedure("filter_daily_event", (site_name, "0000-00-00"))
+    result, error = db_procedure("filter_daily_event", (site_name, ""))
     if error:
         DatabaseError(error, "getting events for site")
     days = []
@@ -142,7 +142,7 @@ def create_event():
     if form.start_date.data and form.end_date.data:
         args = (form.start_date.data, form.end_date.data)
     else:
-        args = ("0000-00-00",) * 2
+        args = ("",) * 2
     result, error = db_procedure("get_free_staff", args)
     if error:
         raise DatabaseError(error, "get_free_staff")

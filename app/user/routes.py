@@ -72,16 +72,20 @@ def transit_history():
 @login_required
 def transit_history_get_table_data():
     site_name = request.args.get("site_name", type=str)
-    args = (current_user.username, site_name, "", "0000-00-00", "0000-00-00")
+    args = (current_user.username, site_name, "", "", "")
     result, error = db_procedure("filter_transit_history", args)
     if error:
         raise DatabaseError(error, "querying user transit history")
-    return jsonify({"data": [{
-        "route": row[0],
-        "transport_type": row[1],
-        "price": row[2],
-        "date": row[3],
-    } for row in result]})
+    transits = []
+    for row in result:
+        transits.append({
+             "route": row[0],
+             "transport_type": row[1],
+             "price": row[2],
+             "date": row[3],
+        })
+        print(row[3])
+    return jsonify({"result": True, "data": transits})
 
 
 @bp.route("/manage_profile", methods=["GET", "POST"])
