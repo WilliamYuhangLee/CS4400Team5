@@ -177,25 +177,10 @@ def manage_staff():
 @bp.route("/site_report")
 @login_required
 def site_report():
-    return render_template("manager-site-report.html", title="Manage Site")
-
-
-@bp.route("/site_report/_get_table_data")
-@login_required
-def site_report_get_table_data():
-    start_date = request.args.get("start_date", type=str)
-    if not validate_date(start_date):
-        return jsonify({"result": False, "message": "Start date format incorrect."})
-    end_date = request.args.get("end_date", type=str)
-    if not validate_date(end_date):
-        return jsonify({"result": False, "message": "End date format incorrect."})
-    result, error = db_procedure("query_employee_sitename", (current_user.username,))
+    site_name = session[current_user.username]["site_name"]
+    result, error = db_procedure("filter_daily_site", (site_name,) + (0,) * 8)
     if error:
-        raise DatabaseError(error, "getting manager's site name")
-    site_name = result[0][0]
-    result, error = db_procedure("filter_daily_site", (site_name, start_date, end_date, 0, 0, 0, 0, 0, 0, 0, 0))
-    if error:
-        raise DatabaseError(error, "getting manager's site reports")
+        raise DatabaseError(error, "filter_daily_site")
     reports = []
     for row in result:
         reports.append({
@@ -205,7 +190,7 @@ def site_report_get_table_data():
             "total_visit": row[3],
             "total_revenue": row[4],
         })
-    return jsonify({"result": True, "data": reports})
+    return render_template("manager-site-report.html", title="Manage Site", reports=json.dumps(reports))
 
 
 @bp.route("/daily_detail")
