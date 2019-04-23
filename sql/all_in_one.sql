@@ -790,10 +790,6 @@ SELECT SiteName, EventName, StartDate, Events.Price, IF(DailyVisit >= 1, sum(Dai
 FROM daily_event RIGHT JOIN Events USING(SiteName, EventName, StartDate) INNER JOIN for_event_pre USING (SiteName, EventName, StartDate)
 GROUP BY SiteName, EventName, StartDate;
 
-CREATE VIEW for_event AS 
-SELECT SiteName, EventName, StartDate, Events.Price, IF(DailyVisit >= 1, sum(DailyVisit), 0) AS TotalVisit, IF(DailyVisit >= 1, sum(DailyRevenue), 0) AS TotalRevenue, IF(DailyVisit >= 1, Capacity - sum(DailyVisit), Capacity) AS TicketRem, (Events.EndDate - StartDate + 1) AS Duration, Description, CountStaff, Capacity, Events.EndDate   
-FROM daily_event RIGHT JOIN Events USING(SiteName, EventName, StartDate) INNER JOIN for_event_pre USING (SiteName, EventName, StartDate)
-GROUP BY SiteName, EventName, StartDate;
 
 CREATE VIEW daily_visit_site AS 
 SELECT SiteName, `Date`, count(*) AS DailyVisit, 0 AS DailyRevenue 
@@ -2081,6 +2077,44 @@ BEGIN
     END IF;
     SELECT start_res, end_res;
 END $$
+
+
+
+CREATE PROCEDURE check_log_site(in user_name varchar(100), in site_name varchar(50), in date_ date)
+BEGIN
+    DECLARE result int;
+    IF EXISTS(SELECT * FROM VisitSite WHERE SiteName = site_name AND UserName = user_name AND `Date` = date_) THEN
+        SET result = 0;
+    ELSE 
+        SET result = 1;
+    END IF;
+    SELECT result;
+END $$
+
+
+CREATE PROCEDURE check_log_event(in user_name varchar(100), in site_name varchar(50), in event_name varchar(50), in start_date date, in date_ date)
+BEGIN
+    DECLARE result int;
+    IF EXISTS(SELECT * FROM VisitEvent WHERE SiteName = site_name AND UserName = user_name AND `Date` = date_ AND EventName = event_name AND StartDate = start_date) THEN
+        SET result = 0;
+    ELSE 
+        SET result = 1;
+    END IF;
+    SELECT result;
+END $$
+
+
+CREATE PROCEDURE check_take_transit(in user_name varchar(100), in route varchar(50), in transport_type varchar(50), in date_ date)
+BEGIN
+    DECLARE result int;
+    IF EXISTS(SELECT * FROM Take WHERE Route = route_ AND UserName = user_name AND TransportType = transport_type AND `Date` = date_) THEN
+        SET result = 0;
+    ELSE 
+        SET result = 1;
+    END IF;
+    SELECT result;
+END $$
+
 
 DELIMITER ;
 
