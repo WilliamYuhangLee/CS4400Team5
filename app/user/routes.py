@@ -40,7 +40,7 @@ def take_transit_get_table_data():
             "price": row[2],
             "num_of_connected_sites": row[3],
         })
-    return jsonify({"data": transits})
+    return jsonify({"result": True, "data": transits})
 
 
 @bp.route("/take_transit/_send_data", methods=["POST"])
@@ -48,14 +48,14 @@ def take_transit_get_table_data():
 def take_transit_send_data():
     date = request.json["date"]
     if not validate_date(date):
-        return jsonify({"result": "Date format incorrect."})
+        return jsonify({"result": False, "message": "Date format incorrect."})
     route = request.json["route"]
     transport_type = Transit.Type.coerce(request.json["transport_type"])
     args = (current_user.username, route, str(transport_type), date)
     result, error = db_procedure("take_transit", args)
     if error:
         raise DatabaseError(error, "logging transit")
-    return jsonify({"result": "Successfully logged transit."})
+    return jsonify({"result": True, "message": "Successfully logged transit."})
 
 
 @bp.route("/transit_history")
@@ -96,8 +96,6 @@ def manage_profile():
             user.phone = process_phone(form.phone.data)
             user.is_visitor = form.visitor.data
             user.update()
-            for email_form in form.emails.entries:
-                user.add_email(email_form.email.data)
             flash("Your account has been updated!", category="success")
         elif form.add.data:
             form.add_email()

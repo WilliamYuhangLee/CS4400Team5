@@ -39,12 +39,18 @@ class ManageProfileForm(FlaskForm):
     def add_email(self):
         form = EmailEntryForm()
         form.email = self.email.data
+        result, error = db_procedure("add_email", (self.username.data, self.email.data))
+        if error:
+            raise DatabaseError(error, "add_email")
         self.email.data = None
         self.emails.append_entry(form)
 
     def delete_email(self):
         for form in self.emails:
             if form.remove.data:
+                result, error = db_procedure("delete_email", (self.email.data,))
+                if error:
+                    raise DatabaseError(error, "delete_email")
                 self.emails.entries.remove(form)
                 break
 
@@ -64,8 +70,8 @@ class ManageProfileForm(FlaskForm):
 
         args = (user.username,)
         result, error = db_procedure("query_employee_sitename", args)
-        # if error:
-        #     raise DatabaseError(error, "query user's site")  #TODO: fix error handling logic
+        if error:
+            raise DatabaseError(error, "query_employee_sitename")
         if error or len(result) == 0:
             self.site_name.data = "No site assigned."
         else:
@@ -76,5 +82,5 @@ class ManageProfileForm(FlaskForm):
             raise DatabaseError(error, "query user's emails")
         for row in result:
             subform = EmailEntryForm()
-            subform.email.data = row[0]
+            subform.email = row[0]
             self.emails.append_entry(subform)

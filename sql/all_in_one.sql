@@ -1624,7 +1624,7 @@ BEGIN
     DECLARE new_start_date date;
     DECLARE new_end_date date;
     DECLARE new_long_duration int;
-    DECLARE new_high_visit bigint;
+    DECLARE new_high_visit int;
     DECLARE new_high_revenue float;
     DECLARE site_name varchar(50);
     
@@ -1649,17 +1649,17 @@ BEGIN
         SET new_start_date = start_date;
     END IF;
     IF long_duration = 0 THEN
-        SET new_long_duration = ~0;
+        SET new_long_duration = 2147483646;
     ELSE
         SET new_long_duration = long_duration;
     END IF;
     IF high_visit = 0 THEN
-        SET new_high_visit = ~0;
+        SET new_high_visit = 2147483646;
     ELSE
         SET new_high_visit = high_visit;
     END IF;
     IF high_revenue = 0 THEN
-        SET new_high_revenue = ~0 - 1.0;
+        SET new_high_revenue = 2147483646 - 1.0;
     ELSE
         SET new_high_revenue = high_revenue;
     END IF;   
@@ -1675,16 +1675,16 @@ CREATE PROCEDURE filter_event_daily(in site_name varchar(50), in event_name varc
 -- order of parameter
 -- site name, manager name, if open every day
 BEGIN 
-    DECLARE new_high_visit bigint;
+    DECLARE new_high_visit int;
     DECLARE new_high_revenue float;
     
     IF high_visit = 0 THEN
-        SET new_high_visit = ~0;
+        SET new_high_visit = 2147483646;
     ELSE
         SET new_high_visit = high_visit;
     END IF;
     IF high_revenue = 0 THEN
-        SET new_high_revenue = ~0 - 1.0;
+        SET new_high_revenue = 2147483646 - 1.0;
     ELSE
         SET new_high_revenue = high_revenue;
     END IF;  
@@ -1745,9 +1745,9 @@ CREATE PROCEDURE filter_daily_site(in site_name varchar(50), in start_date date,
 BEGIN
     DECLARE new_start_date date;
     DECLARE new_end_date date;
-    DECLARE new_high_event bigint;
-    DECLARE new_high_staff bigint;
-    DECLARE new_high_visit bigint;
+    DECLARE new_high_event int;
+    DECLARE new_high_staff int;
+    DECLARE new_high_visit int;
     DECLARE new_high_revenue float;
     
      
@@ -1768,22 +1768,22 @@ BEGIN
             SET new_start_date = start_date;
         END IF;
         IF high_revenue = 0 THEN
-            SET new_high_revenue = ~0 - 1.0;
+            SET new_high_revenue = 2147483646 - 1.0;
         ELSE
             SET new_high_revenue = high_revenue;
         END IF;
         IF high_staff = 0 THEN
-            SET new_high_staff = ~0;
+            SET new_high_staff = 2147483646;
         ELSE
             SET new_high_staff = high_staff;
         END IF;
         IF high_visit = 0 THEN
-            SET new_high_visit = ~0;
+            SET new_high_visit = 2147483646;
         ELSE
             SET new_high_visit = high_visit;
         END IF;
         IF high_event = 0 THEN
-            SET new_high_event = ~0;
+            SET new_high_event = 2147483646;
         ELSE
             SET new_high_event = high_event;
         END IF;
@@ -1853,7 +1853,7 @@ BEGIN
     DECLARE new_site_name varchar(100);
     DECLARE new_event_name varchar(100);
     DECLARE new_key varchar(200);
-    DECLARE new_high_visit bigint;
+    DECLARE new_high_visit int;
     DECLARE new_high_price float;
     DECLARE new_visited int;
     DECLARE new_sold int;
@@ -1868,15 +1868,15 @@ BEGIN
     IF high_visit > 0 THEN
         SET new_high_visit = high_visit;
     ELSE 
-        SET new_high_visit = ~0;
+        SET new_high_visit = 2147483646;
     END IF;    
     IF high_price > 0 THEN
         SET new_high_price = high_price;
     ELSE 
-        SET new_high_price = ~0;
+        SET new_high_price = 2147483646;
     END IF;
     IF is_visited = 1 THEN
-        SET new_visited = ~0;
+        SET new_visited = 2147483646;
     ELSE 
         SET new_visited = 1;
     END IF;
@@ -1921,8 +1921,8 @@ BEGIN
     DECLARE new_site_name varchar(50);
     DECLARE new_start_date date;
     DECLARE new_end_date date;
-    DECLARE new_high_visit bigint;
-    DECLARE new_high_event bigint;
+    DECLARE new_high_visit int;
+    DECLARE new_high_event int;
     DECLARE new_visited int;
     
     IF length(site_name) > 0 THEN
@@ -1941,17 +1941,17 @@ BEGIN
         SET new_start_date = start_date;
     END IF;
     IF high_visit = 0 THEN
-        SET new_high_visit = ~0;
+        SET new_high_visit = 2147483646;
     ELSE
         SET new_high_visit = high_visit;
     END IF;
     IF high_event = 0 THEN
-        SET new_high_event = ~0;
+        SET new_high_event = 2147483646;
     ELSE
         SET new_high_event = high_event;
     END IF;
     IF is_visited = 1 THEN
-        SET new_visited = ~0;
+        SET new_visited = 2147483646;
     ELSE 
         SET new_visited = 1;
     END IF;
