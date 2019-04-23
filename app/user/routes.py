@@ -52,6 +52,11 @@ def take_transit_send_data():
     route = request.json["route"]
     transport_type = Transit.Type.coerce(request.json["transport_type"])
     args = (current_user.username, route, str(transport_type), date)
+    result, error = db_procedure("check_take_transit", args)
+    if error:
+        raise DatabaseError(error, "check_take_transit")
+    if not result[0][0]:
+        return jsonify({"result": False, "message": "A same transit has already been logged."})
     result, error = db_procedure("take_transit", args)
     if error:
         raise DatabaseError(error, "logging transit")
