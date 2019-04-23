@@ -109,9 +109,12 @@ BEGIN
     ELSE 
         SET new_manager_name = '%';
     END IF;
-    SET new_open_everyday = open_everyday + 1;
     
-    SELECT SiteName, ManagerName, EveryDay FROM for_site WHERE SiteName LIKE new_site_name AND ManagerName LIKE new_manager_name AND EveryDay = new_open_everyday;
+    IF open_everyday > 0 THEN
+        SELECT SiteName, ManagerName, EveryDay FROM for_site WHERE SiteName LIKE new_site_name AND ManagerName LIKE new_manager_name AND EveryDay = new_open_everyday;
+    ELSE 
+        SELECT SiteName, ManagerName, EveryDay FROM for_site WHERE SiteName LIKE new_site_name AND ManagerName LIKE new_manager_name;
+    END IF;
 END $$
 
 
