@@ -14,50 +14,52 @@
         </div>
     </div>
     <div class="row">
-            <div class="col-md-4">
+        <div class="col-md-4">
             <label>Minimum Event Count<input type="text" class="form-control" id="event_count_min" name="min">
             </label>
         </div>
-                <div class="col-md-4">
+        <div class="col-md-4">
             <label>Maximum Event Count<input type="text" class="form-control" id="event_count_max" name="max">
             </label>
         </div>
     </div>
     <div class="row">
-        <table>
-            <tbody>
-            <tr>
-                <td>Staff Count Range</td>
-                <td><input type="text" class="form-control" id="staff_count_min" name="min"></td>
-                <td><input type="text" class="form-control" id="staff_count_max" name="max"></td>
-            </tr>
-            </tbody>
-        </table>
+        <div class="col-md-4">
+            <label>Minimum Staff Count<input type="text" class="form-control" id="staff_count_min" name="min">
+            </label>
+        </div>
+        <div class="col-md-4">
+            <label>Maximum Staff Count<input type="text" class="form-control" id="staff_count_max" name="max">
+            </label>
+        </div>
     </div>
+    <div class="row">
+        <div class="col-md-4">
+            <label>Minimum Total Visits<input type="text" class="form-control" id="total_visit_min" name="min">
+            </label>
+        </div>
+        <div class="col-md-4">
+            <label>Maximum Total Visits<input type="text" class="form-control" id="total_visit_max" name="max">
+            </label>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <label>Minimum Total Revenue<input type="text" class="form-control" id="total_revenue_min" name="min">
+            </label>
+        </div>
+        <div class="col-md-4">
+            <label>Maximum Total Revenue<input type="text" class="form-control" id="total_revenue_max" name="max">
+            </label>
+        </div>
+    </div>
+    <div class="row">
     <div class="col-md-12">
-        <table>
-            <tbody>
-            <tr>
-                <td>Total Visits Range</td>
-                <td><input type="text" class="form-control" id="total_visit_min" name="min"></td>
-                <td><input type="text" class="form-control" id="total_visit_max" name="max"></td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-    <div class="col-md-12">
-        <table>
-            <tbody>
-            <tr>
-                <td>Total Revenue Range</td>
-                <td><input type="text" class="form-control" id="total_revenue_min" name="min"></td>
-                <td><input type="text" class="form-control" id="total_revenue_max" name="max"></td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
     <button type="button" class="btn btn-outline-info" id="daily_detail">Daily Detail</button>
-    <div class="col-md-12">
+    </div>
+    </div>
+    <div class="row mt-3">
+     <div class="col-md-12">
         <table id="site_report" class="table table-striped table-bordered" style="width:100%">
             <thead>
             <tr>
@@ -73,9 +75,12 @@
             </thead>
         </table>
     </div>
+    </div>
+    <div class="row">
     <div class="col-md-12">
         <button type="button" class="btn btn-outline-info" onclick="location.href='{{ url_for('main.login') }}'">Back
         </button>
+    </div>
     </div>
     <script>
         $(document).ready(function () {

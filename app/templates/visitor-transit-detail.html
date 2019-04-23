@@ -4,20 +4,24 @@
 
 {% block content %}
     <legend class="border-bottom mb-4">
-       Transit Detail
+        Transit Detail
     </legend>
-    <div class="col-md-12">
-        <label>Site<input type="text" id="site_name" class="form-control" value="{{ site_name }}" readonly>
-        </label>
-        <label>Transport Type<select id="transport_type" name="transport_type" class="form-control">
-            <option value="">All</option>
-            <option value="MARTA">MARTA</option>
-            <option value="Bus">Bus</option>
-            <option value="Bike">Bike</option>
-        </select>
-        </label>
-    </div>​
-    <div class="content-section">
+    <div class="row">
+        <div class="col-md-4">
+            <label>Site<input type="text" id="site_name" class="form-control" value="{{ site_name }}" readonly>
+            </label>
+        </div>
+        <div class="col-md-4">
+            <label>Transport Type<select id="transport_type" name="transport_type" class="form-control">
+                <option value="">All</option>
+                <option value="MARTA">MARTA</option>
+                <option value="Bus">Bus</option>
+                <option value="Bike">Bike</option>
+            </select>
+            </label>
+        </div>
+    </div>
+    <div class="row mt-3">
         <div class="col-md-12">
             <table id="daily_detail" class="table table-striped table-bordered" style="width:100%">
                 <thead>
@@ -31,11 +35,20 @@
                 </thead>
             </table>
         </div>
-
-        <input type="textbox" id="transit_date" name="transit_date" value="2019-11-11"></input>
-        <button type="button" class="btn btn-outline-info" onclick="location.href='{{ url_for('visitor.explore_site') }}'">Back</button>
-        <button type="button" class="btn btn-outline-info" id="log_transit">Log Transit</button>
-
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <input type="text" id="transit_date" name="transit_date" value="2019-11-11">
+        </div>
+        <div class="col-md-4">
+            <button type="button" class="btn btn-outline-info"
+                    onclick="location.href='{{ url_for('visitor.explore_site') }}'">
+                Back
+            </button>
+        </div>
+        <div class="col-md-4">
+            <button type="button" class="btn btn-outline-info" id="log_transit">Log Transit</button>
+        </div>
     </div>
     <script>
         $(document).ready(function () {
@@ -80,7 +93,7 @@
                     success: function (data) {
                         alert(data.message)
                     },
-                    error: function() {
+                    error: function () {
                         alert("Transit Duplicate!")
                     }
                 });

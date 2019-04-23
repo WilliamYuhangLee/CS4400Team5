@@ -3,30 +3,38 @@
     <legend class="border-bottom mb-4">
         Manage User
     </legend>
-    <div class="col-md-12">
-        <label>Username<input type="text" id="username_search" class="form-control">
-        </label>
-        <label>Type<select id="user_type" name="user_type" class="form-control">
-            <option value="">All</option>
-            <option value="User">User</option>
-            <option value="Visitor">Visitor</option>
-            <option value="Staff">Staff</option>
-            <option value="Manager">Manager</option>
-        </select>
-        </label>
-        <label>Status<select id="user_status" name="user_status" class="form-control">
-            <option value="">All</option>
-            <option value="Approved">Approved</option>
-            <option value="Pending">Pending</option>
-            <option value="Decline">Decline</option>
-        </select>
-        </label>​
+    <div class="row">
+        <div class="col-md-4">
+            <label>Username<input type="text" id="username_search" class="form-control">
+            </label>
+        </div>
+        <div class="col-md-4">
+            <label>Type<select id="user_type" name="user_type" class="form-control">
+                <option value="">All</option>
+                <option value="User">User</option>
+                <option value="Visitor">Visitor</option>
+                <option value="Staff">Staff</option>
+                <option value="Manager">Manager</option>
+            </select>
+            </label>
+        </div>
+        <div class="col-md-4">
+            <label>Status<select id="user_status" name="user_status" class="form-control">
+                <option value="">All</option>
+                <option value="Approved">Approved</option>
+                <option value="Pending">Pending</option>
+                <option value="Decline">Decline</option>
+            </select>
+            </label>​
+        </div>
     </div>
+    <div class="row">
     <div class="col-md-12">
-        <!--Script for admin needed-->
         <button type="button" class="btn btn-outline-info" id="admin_manage_user_approve">Approve</button>
         <button type="button" class="btn btn-outline-info" id="admin_manage_user_decline">Decline</button>
     </div>
+    </div>
+    <div class="row mt-3">
     <div class="col-md-12">
         <table id="user_list" class="table table-striped table-bordered" style="width:100%">
             <thead>
@@ -40,10 +48,13 @@
             </thead>
         </table>
     </div>
+    </div>
+    <div class="row">
     <div class="col-md-12">
-        <button type="button" class="btn btn-outline-info"
-                onclick="location.href={{ url_for(administrator.manage_user_back) }};">Back
+        <button type="button" class="btn btn-outline-info" onclick="location.href='{{ url_for('main.login') }}'">
+            Back
         </button>
+    </div>
     </div>
 
     <script>

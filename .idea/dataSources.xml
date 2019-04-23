@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="MySQL - atlbeltline@localhost" uuid="f7c0bdb2-dff3-4412-8cee-a9b9f47138dc">
+    <data-source source="LOCAL" name="MySQL - root@localhost" uuid="44a127d2-4158-43cf-aa0d-7113b5645658">
       <driver-ref>mysql</driver-ref>
       <jdbc-driver>com.mysql.jdbc.Driver</jdbc-driver>
       <jdbc-url>jdbc:mysql://localhost:3306/atlbeltline</jdbc-url>
@@ -14,7 +14,7 @@
         <property name="yearIsDateType" value="false" />
       </driver-properties>
     </data-source>
-    <data-source source="LOCAL" name="MySQL - root@localhost" uuid="44a127d2-4158-43cf-aa0d-7113b5645658">
+    <data-source source="LOCAL" name="atlbeltline@localhost" uuid="20610c41-e75d-45d9-accc-842486c8c9a7">
       <driver-ref>mysql</driver-ref>
       <jdbc-driver>com.mysql.jdbc.Driver</jdbc-driver>
       <jdbc-url>jdbc:mysql://localhost:3306/atlbeltline</jdbc-url>

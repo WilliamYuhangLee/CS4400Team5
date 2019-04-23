@@ -3,62 +3,73 @@
     <legend class="border-bottom mb-4">
         Explore Event
     </legend>
-    <div class="col-md-12">
-        <label>Name<input type="text" id="name_search" class="form-control">
-        </label>
-        <label>Description Keyword<input type="text" id="description_search" class="form-control">
-        </label>
+    <div class="row">
+        <div class="col-md-4">
+            <label>Name<input type="text" id="name_search" class="form-control">
+            </label>
+        </div>
+        <div class="col-md-4">
+            <label>Description Keyword<input type="text" id="description_search" class="form-control">
+            </label>
+        </div>
+        <div class="col-md-4">
+            <label>Contain Site<select id="contain_site" name="contain_site" class="form-control">
+                {% for site in sites %}
+                    <option value="{{ site }}">{{ site }}</option>
+                {% endfor %}
+            </select>
+            </label>
+        </div>
     </div>
-    <div class="col-md-12">
-        <label>Contain Site<select id="contain_site" name="contain_site" class="form-control">
-            {% for site in sites %}
-                <option value="{{ site }}">{{ site }}</option>
-            {% endfor %}
-        </select>
-        </label>
+    <div class="row">
+        <div class="col-md-4">
+            <label>Start Date<input type="text" id="date_min" class="form-control">
+            </label>
+        </div>
+        <div class="col-md-4">
+            <label>End Date<input type="text" id="date_max" class="form-control">
+            </label>
+        </div>
     </div>
-    <div class="col-md-12">
-        <label>Start Date<input type="text" id="date_min" class="form-control">
-        </label>
-        <label>End Date<input type="text" id="date_max" class="form-control">
-        </label>
+    <div class="row">
+        <div class="col-md-4">
+            <label>Minimum Total Visit<input type="text" class="form-control" id="total_visit_min" name="min">
+            </label>
+        </div>
+        <div class="col-md-4">
+            <label>Maximum Total Visit<input type="text" class="form-control" id="total_visit_max" name="max">
+            </label>
+        </div>
     </div>
-    <div class="col-md-12">
-        <table>
-            <tbody>
-            <tr>
-                <td>Total Visit Range</td>
-                <td><input type="text" class="form-control" id="total_visit_min" name="min"></td>
-                <td><input type="text" class="form-control" id="total_visit_max" name="max"></td>
-            </tr>
-            </tbody>
-        </table>
-        <table>
-            <tbody>
-            <tr>
-                <td>Total Price Range</td>
-                <td><input type="text" class="form-control" id="ticket_price_min" name="min"></td>
-                <td><input type="text" class="form-control" id="ticket_price_max" name="max"></td>
-            </tr>
-            </tbody>
-        </table>
+    <div class="row">
+        <div class="col-md-4">
+            <label>Minimum Total Price<input type="text" class="form-control" id="ticket_price_min" name="min">
+            </label>
+        </div>
+        <div class="col-md-4">
+            <label>Maximum Total Price<input type="text" class="form-control" id="ticket_price_max" name="max"></td>
+            </label>
+        </div>
     </div>
-    <div class="col-md-12">
-
-        <label>Visit Status<select id="visit_status" name="visit_status" class="form-control">
-            <option value="">ALL</option>
-            <option value="True">Only Visited</option>
-            <option value="False">Only Unvisited</option>
-        </select>
-        </label>
-
-        <label>Sold Out<select id="sold_out" name="sold_out" class="form-control">
-            <option value="">ALL</option>
-            <option value="True">Only Sold Out Events</option>
-            <option value="False">Only Unsold Out Events</option>
-        </select>
-        </label>
+    <div class="row">
+        <div class="col-md-4">
+            <label>Visit Status<select id="visit_status" name="visit_status" class="form-control">
+                <option value="">ALL</option>
+                <option value="True">Only Visited</option>
+                <option value="False">Only Unvisited</option>
+            </select>
+            </label>
+        </div>
+        <div class="col-md-4">
+            <label>Sold Out<select id="sold_out" name="sold_out" class="form-control">
+                <option value="">ALL</option>
+                <option value="True">Only Sold Out Events</option>
+                <option value="False">Only Unsold Out Events</option>
+            </select>
+            </label>
+        </div>
     </div>
+    <div class="row mt-3">
     <div class="col-md-12">
         <table id="explore_event" class="table table-striped table-bordered" style="width:100%">
             <thead>
@@ -79,8 +90,12 @@
             </thead>
         </table>
     </div>
+    </div>
+    <div class="row">
     <div class="col-md-12">
-        <button type="button" class="btn btn-outline-info" onclick="location.href='{{ url_for('main.login') }}'">Back</button>
+        <button type="button" class="btn btn-outline-info" onclick="location.href='{{ url_for('main.login') }}'">Back
+        </button>
+    </div>
     </div>
     <script>
         $(document).ready(function () {
@@ -145,15 +160,15 @@
                 var name = table.cell('.selected', 2).data();
                 var eventname = table.cell('.selected', 1).data();
                 var startdate = table.cell('.selected', 6).data();
-                if ( name == undefined) {
+                if (name == undefined) {
                     alert("You must Select a site first!");
                     return false;
                 }
-                if ( eventname == undefined) {
+                if (eventname == undefined) {
                     alert("You must Select a event first!");
                     return false;
                 }
-                if ( startdate == undefined) {
+                if (startdate == undefined) {
                     alert("You must Select a start date first!");
                     return false;
                 }
