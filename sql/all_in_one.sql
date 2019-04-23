@@ -862,6 +862,40 @@ CREATE VIEW explore_site AS
 SELECT x.UserName, x.SiteName, x.Date, y.TotalVisit, y.CountEvent, y.EveryDay, IF(x.SiteName = y.SiteName, 1, 0) AS MyVisit FROM VisitSite AS x, for_site as y;
 
 
+CREATE VIEW es1 AS
+SELECT SiteName, count(*) AS EventCount FROM Events GROUP BY SiteName;
+
+CREATE VIEW es2 AS
+SELECT SiteName, count(*) AS TotalVisit FROM VisitSite GROUP BY SiteName;
+
+CREATE VIEW es3 AS
+SELECT UserName, SiteName, count(*) AS MyVisit FROM VisitSite GROUP BY SiteName, UserName;
+
+CREATE VIEW es12 AS
+SELECT SiteName, EveryDay, IF(EventCount, EventCount, 0) AS EventCount, IF(TotalVisit, TotalVisit, 0) AS TotalVisit FROM Site LEFT JOIN es1 USING(SiteName) LEFT JOIN es2 USING(SiteName);
+
+CREATE VIEW es4 AS 
+SELECT UserName, SiteName FROM Users, Site WHERE IsVisitor = "YES";
+
+CREATE VIEW es34 AS
+SELECT UserName, SiteName, IF(MyVisit, MyVisit, 0) AS MyVisit FROM es4 LEFT JOIN es3 USING(SiteName, UserName);
+
+Alter VIEW explore_site AS
+SELECT UserName, SiteName, EveryDay, EventCount, TotalVisit, MyVisit FROM es12 JOIN es34 USING(SiteName);
+
+
+CREATE VIEW ee1 AS
+SELECT EventName, SiteName, StartDate, UserName, count(*) AS MyVisit FROM VisitEvent GROUP BY EventName, SiteName, StartDate, UserName;
+
+CREATE VIEW ee2 AS
+SELECT EventName, SiteName, StartDate, UserName FROM Events, Users WHERE IsVisitor = "YES";
+
+CREATE VIEW ee3 AS 
+SELECT EventName, SiteName, StartDate, UserName, IF(MyVisit, MyVisit, 0) AS MyVisit FROM ee1 RIGHT JOIN ee2 USING(EventName, SiteName, StartDate, UserName);
+
+ALTER VIEW explore_event AS
+SELECT UserName, EventName, SiteName, StartDate, EndDate, Price, TicketRem, TotalVisit, MyVisit, Description FROM for_event JOIN ee3 USING(EventName, SiteName, StartDate);
+
 
 USE atlbeltline;
 DELIMITER $$
@@ -1889,14 +1923,11 @@ BEGIN
     
     IF length(user_name) > 0 THEN 
         IF open_everyday = 0 THEN
-            SELECT SiteName, CountEvent, TotalVisit, sum(MyVisit) AS MyVisits, `Date`, EveryDay FROM explore_site 
-            WHERE UserName = user_name AND SiteName LIKE new_site_name AND `Date` >= new_start_date AND `Date` <= new_end_date AND
-            TotalVisit >= low_visit AND TotalVisit <= new_high_visit GROUP BY SiteName, UserName;
+            SELECT SiteName, EventCount, TotalVisit, sum(MyVisit) AS MyVisits, '1000-01-01', EveryDay FROM explore_site 
+            WHERE UserName = user_name;
         ELSE 
-            SELECT SiteName, CountEvent, TotalVisit, sum(MyVisit) AS MyVisits, `Date`, EveryDay FROM explore_site 
-            WHERE UserName = user_name AND SiteName LIKE new_site_name AND `Date` >= new_start_date AND `Date` <= new_end_date AND
-            TotalVisit >= low_visit AND TotalVisit <= new_high_visit GROUP BY SiteName, UserName HAVING 
-            EveryDay = open_everyday;
+            SELECT SiteName, EventCount, TotalVisit, sum(MyVisit) AS MyVisits, '1000-01-01', EveryDay FROM explore_site 
+            WHERE UserName = user_name;
         END IF;
     ELSE 
         SET @error = 'Username cannot be null.';
