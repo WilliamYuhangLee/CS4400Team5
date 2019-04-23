@@ -30,8 +30,8 @@ def manage_event():
             "name": row[0],
             "staff_count": row[1],
             "duration": row[2],
-            "total_visits": row[3],
-            "total_revenue": row[4],
+            "total_visits": int(row[3]),
+            "total_revenue": float(row[4]),
             "description": row[5],
             "start_date": row[6],
             "end_date": row[7],
@@ -185,10 +185,10 @@ def site_report():
     for row in result:
         reports.append({
             "date": row[0],
-            "event_count": row[1],
-            "staff_count": row[2],
-            "total_visit": row[3],
-            "total_revenue": row[4],
+            "event_count": int(row[1]),
+            "staff_count": int(row[2]),
+            "total_visit": int(row[3]),
+            "total_revenue": float(row[4]),
         })
     return render_template("manager-site-report.html", title="Manage Site", reports=json.dumps(reports))
 
