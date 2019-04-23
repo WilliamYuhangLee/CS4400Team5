@@ -2,15 +2,17 @@ from flask import render_template, request, jsonify, json, session, flash, redir
 from flask_login import login_required, current_user
 from . import bp
 from .forms import EditEventForm, CreateEventForm
-from app.util import validate_date, db_procedure, DatabaseError
+from app.util import validate_date, db_procedure, DatabaseError, role_required
 
 
+@bp.route("/")
 @bp.route("/home")
 @login_required
 def home():
     result, error = db_procedure("query_employee_sitename", (current_user.username,))
     if error:
         raise DatabaseError(error, "query_employee_sitename")
+    session[current_user.username] = {}
     session[current_user.username]["site_name"] = result[0][0]
     return render_template("home-manager.html", title="Home")
 
