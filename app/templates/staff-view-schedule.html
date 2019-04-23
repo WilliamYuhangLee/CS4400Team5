@@ -100,9 +100,12 @@
             });
 
             $('#view_event').on('click', function () {
-                var name = table.cell('.selected', 1).data();
-                var name2 = table.cell('.selected', 2).data();
-                var name3 = table.cell('.selected', 3).data();
+                var namee = table.cell('.selected', 1).data();
+                var namee2 = table.cell('.selected', 2).data();
+                var namee3 = table.cell('.selected', 3).data();
+                var name = encodeURIComponent(namee);
+                var name2 = encodeURIComponent(namee2);
+                var name3 = encodeURIComponent(namee3);
                 if (name == undefined) {
                     alert("You must Select a event first!");
                     return false;
@@ -115,7 +118,7 @@
                     alert("You must Select a start date first!");
                     return false;
                 }
-                window.location.replace("{{ url_for('staff.event_detail')}}" + "?event_name=" + name + "/?site_name=" + name2 + "/?start_date=" + name3);
+                window.location.replace("{{ url_for('staff.event_detail')}}" + "?event_name=" + name + "&site_name=" + name2 + "&start_date=" + name3);
             });
 
             $.fn.dataTable.ext.search.push(

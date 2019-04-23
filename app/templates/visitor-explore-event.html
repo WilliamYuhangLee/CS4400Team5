@@ -180,9 +180,9 @@
 
             ////need restruction
             $('#event_detail').on('click', function () {
-                var name = table.cell('.selected', 2).data();
-                var eventname = table.cell('.selected', 1).data();
-                var startdate = table.cell('.selected', 6).data();
+                var name = encodeURIComponent(table.cell('.selected', 2).data());
+                var eventname = encodeURIComponent(table.cell('.selected', 1).data());
+                var startdate = encodeURIComponent(table.cell('.selected', 6).data());
                 if (name == undefined) {
                     alert("You must Select a site first!");
                     return false;
@@ -195,7 +195,7 @@
                     alert("You must Select a start date first!");
                     return false;
                 }
-                window.location.replace("{{ url_for('visitor.event_detail')}}" + "?site_name=" + name + "/?event_name=" + eventname + "/?start_date=" + startdate);
+                window.location.replace("{{ url_for('visitor.event_detail')}}" + "?site_name=" + name + "&event_name=" + eventname + "&start_date=" + startdate);
             });
 
             $.fn.dataTable.ext.search.push(

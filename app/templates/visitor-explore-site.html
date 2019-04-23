@@ -189,7 +189,7 @@
             });
 
             $('#site_detail').on('click', function () {
-                var name = table.cell('.selected', 1).data();
+                var name = encodeURIComponent(table.cell('.selected', 1).data());
                 if (name == undefined) {
                     alert("You must Select a site first!");
                     return false;
@@ -197,7 +197,7 @@
                 window.location.replace("{{ url_for('visitor.site_detail') }}" + "?site_name=" + name);
             });
             $('#transit_detail').on('click', function () {
-                var name = table.cell('.selected', 1).data();
+                var name = encodeURIComponent(table.cell('.selected', 1).data());
                 if (name == undefined) {
                     alert("You must Select a site first!");
                     return false;

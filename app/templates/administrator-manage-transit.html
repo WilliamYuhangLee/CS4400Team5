@@ -134,8 +134,8 @@
 
 
             $('#transit_edit').on('click', function () {
-                var name = table.cell('.selected', 1).data();
-                var type = table.cell('.selected', 2).data();
+                var name = encodeURIComponent(table.cell('.selected', 1).data());
+                var type = encodeURIComponent(table.cell('.selected', 2).data());
                 if (name == undefined) {
                     alert("You must Select a site first!");
                     return false;
@@ -144,7 +144,7 @@
                     alert("You must Select a transport type first!");
                     return false;
                 }
-                window.location.replace("{{ url_for('administrator.edit_transit')}}?site_name=" + name + "/?transport_type=" + type);
+                window.location.replace("{{ url_for('administrator.edit_transit')}}?route=" + name + "&transport_type=" + type);
             });
 
             $('#transit_create').on('click', function () {
