@@ -2048,6 +2048,12 @@ BEGIN
 END $$
 
 
+CREATE PROCEDURE query_event_day_by_day(in site_name varchar(50), in event_name varchar(50), in start_date date)
+BEGIN
+    SELECT `Date`, DailyVisit, DailyRevenue FROM daily_event WHERE SiteName = site_name AND EventName = event_name AND StartDate = start_date;
+END $$
+
+
 DELIMITER ;
 
 
