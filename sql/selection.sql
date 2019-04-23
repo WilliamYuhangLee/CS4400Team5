@@ -405,10 +405,10 @@ BEGIN
             END IF;
         ELSE 
             IF end_date = '' THEN
-                SELECT EventName, SiteName, Price, TicketRem, TotalVisit, MyVisit, StartDate, EndDate  FROM explore _event
+                SELECT EventName, SiteName, Price, TicketRem, TotalVisit, MyVisit, StartDate, EndDate  FROM explore_event
                 WHERE UserName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key AND TotalVisit <= new_high_visit AND TotalVisit >= low_visit AND Price >= low_price AND Price <= new_high_price AND MyVisit < new_visited AND TicketRem >= new_sold AND StartDate = start_date;
             ELSE 
-                SELECT EventName, SiteName, Price, TicketRem, TotalVisit, MyVisit, StartDate, EndDate FROM explore _event
+                SELECT EventName, SiteName, Price, TicketRem, TotalVisit, MyVisit, StartDate, EndDate FROM explore_event
                 WHERE UserName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key AND TotalVisit <= new_high_visit AND TotalVisit >= low_visit AND Price >= low_price AND Price <= new_high_price AND MyVisit < new_visited AND TicketRem >= new_sold AND EndDate = end_date AND StartDate = start_date;
             END IF;
         END IF;     
