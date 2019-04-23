@@ -86,7 +86,8 @@ class UserRegistrationForm(FlaskForm):
 
 
 class EmployeeRegistrationForm(UserRegistrationForm):
-    title = SelectField(label="User Type", validators=[DataRequired()], choices=Employee.Title.choices(),
+    title = SelectField(label="User Type", validators=[DataRequired()],
+                        choices=[title for title in Employee.Title.choices() if title != "ADMINISTRATOR"],
                         coerce=Employee.Title.coerce)
     phone = StringField(label="Phone",
                         validators=[DataRequired("Please enter your phone number."),
