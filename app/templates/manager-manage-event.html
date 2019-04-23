@@ -3,61 +3,66 @@
     <legend class="border-bottom mb-4">
         Manage Event
     </legend>
-    <div class="form-group">
-    <div class="form-row">
-    <div class="form-group col-md-6">
-        <label>Name<input type="text" id="name_search" class="form-control">
-        </label>
+    <div class="row">
+        <div class="col-md-6">
+            <label>Name<input type="text" id="name_search" class="form-control">
+            </label>
+        </div>
+        <div class="col-md-6">
+            <label>Description Keyword<input type="text" id="description_search" class="form-control">
+            </label>
+        </div>
     </div>
-    <div class="form-group col-md-6">
-        <label>Description Keyword<input type="text" id="description_search" class="form-control">
-        </label>
+    <div class="row">
+        <div class="col-md-6">
+            <label>Start Date<input type="text" id="date_min" class="form-control">
+            </label>
+        </div>
+        <div class="col-md-6">
+            <label>End Date<input type="text" id="date_max" class="form-control">
+            </label>
+        </div>
     </div>
+    <div class="row">
+        <div class="col-md-6">
+            <label>Minimum Duration<input type="text" class="form-control" id="duration_min" name="min">
+            </label>
+        </div>
+        <div class="col-md-6">
+            <label>Maximum Duration<input type="text" class="form-control" id="duration_max" name="max">
+            </label>
+        </div>
     </div>
-<div class="form-row">
-    <div class="form-group col-md-12">
-
-    </div>       <label>Start Date<input type="text" id="date_min" class="form-control">
-</label>
-    <label>End Date<input type="text" id="date_max" class="form-control">
-    </label>
-    <div class="col-md-12">
-        <table>
-            <tbody>
-            <tr>
-                <td>Duration Range</td>
-                <td><input type="text" class="form-control" id="duration_min" name="min"></td>
-                <td><input type="text" class="form-control" id="duration_max" name="max"></td>
-            </tr>
-            </tbody>
-        </table>
-        <table>
-            <tbody>
-            <tr>
-                <td>Total Visit Range</td>
-                <td><input type="text" class="form-control" id="total_visit_min" name="min"></td>
-                <td><input type="text" class="form-control" id="total_visit_max" name="max"></td>
-            </tr>
-            </tbody>
-        </table>
+    <div class="row">
+        <div class="col-md-6">
+            <label>Minimum Visit<input type="text" class="form-control" id="total_visit_min" name="min">
+            </label>
+        </div>
+        <div class="col-md-6">
+            <label>Maximum visit<input type="text" class="form-control" id="total_visit_max" name="max">
+            </label>
+        </div>
     </div>
-    <div class="col-md-12">
-        <table>
-            <tbody>
-            <tr>
-                <td>Total Revenue Range</td>
-                <td><input type="text" class="form-control" id="total_revenue_min" name="min"></td>
-                <td><input type="text" class="form-control" id="total_revenue_max" name="max"></td>
-            </tr>
-            </tbody>
-        </table>
+    <div class="row">
+    <div class="col-md-6">
+            <label>Minimum Revenue<input type="text" class="form-control" id="total_revenue_min" name="min">
+            </label>
+        </div>
+        <div class="col-md-6">
+            <label>Maximum Revenue<input type="text" class="form-control" id="total_revenue_max" name="max">
+            </label>
+        </div>
     </div>
-    <div class="col-md-12">
-        <!--Script for admin needed-->
+    <div class="row">
+        <div class="btn-group col-md-6" role="group" aria-label="First group">
         <button type="button" class="btn btn-outline-info" id="event_edit">View/Edit</button>
         <button type="button" class="btn btn-outline-info" id="event_create">Create</button>
         <button type="button" class="btn btn-outline-info" id="event_delete">Delete</button>
+        </div>
     </div>
+    <div class="row">
+    </div>
+    <div class="row">
     <div class="col-md-12">
         <table id="event_list" class="table table-striped table-bordered" style="width:100%">
             <thead>
@@ -75,8 +80,13 @@
             </thead>
         </table>
     </div>
+    </div>
+    <div class="row">
     <div class="col-md-12">
-        <button type="button" class="btn btn-outline-info" onclick="location.href='{{ url_for('main.login') }}'">Back</button>
+        <button type="button" class="btn btn-outline-info" onclick="location.href='{{ url_for('main.login') }}'">
+            Back
+        </button>
+    </div>
     </div>
     <script>
         $(document).ready(function () {
@@ -135,7 +145,7 @@
 
             $('#event_edit').on('click', function () {
                 var name = table.cell('.selected', 1).data();
-                if ( name == undefined) {
+                if (name == undefined) {
                     alert("You must Select a event first!");
                     return false;
                 }
