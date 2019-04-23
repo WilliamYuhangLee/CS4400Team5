@@ -183,3 +183,16 @@ SELECT UserName, SiteName, IF(MyVisit, MyVisit, 0) AS MyVisit FROM es4 LEFT JOIN
 
 Alter VIEW explore_site AS
 SELECT UserName, SiteName, EveryDay, EventCount, TotalVisit, MyVisit FROM es12 JOIN es34 USING(SiteName);
+
+
+CREATE VIEW ee1 AS
+SELECT EventName, SiteName, StartDate, UserName, count(*) AS MyVisit FROM VisitEvent GROUP BY EventName, SiteName, StartDate, UserName;
+
+CREATE VIEW ee2 AS
+SELECT EventName, SiteName, StartDate, UserName FROM Events, Users WHERE IsVisitor = "YES";
+
+CREATE VIEW ee3 AS 
+SELECT EventName, SiteName, StartDate, UserName, IF(MyVisit, MyVisit, 0) AS MyVisit FROM ee1 RIGHT JOIN ee2 USING(EventName, SiteName, StartDate, UserName);
+
+ALTER VIEW explore_event AS
+SELECT UserName, EventName, SiteName, StartDate, EndDate, Price, TicketRem, TotalVisit, MyVisit, Description FROM for_event JOIN ee3 USING(EventName, SiteName, StartDate);
