@@ -90,6 +90,7 @@ def manage_site_send_data():
 @login_required
 def edit_site():
     form = EditSiteForm()
+    form.manager.choices = [(manager, manager) for manager in Employee.get_free_managers()] + [(manager, manager)]
     if form.validate_on_submit():
         args = (form.name.data, form.zip_code.data, form.address.data, form.manager.data, int(form.open_everyday.data))
         result, error = db_procedure("edit_site", args)
@@ -107,7 +108,6 @@ def edit_site():
     form.old_name = site_name
     form.zip_code.data = zip_code
     form.address.data = address
-    form.manager.choices = [(manager, manager) for manager in Employee.get_free_managers()] + [(manager, manager)]
     form.manager.data = manager
     form.open_everyday.data = open_everyday
     return render_template("administrator-edit-site.html", title="Edit Site", form=form)
@@ -117,6 +117,7 @@ def edit_site():
 @login_required
 def create_site():
     form = EditSiteForm()
+    form.manager.choices = [(manager, manager) for manager in Employee.get_free_managers()]
     if form.validate_on_submit():
         args = (form.name.data, form.zip_code.data, form.address.data, form.manager.data, int(form.open_everyday.data))
         result, error = db_procedure("create_site", args)
@@ -124,7 +125,6 @@ def create_site():
             raise DatabaseError(error, "creating site")
         flash(message="Site created!", category="success")
         return redirect(url_for(".manage_site"))
-    form.manager.choices = [(manager, manager) for manager in Employee.get_free_managers()]
     return render_template("administrator-edit-site.html", title="Create Site", form=form)
 
 
