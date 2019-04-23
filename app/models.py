@@ -117,7 +117,6 @@ class Employee(User):
         MANAGER = "MANAGER"
         STAFF = "STAFF"
 
-
     class State(EnumAttribute):
         AL = 'AL'
         AK = 'AK'
@@ -170,7 +169,6 @@ class Employee(User):
         WI = 'WI'
         WY = 'WY'
         OTHER = 'OTHER'
-
 
     def __init__(self, user, phone, address, city, state, zip_code, title, employee_id=None):
         """
@@ -238,7 +236,6 @@ class Transit:
         BUS = "BUS"
         MARTA = "MARTA"
         BIKE = "BIKE"
-
 
     def __init__(self, route, transport_type, price, num_of_connected_sites=None):
         self.route = route

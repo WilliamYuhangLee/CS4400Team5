@@ -24,6 +24,8 @@ def register():
                 phone = process_phone(form.phone.data)
                 user = Employee(user, phone, form.address.data, form.city.data, form.state.data, form.zip_code.data, form.title.data)
             user.create()
+            for email_form in form.emails.entries:
+                user.add_email(email_form.email)
             flash("Your have submitted your registration. Please wait for an administrator to approve your request.", category="success")
             return redirect(url_for(".login"))
         elif form.add.data:
