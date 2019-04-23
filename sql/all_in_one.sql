@@ -1224,7 +1224,7 @@ BEGIN
     DECLARE site_name varchar(50);
      
     IF EXISTS(SELECT * FROM Site WHERE ManagerName = user_name) THEN
-        SELECT SiteName INTO site_name FROM Site WHERE ManagerName = user_name;
+        SELECT SiteName INTO site_name FROM Site WHERE ManagerName = user_name LIMIT 1;
         SELECT site_name;
     ELSE 
         SELECT "";
@@ -1272,7 +1272,7 @@ BEGIN
     DECLARE zip_code varchar(10); 
     DECLARE title_ varchar(20);
     
-    SELECT UserName INTO user_name FROM Email WHERE EmailAddress = email_address;
+    SELECT UserName INTO user_name FROM Email WHERE EmailAddress = email_address LIMIT 1;
     IF length(user_name) > 0 THEN 
         IF EXISTS(SELECT * FROM Employee WHERE UserName = user_name) THEN
             SELECT EmployeeID, Phone, Address, City, State, ZipCode, Title 
@@ -1355,7 +1355,7 @@ BEGIN
     DECLARE manager_name varchar(100);
      
     IF length(site_name) > 0 THEN
-        SELECT Zipcode, Address, EveryDay, ManagerName INTO zip_code, address_, every_day, manager_name FROM Site WHERE SiteName = site_name;
+        SELECT Zipcode, Address, EveryDay, ManagerName INTO zip_code, address_, every_day, manager_name FROM Site WHERE SiteName = site_name LIMIT 1;
         IF length(zip_code) > 1 THEN 
             SELECT zip_code, address_, every_day, manager_name;
         ELSE 
@@ -1381,7 +1381,7 @@ BEGIN
     DECLARE duration_ int;
     DECLARE price_ int;
      
-    IF length(site_name) > 0 AND length(event_name) > 0 AND start_date != '0000-00-00' THEN
+    IF length(site_name) > 0 AND length(event_name) > 0 AND start_date != '' THEN
         SELECT EndDate, MinStaffReq, Capacity, Description, Duration, Price INTO end_date, min_staff_req, capacity_, description_, duration_, price_ FROM for_event WHERE SiteName = site_name AND EventName = event_name AND StartDate = start_date LIMIT 1;        
         IF length(description_) > 1 THEN 
             SELECT end_date, min_staff_req, capacity_, description_, duration_, price_;
@@ -1539,12 +1539,12 @@ BEGIN
         ELSE 
             SET new_site_name = '%';
         END IF;
-        IF end_date = '0000-00-00' THEN
+        IF end_date = '' THEN
             SET new_end_date = '9999-12-31';
         ELSE 
             SET new_end_date = end_date;
         END IF;
-        IF start_date = '0000-00-00' THEN
+        IF start_date = '' THEN
             SET new_start_date = '1000-01-01';
         ELSE 
             SET new_start_date = start_date;
@@ -1624,7 +1624,7 @@ BEGIN
     DECLARE new_start_date date;
     DECLARE new_end_date date;
     DECLARE new_long_duration int;
-    DECLARE new_high_visit bigint;
+    DECLARE new_high_visit int;
     DECLARE new_high_revenue float;
     DECLARE site_name varchar(50);
     
@@ -1638,33 +1638,33 @@ BEGIN
     ELSE 
         SET new_key_word = '%';
     END IF;
-    IF end_date = '0000-00-00' THEN
+    IF end_date = '' THEN
         SET new_end_date = '9999-12-31';
     ELSE 
         SET new_end_date = end_date;
     END IF;
-    IF start_date = '0000-00-00' THEN
+    IF start_date = '' THEN
             SET new_start_date = '1000-01-01';
     ELSE 
         SET new_start_date = start_date;
     END IF;
     IF long_duration = 0 THEN
-        SET new_long_duration = ~0;
+        SET new_long_duration = 2147483646;
     ELSE
         SET new_long_duration = long_duration;
     END IF;
     IF high_visit = 0 THEN
-        SET new_high_visit = ~0;
+        SET new_high_visit = 2147483646;
     ELSE
         SET new_high_visit = high_visit;
     END IF;
     IF high_revenue = 0 THEN
-        SET new_high_revenue = ~0 - 1.0;
+        SET new_high_revenue = 2147483646 - 1.0;
     ELSE
         SET new_high_revenue = high_revenue;
     END IF;   
     
-    SELECT SiteName INTO site_name FROM Site WHERE ManagerName = manager_name;    
+    SELECT SiteName INTO site_name FROM Site WHERE ManagerName = manager_name LIMIT 1;    
     
     SELECT EventName, CountStaff, Duration, TotalVisit, TotalRevenue, Description, StartDate, EndDate FROM for_event WHERE SiteName = site_name AND EventName LIKE new_event_name AND Description LIKE new_key_word AND StartDate >= new_start_date AND EndDate <= new_end_date AND Duration >= short_duration AND Duration <= new_long_duration AND TotalVisit >= low_visit AND TotalVisit <= new_high_visit AND TotalRevenue >= low_revenue AND TotalRevenue <= new_high_revenue;
     
@@ -1675,21 +1675,21 @@ CREATE PROCEDURE filter_event_daily(in site_name varchar(50), in event_name varc
 -- order of parameter
 -- site name, manager name, if open every day
 BEGIN 
-    DECLARE new_high_visit bigint;
+    DECLARE new_high_visit int;
     DECLARE new_high_revenue float;
     
     IF high_visit = 0 THEN
-        SET new_high_visit = ~0;
+        SET new_high_visit = 2147483646;
     ELSE
         SET new_high_visit = high_visit;
     END IF;
     IF high_revenue = 0 THEN
-        SET new_high_revenue = ~0 - 1.0;
+        SET new_high_revenue = 2147483646 - 1.0;
     ELSE
         SET new_high_revenue = high_revenue;
     END IF;  
     
-    IF length(site_name) > 0 AND length(event_name) > 0 AND start_date != '0000-00-00' THEN
+    IF length(site_name) > 0 AND length(event_name) > 0 AND start_date != '' THEN
         SELECT `Date`, DailyVisit, DailyRevenue FROM daily_event WHERE SiteName = site_name AND EventName = event_name AND StartDate = start_date AND DailyVisit >= low_price AND DailyVisit <= new_high_price AND DailyRevenue >= low_revenue AND DailyRevenue <= new_high_revenue;
     ELSE 
         SET @error = 'Primary key cannot have null value.';
@@ -1723,12 +1723,12 @@ BEGIN
     ELSE 
         SET new_last_name = '%';
     END IF;
-    IF end_date = '0000-00-00' THEN
+    IF end_date = '' THEN
         SET new_end_date = '9999-12-31';
     ELSE 
         SET new_end_date = end_date;
     END IF;
-    IF start_date = '0000-00-00' THEN
+    IF start_date = '' THEN
         SET new_start_date = '1000-01-01';
     ELSE 
         SET new_start_date = start_date;
@@ -1745,9 +1745,9 @@ CREATE PROCEDURE filter_daily_site(in site_name varchar(50), in start_date date,
 BEGIN
     DECLARE new_start_date date;
     DECLARE new_end_date date;
-    DECLARE new_high_event bigint;
-    DECLARE new_high_staff bigint;
-    DECLARE new_high_visit bigint;
+    DECLARE new_high_event int;
+    DECLARE new_high_staff int;
+    DECLARE new_high_visit int;
     DECLARE new_high_revenue float;
     
      
@@ -1757,33 +1757,33 @@ BEGIN
         SET @error = 'Site name cannot be null.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     ELSE
-        IF end_date = '0000-00-00' THEN
+        IF end_date = '' THEN
             SET new_end_date = '9999-12-31';
         ELSE 
             SET new_end_date = end_date;
         END IF;
-        IF start_date = '0000-00-00' THEN
+        IF start_date = '' THEN
             SET new_start_date = '1000-01-01';
         ELSE 
             SET new_start_date = start_date;
         END IF;
         IF high_revenue = 0 THEN
-            SET new_high_revenue = ~0 - 1.0;
+            SET new_high_revenue = 2147483646 - 1.0;
         ELSE
             SET new_high_revenue = high_revenue;
         END IF;
         IF high_staff = 0 THEN
-            SET new_high_staff = ~0;
+            SET new_high_staff = 2147483646;
         ELSE
             SET new_high_staff = high_staff;
         END IF;
         IF high_visit = 0 THEN
-            SET new_high_visit = ~0;
+            SET new_high_visit = 2147483646;
         ELSE
             SET new_high_visit = high_visit;
         END IF;
         IF high_event = 0 THEN
-            SET new_high_event = ~0;
+            SET new_high_event = 2147483646;
         ELSE
             SET new_high_event = high_event;
         END IF;
@@ -1799,7 +1799,7 @@ CREATE PROCEDURE filter_daily_event(in site_name varchar(50), in date_ date )
 -- site name, date
 BEGIN
      
-    IF length(site_name) = 0 OR date_ = '0000-00-00' THEN 
+    IF length(site_name) = 0 OR date_ = '' THEN 
         SET @error = 'Site name or date cannot be null.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     ELSE 
@@ -1826,8 +1826,8 @@ BEGIN
         SET new_key_word = '%';
     END IF;
     
-    IF start_date = '0000-00-00' THEN 
-        IF end_date = '0000-00-00' THEN
+    IF start_date = '' THEN 
+        IF end_date = '' THEN
             SELECT EventName, SiteName, StartDate, EndDate, CountStaff, Description FROM for_schedule 
             WHERE StaffName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key_word;
         ELSE 
@@ -1835,7 +1835,7 @@ BEGIN
             WHERE StaffName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key_word AND EndDate = end_date;
         END IF;
     ELSE 
-        IF end_date = '0000-00-00' THEN
+        IF end_date = '' THEN
             SELECT EventName, SiteName, StartDate, EndDate, CountStaff, Description FROM for_schedule 
             WHERE StaffName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key_word AND StartDate = start_date;
         ELSE 
@@ -1853,7 +1853,7 @@ BEGIN
     DECLARE new_site_name varchar(100);
     DECLARE new_event_name varchar(100);
     DECLARE new_key varchar(200);
-    DECLARE new_high_visit bigint;
+    DECLARE new_high_visit int;
     DECLARE new_high_price float;
     DECLARE new_visited int;
     DECLARE new_sold int;
@@ -1868,15 +1868,15 @@ BEGIN
     IF high_visit > 0 THEN
         SET new_high_visit = high_visit;
     ELSE 
-        SET new_high_visit = ~0;
+        SET new_high_visit = 2147483646;
     END IF;    
     IF high_price > 0 THEN
         SET new_high_price = high_price;
     ELSE 
-        SET new_high_price = ~0;
+        SET new_high_price = 2147483646;
     END IF;
     IF is_visited = 1 THEN
-        SET new_visited = ~0;
+        SET new_visited = 2147483646;
     ELSE 
         SET new_visited = 1;
     END IF;
@@ -1887,8 +1887,8 @@ BEGIN
     END IF;
     
     IF length(user_name) > 0 THEN
-        IF start_date = '0000-00-00' THEN 
-            IF end_date = '0000-00-00' THEN
+        IF start_date = '' THEN 
+            IF end_date = '' THEN
                 SELECT EventName, SiteName, Price, TicketRem, TotalVisit, MyVisit, StartDate, EndDate FROM explore_event
                 WHERE UserName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key AND TotalVisit <= new_high_visit AND TotalVisit >= low_visit AND Price >= low_price AND Price <= new_high_price AND MyVisit < new_visited AND TicketRem >= new_sold ;
             ELSE 
@@ -1896,7 +1896,7 @@ BEGIN
                 WHERE UserName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key AND TotalVisit <= new_high_visit AND TotalVisit >= low_visit AND Price >= low_price AND Price <= new_high_price AND MyVisit < new_visited AND TicketRem >= new_sold AND EndDate = end_date;
             END IF;
         ELSE 
-            IF end_date = '0000-00-00' THEN
+            IF end_date = '' THEN
                 SELECT EventName, SiteName, Price, TicketRem, TotalVisit, MyVisit, StartDate, EndDate  FROM explore _event
                 WHERE UserName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key AND TotalVisit <= new_high_visit AND TotalVisit >= low_visit AND Price >= low_price AND Price <= new_high_price AND MyVisit < new_visited AND TicketRem >= new_sold AND StartDate = start_date;
             ELSE 
@@ -1921,8 +1921,8 @@ BEGIN
     DECLARE new_site_name varchar(50);
     DECLARE new_start_date date;
     DECLARE new_end_date date;
-    DECLARE new_high_visit bigint;
-    DECLARE new_high_event bigint;
+    DECLARE new_high_visit int;
+    DECLARE new_high_event int;
     DECLARE new_visited int;
     
     IF length(site_name) > 0 THEN
@@ -1930,28 +1930,28 @@ BEGIN
     ELSE 
         SET new_site_name = '%';
     END IF; 
-    IF end_date = '0000-00-00' THEN
+    IF end_date = '' THEN
         SET new_end_date = '9999-12-31';
     ELSE 
         SET new_end_date = end_date;
     END IF;
-    IF start_date = '0000-00-00' THEN
+    IF start_date = '' THEN
             SET new_start_date = '1000-01-01';
     ELSE 
         SET new_start_date = start_date;
     END IF;
     IF high_visit = 0 THEN
-        SET new_high_visit = ~0;
+        SET new_high_visit = 2147483646;
     ELSE
         SET new_high_visit = high_visit;
     END IF;
     IF high_event = 0 THEN
-        SET new_high_event = ~0;
+        SET new_high_event = 2147483646;
     ELSE
         SET new_high_event = high_event;
     END IF;
     IF is_visited = 1 THEN
-        SET new_visited = ~0;
+        SET new_visited = 2147483646;
     ELSE 
         SET new_visited = 1;
     END IF;
@@ -2014,7 +2014,7 @@ CREATE PROCEDURE query_staff_by_event (in site_name varchar(50), in event_name v
 -- site name, event name, start date
 BEGIN
      
-    IF length(site_name) > 0 AND length(event_name) > 0 AND start_date != '0000-00-00' THEN
+    IF length(site_name) > 0 AND length(event_name) > 0 AND start_date != '' THEN
         SELECT StaffName, FirstName, LastName AS Name FROM AssignTo JOIN Users ON StaffName = UserName WHERE SiteName = site_name AND EventName = event_name AND StartDate = start_date;
     ELSE 
         SET @error = 'Primary key cannot have null value.';
