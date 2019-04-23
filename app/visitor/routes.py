@@ -18,9 +18,9 @@ def explore_event():
             "event_name": row[0],
             "site_name": row[1],
             "ticket_price": row[2],
-            "ticket_remaining": row[3],
-            "total_visits": row[4],
-            "my_visits": row[5],
+            "ticket_remaining": int(row[3]),
+            "total_visits": int(row[4]),
+            "my_visits": int(row[5]),
             "start_date": row[6],
             "end_date": row[7],
         })
@@ -69,9 +69,9 @@ def explore_site():
     for row in result:
         sites.append({
             "site_name": row[0],
-            "event_count": row[1],
-            "total_visits": row[2],
-            "my_visits": row[3],
+            "event_count": int(row[1]),
+            "total_visits": int(row[2]),
+            "my_visits": int(row[3]),
             "date": row[4],
             "open_everyday": row[5],
         })
