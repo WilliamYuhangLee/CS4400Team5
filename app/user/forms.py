@@ -22,7 +22,7 @@ class ManageProfileForm(FlaskForm):
     email = StringField(label="Email", validators=[RequiredIf(required_field_name="add")])
     add = SubmitField(label="Add")
     visitor = BooleanField(label="Visitor Account")
-    submit = SubmitField(label="Sign up")
+    submit = SubmitField(label="Update")
 
     def validate_email(self, email_field):
         if self.add.data:
