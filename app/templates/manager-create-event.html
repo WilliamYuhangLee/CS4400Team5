@@ -3,9 +3,6 @@
 <html lang="en">
 
 {% block content %}
-    <legend class="border-bottom mb-4">
-        Create Event
-    </legend>
     <div class="content-section">
         <form method="post" action="">
             {{ form.hidden_tag() }}
@@ -14,36 +11,36 @@
                     {{ title }}
                 </legend>
                 <div class="form-row">
-                    <div class="form-group">
+                    <div class="form-group col-md-12">
                         {{ render_field(form.name) }}
                     </div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group">
+                    <div class="form-group col-md-4">
                         {{ render_field(form.price) }}
                     </div>
-                    <div class="form-group">
+                    <div class="form-group col-md-4">
                         {{ render_field(form.capacity) }}
                     </div>
-                    <div class="form-group">
+                    <div class="form-group col-md-4">
                         {{ render_field(form.minimum_staff_required) }}
                     </div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group">
+                    <div class="form-group col-md-6">
                         {{ render_field(form.start_date) }}
                     </div>
-                    <div class="form-group">
+                    <div class="form-group col-md-6">
                         {{ render_field(form.end_date) }}
                     </div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group">
+                    <div class="form-group col-md-12">
                         {{ render_field(form.description) }}
                     </div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group">
+                    <div class="form-group col-md-12">
                         {{ render_field(form.assign_staff) }}
                     </div>
                 </div>

@@ -121,11 +121,23 @@ def edit_event():
     return render_template("manager-edit-event.html", title="Edit Event", form=form, days=json.dumps(days))
 
 
-@bp.route("/create_event")
+@bp.route("/create_event", methods=["GET", "POST"])
 @login_required
 def create_event():
     form = CreateEventForm()
     site_name = session[current_user.username]["site_name"]
+    form.site_name.data = site_name
+    if form.start_date.data and form.end_date.data:
+        args = (form.start_date.data, form.end_date.data)
+    else:
+        args = ("1000-01-01", "9999-12-31")
+    result, error = db_procedure("get_free_staff", args)
+    if error:
+        raise DatabaseError(error, "get_free_staff")
+    free_staffs = {}
+    for staff in result:
+        free_staffs[staff[1] + staff[2]] = staff[0]
+    form.assign_staff.choices = [(staff, staff) for staff in free_staffs.keys()]
     if form.validate_on_submit():
         args = (site_name, form.name.data, form.start_date.data, form.end_date.data,
                 form.minimum_staff_required.data, form.price.data, form.capacity.data, form.description.data)
@@ -139,19 +151,6 @@ def create_event():
                 raise DatabaseError(error, "assign_staff")
         flash(message="Event created!", category="success")
         return redirect(url_for(".manage_event"))
-    if form.start_date.data and form.end_date.data:
-        args = (form.start_date.data, form.end_date.data)
-    else:
-        args = ("1000-01-01", "9999-12-31")
-    result, error = db_procedure("get_free_staff", args)
-    if error:
-        raise DatabaseError(error, "get_free_staff")
-    free_staffs = {}
-    for staff in result:
-        free_staffs[staff[1] + staff[2]] = staff[0]
-    form.assign_staff.choices = free_staffs.keys()
-    session[current_user.username]["free_staffs"] = free_staffs
-    form.site_name.data = site_name
     return render_template("manager-create-event.html", title="Create Event", form=form)
 
 
@@ -177,7 +176,16 @@ def manage_staff():
 @bp.route("/site_report")
 @login_required
 def site_report():
-    site_name = session[current_user.username]["site_name"]
+    if not session[current_user.username]:
+        session[current_user.username] = {}
+    if session[current_user.username]["site_name"]:
+        site_name = session[current_user.username]["site_name"]
+    else:
+        result, error = db_procedure("query_employee_sitename", (current_user.username,))
+        if error:
+            raise DatabaseError(error, "query_employee_sitename")
+        site_name = result[0][0]
+        session[current_user.username]["site_name"] = site_name
     result, error = db_procedure("filter_daily_site", (site_name,) + (0,) * 8)
     if error:
         raise DatabaseError(error, "filter_daily_site")
