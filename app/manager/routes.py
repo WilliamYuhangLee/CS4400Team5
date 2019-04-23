@@ -142,7 +142,7 @@ def create_event():
     if form.start_date.data and form.end_date.data:
         args = (form.start_date.data, form.end_date.data)
     else:
-        args = ("1000-01-01", "9999-12-31") * 2
+        args = ("1000-01-01", "9999-12-31")
     result, error = db_procedure("get_free_staff", args)
     if error:
         raise DatabaseError(error, "get_free_staff")
