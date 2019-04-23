@@ -17,7 +17,7 @@ def home():
 @login_required
 def view_schedule():
     username = current_user.username
-    result, error = db_procedure("filter_schedule", (username, "", "", "", ""))
+    result, error = db_procedure("filter_schedule", (username, "", "", None, None))
     if error:
         raise DatabaseError(error, "getting staff's events")
     events = []

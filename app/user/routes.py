@@ -72,7 +72,7 @@ def transit_history():
 @login_required
 def transit_history_get_table_data():
     site_name = request.args.get("site_name", type=str)
-    args = (current_user.username, site_name, "", "", "")
+    args = (current_user.username, site_name, "", None, None)
     result, error = db_procedure("filter_transit_history", args)
     if error:
         raise DatabaseError(error, "querying user transit history")
