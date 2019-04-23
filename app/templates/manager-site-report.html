@@ -3,22 +3,27 @@
     <legend class="border-bottom mb-4">
         Site Report
     </legend>
-    <div class="col-md-12">
-        <label>Start Date<input type="text" id="date_min" class="form-control" value="0000-00-00">
-        </label>
-        <label>End Date<input type="text" id="date_max" class="form-control" value="0000-00-00">
-        </label>
+    <div class="row">
+        <div class="col-md-4">
+            <label>Start Date<input type="text" id="date_min" class="form-control" value="0000-00-00">
+            </label>
+        </div>
+        <div class="col-md-4">
+            <label>End Date<input type="text" id="date_max" class="form-control" value="9999-12-31">
+            </label>
+        </div>
     </div>
-    <div class="col-md-12">
-        <table>
-            <tbody>
-            <tr>
-                <td>Event Count Range</td>
-                <td><input type="text" class="form-control" id="event_count_min" name="min"></td>
-                <td><input type="text" class="form-control" id="event_count_max" name="max"></td>
-            </tr>
-            </tbody>
-        </table>
+    <div class="row">
+            <div class="col-md-4">
+            <label>Minimum Event Count<input type="text" class="form-control" id="event_count_min" name="min">
+            </label>
+        </div>
+                <div class="col-md-4">
+            <label>Maximum Event Count<input type="text" class="form-control" id="event_count_max" name="max">
+            </label>
+        </div>
+    </div>
+    <div class="row">
         <table>
             <tbody>
             <tr>
@@ -69,7 +74,8 @@
         </table>
     </div>
     <div class="col-md-12">
-        <button type="button" class="btn btn-outline-info" onclick="location.href='{{ url_for('main.login') }}'">Back</button>
+        <button type="button" class="btn btn-outline-info" onclick="location.href='{{ url_for('main.login') }}'">Back
+        </button>
     </div>
     <script>
         $(document).ready(function () {
@@ -136,7 +142,7 @@
 
             $('#daily_detail').on('click', function () {
                 var date = table.cell('.selected', 1).data();
-                if ( date == undefined) {
+                if (date == undefined) {
                     alert("You must Select a date first!");
                     return false;
                 }
