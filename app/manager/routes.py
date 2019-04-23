@@ -180,9 +180,9 @@ def site_report():
     return render_template("manager-site-report.html", title="Manage Site")
 
 
-@bp.route("/site_report/_get_data")
+@bp.route("/site_report/_get_table_data")
 @login_required
-def site_report_get_data():
+def site_report_get_table_data():
     start_date = request.args.get("start_date", type=str)
     if not validate_date(start_date):
         return jsonify({"result": False, "message": "Start date format incorrect."})

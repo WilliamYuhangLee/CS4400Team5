@@ -1521,7 +1521,7 @@ BEGIN
 END $$
 
 
-CREATE PROCEDURE filter_transit_history(in user_name varchar(100), in site_name varchar(50), in transport_type varchar(10), in start_date date, in end_date date )
+CREATE PROCEDURE filter_transit_history(in user_name varchar(100), in site_name varchar(50), in transport_type varchar(10))
 BEGIN
     DECLARE new_site_name varchar(100);
     DECLARE new_start_date date;
@@ -1535,16 +1535,8 @@ BEGIN
         ELSE 
             SET new_site_name = '%';
         END IF;
-        IF end_date = '' THEN
-            SET new_end_date = '9999-12-31';
-        ELSE 
-            SET new_end_date = end_date;
-        END IF;
-        IF start_date = '' THEN
-            SET new_start_date = '1000-01-01';
-        ELSE 
-            SET new_start_date = start_date;
-        END IF;
+        SET new_end_date = '9999-12-31';
+        SET new_start_date = '1000-01-01';
         IF length(transport_type) >  0 THEN 
             SELECT DISTINCT Route, TransportType, Price, `Date` FROM Take JOIN Transit USING(Route, TransportType) JOIN Connects USING(Route, TransportType) WHERE UserName = user_name AND SiteName LIKE new_site_name AND TransportType = transport_type AND `Date` >= new_start_date AND `Date` <= new_end_date;
         ELSE 
@@ -1611,7 +1603,7 @@ BEGIN
 END $$
 
 
-CREATE PROCEDURE filter_event_adm(in manager_name varchar(100), in event_name varchar(50), in key_word varchar(100), in start_date date, in end_date date, in short_duration int, in long_duration int, in low_visit int, in high_visit int, in low_revenue float, in high_revenue float )
+CREATE PROCEDURE filter_event_adm(in manager_name varchar(100), in event_name varchar(50), in key_word varchar(100), in short_duration int, in long_duration int, in low_visit int, in high_visit int, in low_revenue float, in high_revenue float )
 -- order of parameter
 -- event nane, key word in description, start date, end date, lower bondary of duration, higher bondary of duration, lower bondary of visit, higher bondary of visit, lower bondary of revenue, higher bondary of revenue
 BEGIN 
@@ -1634,16 +1626,8 @@ BEGIN
     ELSE 
         SET new_key_word = '%';
     END IF;
-    IF end_date = '' THEN
-        SET new_end_date = '9999-12-31';
-    ELSE 
-        SET new_end_date = end_date;
-    END IF;
-    IF start_date = '' THEN
-            SET new_start_date = '1000-01-01';
-    ELSE 
-        SET new_start_date = start_date;
-    END IF;
+    SET new_end_date = '9999-12-31';
+    SET new_start_date = '1000-01-01';
     IF long_duration = 0 THEN
         SET new_long_duration = 2147483646;
     ELSE
@@ -1694,7 +1678,7 @@ BEGIN
 END $$
 
 
-CREATE PROCEDURE filter_staff(in site_name varchar(50), in first_name varchar(50), in last_name varchar(50), in start_date date, in end_date date )
+CREATE PROCEDURE filter_staff(in site_name varchar(50), in first_name varchar(50), in last_name varchar(50))
 -- order of parameter
 -- site name, first name, last name, start date, end date
 BEGIN
@@ -1719,23 +1703,15 @@ BEGIN
     ELSE 
         SET new_last_name = '%';
     END IF;
-    IF end_date = '' THEN
-        SET new_end_date = '9999-12-31';
-    ELSE 
-        SET new_end_date = end_date;
-    END IF;
-    IF start_date = '' THEN
-        SET new_start_date = '1000-01-01';
-    ELSE 
-        SET new_start_date = start_date;
-    END IF;
+    SET new_end_date = '9999-12-31';
+    SET new_start_date = '1000-01-01';
     
     SELECT FirstName, LastName, NumEventShifts, SiteName, StartDate, EndDate FROM for_staff 
     WHERE SiteName LIKE new_site_name AND FirstName LIKE new_first_name AND LastName LIKE new_last_name AND StartDate >= new_start_date AND EndDate <= new_end_date;
 
 END $$
 
-CREATE PROCEDURE filter_daily_site(in site_name varchar(50), in start_date date, in end_date date, low_event int, in high_event int, in low_staff int, in high_staff int, in low_visit int, in high_visit int, in low_revenue float, in high_revenue float )
+CREATE PROCEDURE filter_daily_site(in site_name varchar(50), low_event int, in high_event int, in low_staff int, in high_staff int, in low_visit int, in high_visit int, in low_revenue float, in high_revenue float )
 -- order of parameters
 -- site name, start date, end date, lower bondary of event count, higher bondary of event count, lower bondary of staff count, higher bondary of staff count, lower bondary of daily visits, higher bondary of daily visits, lower bondary of daily revenue, higher bondary of daily revenue
 BEGIN
@@ -1753,16 +1729,8 @@ BEGIN
         SET @error = 'Site name cannot be null.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
     ELSE
-        IF end_date = '' THEN
-            SET new_end_date = '9999-12-31';
-        ELSE 
-            SET new_end_date = end_date;
-        END IF;
-        IF start_date = '' THEN
-            SET new_start_date = '1000-01-01';
-        ELSE 
-            SET new_start_date = start_date;
-        END IF;
+        SET new_end_date = '9999-12-31';
+        SET new_start_date = '1000-01-01';
         IF high_revenue = 0 THEN
             SET new_high_revenue = 2147483646 - 1.0;
         ELSE
@@ -1804,7 +1772,7 @@ BEGIN
 END $$
 
 
-CREATE PROCEDURE filter_schedule(in user_name varchar(100), in event_name varchar(50), in key_word varchar(200), in start_date date, in end_date date)
+CREATE PROCEDURE filter_schedule(in user_name varchar(100), in event_name varchar(50), in key_word varchar(200))
 -- order of parameter
 -- username, event name, description keyword, start date, end date
 BEGIN
@@ -1822,27 +1790,13 @@ BEGIN
         SET new_key_word = '%';
     END IF;
     
-    IF start_date = '' THEN 
-        IF end_date = '' THEN
-            SELECT EventName, SiteName, StartDate, EndDate, CountStaff, Description FROM for_schedule 
-            WHERE StaffName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key_word;
-        ELSE 
-            SELECT EventName, SiteName, StartDate, EndDate, CountStaff, Description FROM for_schedule 
-            WHERE StaffName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key_word AND EndDate = end_date;
-        END IF;
-    ELSE 
-        IF end_date = '' THEN
-            SELECT EventName, SiteName, StartDate, EndDate, CountStaff, Description FROM for_schedule 
-            WHERE StaffName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key_word AND StartDate = start_date;
-        ELSE 
-            SELECT EventName, SiteName, StartDate, EndDate, CountStaff, Description FROM for_schedule 
-            WHERE StaffName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key_word AND EndDate = end_date AND StartDate = start_date;
-        END IF;
-    END IF;     
+    SELECT EventName, SiteName, StartDate, EndDate, CountStaff, Description FROM for_schedule 
+    WHERE StaffName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key_word;
+        
 END $$
 
 
-CREATE PROCEDURE filter_event_vis(in user_name varchar(100), in event_name varchar(50), in key_word varchar(200), in site_name varchar(50), in start_date date, in end_date date, in low_visit int, in high_visit int, in low_price float, in high_price float, in is_visited int, in is_sold_out int )
+CREATE PROCEDURE filter_event_vis(in user_name varchar(100), in event_name varchar(50), in key_word varchar(200), in site_name varchar(50), in low_visit int, in high_visit int, in low_price float, in high_price float, in is_visited int, in is_sold_out int )
 -- order of parameter
 -- username, event name, description keyword, site name, start date, end date, lower bondary of total visit, higher bondary of total visit, lower bondary of price, higher bondary of price, if show visited event, if show sold-out-ticket event
 BEGIN
@@ -1882,24 +1836,10 @@ BEGIN
         SET new_sold = 1;
     END IF;
     
-    IF length(user_name) > 0 THEN
-        IF start_date = '' THEN 
-            IF end_date = '' THEN
-                SELECT EventName, SiteName, Price, TicketRem, TotalVisit, MyVisit, StartDate, EndDate FROM explore_event
-                WHERE UserName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key AND TotalVisit <= new_high_visit AND TotalVisit >= low_visit AND Price >= low_price AND Price <= new_high_price AND MyVisit < new_visited AND TicketRem >= new_sold ;
-            ELSE 
-                SELECT EventName, SiteName, Price, TicketRem, TotalVisit, MyVisit, StartDate, EndDate FROM explore_event
-                WHERE UserName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key AND TotalVisit <= new_high_visit AND TotalVisit >= low_visit AND Price >= low_price AND Price <= new_high_price AND MyVisit < new_visited AND TicketRem >= new_sold AND EndDate = end_date;
-            END IF;
-        ELSE 
-            IF end_date = '' THEN
-                SELECT EventName, SiteName, Price, TicketRem, TotalVisit, MyVisit, StartDate, EndDate  FROM explore_event
-                WHERE UserName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key AND TotalVisit <= new_high_visit AND TotalVisit >= low_visit AND Price >= low_price AND Price <= new_high_price AND MyVisit < new_visited AND TicketRem >= new_sold AND StartDate = start_date;
-            ELSE 
-                SELECT EventName, SiteName, Price, TicketRem, TotalVisit, MyVisit, StartDate, EndDate FROM explore_event
-                WHERE UserName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key AND TotalVisit <= new_high_visit AND TotalVisit >= low_visit AND Price >= low_price AND Price <= new_high_price AND MyVisit < new_visited AND TicketRem >= new_sold AND EndDate = end_date AND StartDate = start_date;
-            END IF;
-        END IF;     
+
+    SELECT EventName, SiteName, Price, TicketRem, TotalVisit, MyVisit, StartDate, EndDate FROM explore_event
+    WHERE UserName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key AND TotalVisit <= new_high_visit AND TotalVisit >= low_visit AND Price >= low_price AND Price <= new_high_price AND MyVisit < new_visited AND TicketRem >= new_sold ;
+            
     ELSE
         SET @error = 'Username cannot be null.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
@@ -1909,7 +1849,7 @@ END $$
 
 
 
-CREATE PROCEDURE filter_site_vis(in user_name varchar(100), in site_name varchar(50), in open_everyday int, in start_date date, in end_date date, in low_visit int, in high_visit int, in low_event int, in high_event int, in is_visited int )
+CREATE PROCEDURE filter_site_vis(in user_name varchar(100), in site_name varchar(50), in open_everyday int, in low_visit int, in high_visit int, in low_event int, in high_event int, in is_visited int )
 -- order of paremeter
 -- username, site name, if site open everyday, start date, end date, lower bondary of total visit, higher bondary of total visit, lower bondary of event count, higher bondary of event count, if this site has been visited 
 -- open_everyday's value shall be 0, 1, or 2, in which 0 for all, 1 for no, 2 for yes
@@ -1926,16 +1866,8 @@ BEGIN
     ELSE 
         SET new_site_name = '%';
     END IF; 
-    IF end_date = '' THEN
-        SET new_end_date = '9999-12-31';
-    ELSE 
-        SET new_end_date = end_date;
-    END IF;
-    IF start_date = '' THEN
-            SET new_start_date = '1000-01-01';
-    ELSE 
-        SET new_start_date = start_date;
-    END IF;
+    SET new_end_date = '9999-12-31';
+    SET new_start_date = '1000-01-01';
     IF high_visit = 0 THEN
         SET new_high_visit = 2147483646;
     ELSE
