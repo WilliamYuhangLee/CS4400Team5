@@ -828,8 +828,8 @@ FROM daily_site
 GROUP BY SiteName;
 
 CREATE VIEW for_site AS
-SELECT SiteName, TotalVisit, TotalRevenue, CountStaff, count(*) AS CountEvent, ManagerName, EveryDay 
-FROM total_site LEFT JOIN count_site_staff USING(SiteName) JOIN Events USING(SiteName) JOIN Site USING(SiteName) 
+SELECT SiteName, IF(TotalVisit, TotalVisit, 0) AS TotalVisit, IF(TotalRevenue, TotalRevenue, 0) AS TotalRevenue, IF(CountStaff, CountStaff, 0) AS CountStaff, count(*) AS CountEvent , ManagerName, EveryDay 
+FROM total_site LEFT JOIN count_site_staff USING(SiteName) JOIN Events USING(SiteName) RIGHT JOIN Site USING(SiteName) 
 GROUP BY SiteName;
 
 CREATE VIEW visit_one_event AS
