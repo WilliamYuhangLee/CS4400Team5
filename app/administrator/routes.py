@@ -173,6 +173,7 @@ def manage_transit_send_data():
 @login_required
 def edit_transit():
     form = EditTransitForm()
+    form.sites.choices = [(site[0], site[0]) for site in Site.get_all_sites()]
     if form.validate_on_submit():
         transport_type = form.transport_type.data
         old_route = form.old_route.data
@@ -181,7 +182,7 @@ def edit_transit():
         result, error = db_procedure("edit_transit", (transport_type, old_route, new_route, price))
         if error:
             raise DatabaseError(error, "editing transit")
-        sites = form.connected_sites.data
+        sites = form.sites.data
         for site in sites:
             if site not in session[current_user.username]["sites"]:
                 result, error = db_procedure("connect_site", (transport_type, new_route, site))
@@ -208,8 +209,7 @@ def edit_transit():
     form.old_route.data = route
     form.transport_type.data = transport_type
     form.price.data = price
-    form.connected_sites.choices = [(site[0], site[0]) for site in Site.get_all_sites()]
-    form.connected_sites.data = sites
+    form.sites.data = sites
     return render_template("administrator-edit-transit.html", title="Edit Transit", form=form)
 
 
@@ -217,6 +217,7 @@ def edit_transit():
 @login_required
 def create_transit():
     form = CreateTransitForm()
+    form.sites.choices = [(site[0], site[0]) for site in Site.get_all_sites()]
     if form.validate_on_submit():
         transport_type = form.transport_type.data
         route = form.route.data
@@ -224,12 +225,11 @@ def create_transit():
         result, error = db_procedure("create_transit", (transport_type, route, price))
         if error:
             raise DatabaseError(error, "creating transit")
-        sites = form.connected_sites.data
+        sites = form.sites.data
         for site in sites:
             result, error = db_procedure("connect_site", (transport_type, route, site))
             if error:
                 raise DatabaseError(error, "connecting site")
         flash(message="Transit created!", category="success")
         return redirect(url_for(".manage_transit"))
-    form.connected_sites.choices = [(site[0], site[0]) for site in Site.get_all_sites()]
     return render_template("administrator-edit-transit.html", title="Create Transit", form=form)

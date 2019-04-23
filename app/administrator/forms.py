@@ -29,7 +29,7 @@ class EditTransitForm(FlaskForm):
     route = StringField(label="Route", validators=[InputRequired()])
     old_route = HiddenField()
     price = DecimalField(label="Price ($)", validators=[InputRequired(), NumberRange(min=0, message="The price must not be nagative!")])
-    connected_sites = SelectMultipleField(label="Connected Sites")
+    sites = SelectMultipleField(label="Connected Sites", validators=[InputRequired()])
     submit = SubmitField(label="Update")
 
     def validate_route(self, route_field):
@@ -40,7 +40,7 @@ class EditTransitForm(FlaskForm):
             if result[0][0] == 0:
                 raise ValidationError(message="An identical transit already exists!")
 
-    def validate_connected_sites(self, sites_field):
+    def validate_sites(self, sites_field):
         if not sites_field.data or len(sites_field.data) < 2:
             raise ValidationError(message="You must select at least 2 connected sites!")
 
@@ -50,7 +50,7 @@ class CreateTransitForm(FlaskForm):
     route = StringField(label="Route", validators=[InputRequired()])
     price = DecimalField(label="Price ($)",
                          validators=[InputRequired(), NumberRange(min=0, message="The price must not be nagative!")])
-    connected_sites = SelectMultipleField(label="Connected Sites")
+    sites = SelectMultipleField(label="Connected Sites", validators=[InputRequired()])
     submit = SubmitField(label="Create")
 
     def validate_route(self, route_field):
@@ -60,6 +60,6 @@ class CreateTransitForm(FlaskForm):
         if result[0][0] == 0:
             raise ValidationError(message="An identical transit already exists!")
 
-    def validate_connected_sites(self, sites_field):
-        if not sites_field.data or len(sites_field.data) < 2:
+    def validate_sites(self, field: SelectMultipleField):
+        if not field.data or len(field.data) < 2:
             raise ValidationError(message="You must select at least 2 connected sites!")
