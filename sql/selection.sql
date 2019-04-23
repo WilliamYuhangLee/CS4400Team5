@@ -351,10 +351,9 @@ BEGIN
         SET new_sold = 1;
     END IF;
     
-    
     IF length(user_name) > 0 THEN
         SELECT EventName, SiteName, Price, TicketRem, TotalVisit, MyVisit, StartDate, EndDate FROM explore_event
-        WHERE UserName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key AND TotalVisit <= new_high_visit AND TotalVisit >= low_visit AND Price >= low_price AND Price <= new_high_price AND MyVisit < new_visited AND TicketRem >= new_sold ;
+        WHERE UserName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key AND TotalVisit <= new_high_visit AND TotalVisit >= low_visit AND Price >= low_price AND Price <= new_high_price AND TicketRem >= new_sold ;
     ELSE
         SET @error = 'Username cannot be null.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
@@ -403,11 +402,11 @@ BEGIN
         IF open_everyday = 0 THEN
             SELECT SiteName, CountEvent, TotalVisit, sum(MyVisit) AS MyVisits, `Date`, EveryDay FROM explore_site 
             WHERE UserName = user_name AND SiteName LIKE new_site_name AND `Date` >= new_start_date AND `Date` <= new_end_date AND
-            TotalVisit >= low_visit AND TotalVisit <= new_high_visit GROUP BY SiteName, UserName HAVING MyVisits < new_visited;
+            TotalVisit >= low_visit AND TotalVisit <= new_high_visit GROUP BY SiteName, UserName;
         ELSE 
             SELECT SiteName, CountEvent, TotalVisit, sum(MyVisit) AS MyVisits, `Date`, EveryDay FROM explore_site 
             WHERE UserName = user_name AND SiteName LIKE new_site_name AND `Date` >= new_start_date AND `Date` <= new_end_date AND
-            TotalVisit >= low_visit AND TotalVisit <= new_high_visit GROUP BY SiteName, UserName HAVING MyVisits < new_visited AND 
+            TotalVisit >= low_visit AND TotalVisit <= new_high_visit GROUP BY SiteName, UserName HAVING 
             EveryDay = open_everyday;
         END IF;
     ELSE 
@@ -551,7 +550,7 @@ BEGIN
 END $$
 
 
-CREATE PROCEDURE check_take_transit(in user_name varchar(100), in route varchar(50), in transport_type varchar(50), in date_ date)
+CREATE PROCEDURE check_take_transit(in user_name varchar(100), in route_ varchar(50), in transport_type varchar(50), in date_ date)
 BEGIN
     DECLARE result int;
     IF EXISTS(SELECT * FROM Take WHERE Route = route_ AND UserName = user_name AND TransportType = transport_type AND `Date` = date_) THEN
