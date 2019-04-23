@@ -823,14 +823,15 @@ FROM staff_site
 GROUP BY SiteName;
 
 CREATE VIEW total_site AS 
-SELECT SiteName, count(DailyVisit) AS TotalVisit, count(DailyRevenue) AS TotalRevenue 
+SELECT SiteName, sum(DailyVisit) AS TotalVisit, sum(DailyRevenue) AS TotalRevenue 
 FROM daily_site 
 GROUP BY SiteName;
 
 CREATE VIEW for_site AS
-SELECT SiteName, IF(TotalVisit, TotalVisit, 0) AS TotalVisit, IF(TotalRevenue, TotalRevenue, 0) AS TotalRevenue, IF(CountStaff, CountStaff, 0) AS CountStaff, count(*) AS CountEvent , ManagerName, EveryDay 
-FROM total_site LEFT JOIN count_site_staff USING(SiteName) JOIN Events USING(SiteName) RIGHT JOIN Site USING(SiteName) 
-GROUP BY SiteName;
+SELECT Site.SiteName AS SiteName, IF(TotalVisit, TotalVisit, 0) AS TotalVisit, IF(TotalRevenue, TotalRevenue, 0) AS TotalRevenue, IF(CountStaff, CountStaff, 0) AS CountStaff, count(*) AS CountEvent , ManagerName, EveryDay 
+FROM total_site LEFT JOIN count_site_staff ON total_site.SiteName = count_site_staff.SiteName JOIN Events ON total_site.SiteName = Events.SiteName RIGHT JOIN Site ON total_site.SiteName = Site.SiteName 
+GROUP BY Site.SiteName;
+
 
 CREATE VIEW visit_one_event AS
 SELECT UserName, EventName, SiteName, count(*) AS MyVisit, StartDate 
@@ -1841,7 +1842,7 @@ BEGIN
     
     IF length(user_name) > 0 THEN
         SELECT EventName, SiteName, Price, TicketRem, TotalVisit, MyVisit, StartDate, EndDate FROM explore_event
-        WHERE UserName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key AND TotalVisit <= new_high_visit AND TotalVisit >= low_visit AND Price >= low_price AND Price <= new_high_price AND MyVisit < new_visited AND TicketRem >= new_sold ;
+        WHERE UserName = user_name AND EventName LIKE new_event_name AND Description LIKE new_key AND TotalVisit <= new_high_visit AND TotalVisit >= low_visit AND Price >= low_price AND Price <= new_high_price AND TicketRem >= new_sold ;
     ELSE
         SET @error = 'Username cannot be null.';
         SIGNAL SQLSTATE '45000' SET message_text = @error;
@@ -2038,7 +2039,7 @@ BEGIN
 END $$
 
 
-CREATE PROCEDURE check_take_transit(in user_name varchar(100), in route varchar(50), in transport_type varchar(50), in date_ date)
+CREATE PROCEDURE check_take_transit(in user_name varchar(100), in route_ varchar(50), in transport_type varchar(50), in date_ date)
 BEGIN
     DECLARE result int;
     IF EXISTS(SELECT * FROM Take WHERE Route = route_ AND UserName = user_name AND TransportType = transport_type AND `Date` = date_) THEN
