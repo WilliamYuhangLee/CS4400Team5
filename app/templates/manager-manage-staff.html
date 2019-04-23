@@ -38,18 +38,12 @@
         </table>
     </div>
     <div class="col-md-12">
-        <button type="button" class="btn btn-outline-info" onclick="goBack()">Back</button>
+        <button type="button" class="btn btn-outline-info" onclick="location.href='{{ url_for('main.login') }}'">Back</button>
     </div>
     <script>
         $(document).ready(function () {
             var table = $('#staff_list').DataTable({
-                ajax: {
-                    url: "{{ url_for('manager.manage_staff_get_table_data') }}",
-                    type: "GET",
-                    data: function () {
-                        return {site_name: $("#contain_site option:selected").text()}
-                    }
-                },
+                data: JSON.parse({{ staffs|tojson|safe }}),
                 columns: [
                     {
                         data: "name"
@@ -68,6 +62,9 @@
                     },
                     {
                         data: "end_date"
+                    },
+                    {
+                        data: "site_name"
                     },
                 ],
             });

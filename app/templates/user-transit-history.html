@@ -12,7 +12,6 @@
         </select>
         </label>
         <label>Contain Site<select id="contain_site" name="contain_site" class="form-control">
-            <option value="">All</option>
             {% for site in sites %}
                 <option value="{{ site }}">{{ site }}</option>
             {% endfor %}
@@ -42,7 +41,7 @@
         </table>
     </div>
     <div class="col-md-12">
-        <button type="button" class="btn btn-outline-info" onclick="goBack()">Back</button>
+        <button type="button" class="btn btn-outline-info" onclick="location.href='{{ url_for('main.login') }}'">Back</button>
     </div>
     <script>
         $(document).ready(function () {
@@ -70,10 +69,6 @@
                 ],
             });
 
-            $('#route_search').on('change', function () {
-                table.columns(1).search(this.value).draw();
-            });
-
             $('#contain_site').on('change', function () {
                 table.ajax.reload(function (json) {
                     console.log(json)
@@ -82,6 +77,10 @@
 
             $('#transport_type').on('change', function () {
                 table.columns(2).search(this.value).draw();
+            });
+
+            $('#route_search').keyup(function () {
+                table.columns(1).search(this.value).draw();
             });
 
             $.fn.dataTable.ext.search.push(
