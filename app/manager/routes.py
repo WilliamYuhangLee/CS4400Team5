@@ -176,7 +176,16 @@ def manage_staff():
 @bp.route("/site_report")
 @login_required
 def site_report():
-    site_name = session[current_user.username]["site_name"]
+    if not session[current_user.username]:
+        session[current_user.username] = {}
+    if session[current_user.username]["site_name"]:
+        site_name = session[current_user.username]["site_name"]
+    else:
+        result, error = db_procedure("query_employee_sitename", (current_user.username,))
+        if error:
+            raise DatabaseError(error, "query_employee_sitename")
+        site_name = result[0][0]
+        session[current_user.username]["site_name"] = site_name
     result, error = db_procedure("filter_daily_site", (site_name,) + (0,) * 8)
     if error:
         raise DatabaseError(error, "filter_daily_site")
