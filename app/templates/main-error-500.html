@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block navbar_item1 %}
+    <li class="nav-item active">
+        <a class="nav-link" href="{{ url_for('main.login') }}">Home</a>
+    </li>
+{% endblock %}
+{% block navbar_item3 %}
+{% endblock %}
+{% block navbar_item4 %}
+{% endblock %}
+{% block navbar_item2 %}
+    {% endif %}
+{% endblock %}
+{% block navbar_item5 %}
+{% endblock %}
+{% block content %}
+<div class="page-wrap d-flex flex-row align-items-center">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-12 text-center">
+                <span class="display-1 d-block">500</span>
+                <div class="mb-4 lead">There is a problem on the sever!</div>
+                <button type="button" class="btn btn-outline-info" onclick="goBack()">Back</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
