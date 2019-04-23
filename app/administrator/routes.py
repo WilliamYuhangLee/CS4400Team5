@@ -11,6 +11,7 @@ from app.models import User, Transit, Site, Employee
 @bp.route("/home")
 @login_required
 def home():
+    session[current_user.username] = {}
     return render_template("home-administrator.html", title="Home")
 
 
@@ -204,6 +205,8 @@ def edit_transit():
     sites = []
     for row in result:
         sites.append(row[1])
+    if session[current_user.username] is None:
+        session[current_user.username] = {}
     session[current_user.username]["sites"] = sites
     form.route.data = route
     form.old_route.data = route
