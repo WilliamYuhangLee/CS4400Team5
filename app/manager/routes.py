@@ -187,7 +187,7 @@ def site_report():
             "date": row[0],
             "event_count": int(row[1]),
             "staff_count": int(row[2]),
-            "total_visit": int(row[3]),
+            "total_visits": int(row[3]),
             "total_revenue": float(row[4]),
         })
     return render_template("manager-site-report.html", title="Manage Site", reports=json.dumps(reports))

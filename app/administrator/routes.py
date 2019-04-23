@@ -180,17 +180,23 @@ def edit_transit():
         old_route = form.old_route.data
         new_route = form.route.data
         price = form.price.data
+        result, error = db_procedure("query_transit_by_pk", (old_route, transport_type))
+        if error:
+            raise DatabaseError(error, "fetching transit")
+        old_sites = []
+        for row in result:
+            old_sites.append(row[1])
         result, error = db_procedure("edit_transit", (transport_type, old_route, new_route, price))
         if error:
             raise DatabaseError(error, "editing transit")
-        sites = form.sites.data
-        for site in sites:
-            if site not in session[current_user.username]["sites"]:
+        new_sites = form.sites.data
+        for site in new_sites:
+            if site not in old_sites:
                 result, error = db_procedure("connect_site", (transport_type, new_route, site))
                 if error:
                     raise DatabaseError(error, "connecting site")
-        for site in session[current_user.username]["sites"]:
-            if site not in sites:
+        for site in old_sites:
+            if site not in new_sites:
                 result, error = db_procedure("disconnect_site", (transport_type, new_route, site))
                 if error:
                     raise DatabaseError(error, "disconnecting site")
@@ -202,17 +208,14 @@ def edit_transit():
     if error:
         raise DatabaseError(error, "fetching transit")
     price = result[0][0]
-    sites = []
+    new_sites = []
     for row in result:
-        sites.append(row[1])
-    if session[current_user.username] is None:
-        session[current_user.username] = {}
-    session[current_user.username]["sites"] = sites
+        new_sites.append(row[1])
     form.route.data = route
     form.old_route.data = route
     form.transport_type.data = transport_type
     form.price.data = price
-    form.sites.data = sites
+    form.sites.data = new_sites
     return render_template("administrator-edit-transit.html", title="Edit Transit", form=form)
 
 
