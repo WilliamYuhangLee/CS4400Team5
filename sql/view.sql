@@ -161,3 +161,25 @@ SELECT x.SiteName AS SiteName, x.EventName, x.StartDate, x.EndDate, x.TicketRem,
 
 CREATE VIEW explore_site AS
 SELECT x.UserName, x.SiteName, x.Date, y.TotalVisit, y.CountEvent, y.EveryDay, IF(x.SiteName = y.SiteName, 1, 0) AS MyVisit FROM VisitSite AS x, for_site as y;
+
+
+CREATE VIEW es1 AS
+SELECT SiteName, count(*) AS EventCount FROM Events GROUP BY SiteName;
+
+CREATE VIEW es2 AS
+SELECT SiteName, count(*) AS TotalVisit FROM VisitSite GROUP BY SiteName;
+
+CREATE VIEW es3 AS
+SELECT UserName, SiteName, count(*) AS MyVisit FROM VisitSite GROUP BY SiteName, UserName;
+
+CREATE VIEW es12 AS
+SELECT SiteName, EveryDay, IF(EventCount, EventCount, 0) AS EventCount, IF(TotalVisit, TotalVisit, 0) AS TotalVisit FROM Site LEFT JOIN es1 USING(SiteName) LEFT JOIN es2 USING(SiteName);
+
+CREATE VIEW es4 AS 
+SELECT UserName, SiteName FROM Users, Site WHERE IsVisitor = "YES";
+
+CREATE VIEW es34 AS
+SELECT UserName, SiteName, IF(MyVisit, MyVisit, 0) AS MyVisit FROM es4 LEFT JOIN es3 USING(SiteName, UserName);
+
+Alter VIEW explore_site AS
+SELECT UserName, SiteName, EveryDay, EventCount, TotalVisit, MyVisit FROM es12 JOIN es34 USING(SiteName);
