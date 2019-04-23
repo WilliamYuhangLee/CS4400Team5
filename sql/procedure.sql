@@ -513,7 +513,7 @@ BEGIN
     DECLARE duration_ int;
     DECLARE price_ int;
      
-    IF length(site_name) > 0 AND length(event_name) > 0 AND start_date != '0000-00-00' THEN
+    IF length(site_name) > 0 AND length(event_name) > 0 AND start_date != '' THEN
         SELECT EndDate, MinStaffReq, Capacity, Description, Duration, Price INTO end_date, min_staff_req, capacity_, description_, duration_, price_ FROM for_event WHERE SiteName = site_name AND EventName = event_name AND StartDate = start_date LIMIT 1;        
         IF length(description_) > 1 THEN 
             SELECT end_date, min_staff_req, capacity_, description_, duration_, price_;
