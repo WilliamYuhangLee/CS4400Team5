@@ -158,13 +158,26 @@ def create_event():
 @bp.route("/manage-staff")
 @login_required
 def manage_staff():
-    return "Not implemented yet!"  # TODO: implement this method
+    result, error = db_procedure("filter_staff", ("",) * 5)
+    if error:
+        raise DatabaseError(error, "filter_staff")
+    staffs = []
+    for row in result:
+        staffs.append({
+            "first_name": row[0],
+            "last_name": row[1],
+            "num_of_event_shifts": row[2],
+            "site_name": row[3],
+            "start_date": row[4],
+            "end_date": row[5],
+        })
+    return render_template("manager-manage-staff.html", title="Manage Staff", staffs=json.dumps(staffs))
 
 
 @bp.route("/site_report")
 @login_required
 def site_report():
-    return render_template("manager-site-report.html")
+    return render_template("manager-site-report.html", title="Manage Site")
 
 
 @bp.route("/site_report/_get_data")
