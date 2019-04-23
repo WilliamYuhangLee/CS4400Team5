@@ -172,7 +172,7 @@ BEGIN
         SET new_high_revenue = high_revenue;
     END IF;   
     
-    SELECT SiteName INTO site_name FROM Site WHERE ManagerName = manager_name;    
+    SELECT SiteName INTO site_name FROM Site WHERE ManagerName = manager_name LIMIT 1;    
     
     SELECT EventName, CountStaff, Duration, TotalVisit, TotalRevenue, Description, StartDate, EndDate FROM for_event WHERE SiteName = site_name AND EventName LIKE new_event_name AND Description LIKE new_key_word AND StartDate >= new_start_date AND EndDate <= new_end_date AND Duration >= short_duration AND Duration <= new_long_duration AND TotalVisit >= low_visit AND TotalVisit <= new_high_visit AND TotalRevenue >= low_revenue AND TotalRevenue <= new_high_revenue;
     

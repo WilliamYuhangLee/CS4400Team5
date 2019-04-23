@@ -356,7 +356,7 @@ BEGIN
     DECLARE site_name varchar(50);
      
     IF EXISTS(SELECT * FROM Site WHERE ManagerName = user_name) THEN
-        SELECT SiteName INTO site_name FROM Site WHERE ManagerName = user_name;
+        SELECT SiteName INTO site_name FROM Site WHERE ManagerName = user_name LIMIT 1;
         SELECT site_name;
     ELSE 
         SELECT "";
@@ -404,7 +404,7 @@ BEGIN
     DECLARE zip_code varchar(10); 
     DECLARE title_ varchar(20);
     
-    SELECT UserName INTO user_name FROM Email WHERE EmailAddress = email_address;
+    SELECT UserName INTO user_name FROM Email WHERE EmailAddress = email_address LIMIT 1;
     IF length(user_name) > 0 THEN 
         IF EXISTS(SELECT * FROM Employee WHERE UserName = user_name) THEN
             SELECT EmployeeID, Phone, Address, City, State, ZipCode, Title 
@@ -487,7 +487,7 @@ BEGIN
     DECLARE manager_name varchar(100);
      
     IF length(site_name) > 0 THEN
-        SELECT Zipcode, Address, EveryDay, ManagerName INTO zip_code, address_, every_day, manager_name FROM Site WHERE SiteName = site_name;
+        SELECT Zipcode, Address, EveryDay, ManagerName INTO zip_code, address_, every_day, manager_name FROM Site WHERE SiteName = site_name LIMIT 1;
         IF length(zip_code) > 1 THEN 
             SELECT zip_code, address_, every_day, manager_name;
         ELSE 
