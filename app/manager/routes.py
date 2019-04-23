@@ -20,7 +20,7 @@ def home():
 @bp.route("/manage_event")
 @login_required
 def manage_event():
-    args = (current_user.username, "", "",) + (None,) * 2 + (0,) * 6
+    args = (current_user.username, "", "",) + (0,) * 6
     result, error = db_procedure("filter_event_adm", args)
     if error:
         raise DatabaseError(error, "querying events for manager")
@@ -106,17 +106,17 @@ def edit_event():
     form.capacity.data = capacity
     form.staff_assigned.data = old_staffs.keys()
     form.description.data = description
-    result, error = db_procedure("filter_daily_event", (site_name, None))
+    result, error = db_procedure("query_event_day_by_day", (site_name, event_name, start_date))
     if error:
         DatabaseError(error, "getting events for site")
     days = []
     for row in result:
         days.append({
-            "event_name": row[0],
-            "site_name": row[1],
-            "start_date": row[2],
-            "daily_visit": row[3],
-            "daily_revenue": row[4],
+            "event_name": event_name,
+            "site_name": site_name,
+            "start_date": row[0],
+            "daily_visit": row[1],
+            "daily_revenue": row[2],
         })
     return render_template("manager-edit-event.html", title="Edit Event", form=form, days=json.dumps(days))
 
@@ -142,7 +142,7 @@ def create_event():
     if form.start_date.data and form.end_date.data:
         args = (form.start_date.data, form.end_date.data)
     else:
-        args = (None,) * 2
+        args = ("1000-01-01", "9999-12-31") * 2
     result, error = db_procedure("get_free_staff", args)
     if error:
         raise DatabaseError(error, "get_free_staff")
@@ -158,7 +158,7 @@ def create_event():
 @bp.route("/manage_staff")
 @login_required
 def manage_staff():
-    result, error = db_procedure("filter_staff", ("",) * 5)
+    result, error = db_procedure("filter_staff", ("",) * 3)
     if error:
         raise DatabaseError(error, "filter_staff")
     staffs = []
