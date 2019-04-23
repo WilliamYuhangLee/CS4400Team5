@@ -6,6 +6,7 @@ from .forms import EventDetailForm
 from app.util import db_procedure, DatabaseError
 
 
+@bp.route("/")
 @bp.route("/home")
 @login_required
 def home():

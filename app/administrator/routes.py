@@ -7,6 +7,7 @@ from app.util import db_procedure, DatabaseError
 from app.models import User, Transit, Site
 
 
+@bp.route("/")
 @bp.route("/home")
 @login_required
 def home():

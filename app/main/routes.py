@@ -1,6 +1,6 @@
-from flask import request, redirect, url_for, flash, render_template
+from flask import request, redirect, url_for, flash, render_template, session
 from flask_login import login_user, login_required, logout_user, current_user
-from app import bcrypt, login_manager
+from app import bcrypt
 from app.models import User, Employee
 from app.util import process_phone
 from .forms import LoginForm, UserRegistrationForm, EmployeeRegistrationForm
@@ -81,6 +81,7 @@ def login():
 @bp.route("/logout")
 @login_required
 def logout():
+    session.clear()
     logout_user()
     return redirect(url_for(".login"))
 
