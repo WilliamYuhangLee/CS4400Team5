@@ -16,7 +16,7 @@ class EditEventForm(FlaskForm):
     submit = SubmitField(label="Update")
 
     def validate_staff_assigned(self, field):
-        if len(field.data) < self.minimum_staff_required.data:
+        if not field.data or len(field.data) < self.minimum_staff_required.data:
             raise ValidationError("The number of staff assigned must not be fewer than the minimum staff required!")
 
 
@@ -66,5 +66,5 @@ class CreateEventForm(FlaskForm):
                 message="The end date must not overlap with another event on this site with the same name!")
 
     def validate_assign_staff(self, field):
-        if len(field.data) < self.minimum_staff_required.data:
+        if not field.data or len(field.data) < self.minimum_staff_required.data:
             raise ValidationError("The number of staff assigned must not be fewer than the minimum staff required!")

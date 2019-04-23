@@ -41,7 +41,7 @@ class EditTransitForm(FlaskForm):
                 raise ValidationError(message="An identical transit already exists!")
 
     def validate_connected_sites(self, sites_field):
-        if len(sites_field.data) < 2:
+        if not sites_field.data or len(sites_field.data) < 2:
             raise ValidationError(message="You must select at least 2 connected sites!")
 
 
@@ -61,5 +61,5 @@ class CreateTransitForm(FlaskForm):
             raise ValidationError(message="An identical transit already exists!")
 
     def validate_connected_sites(self, sites_field):
-        if len(sites_field.data) < 2:
+        if not sites_field.data or len(sites_field.data) < 2:
             raise ValidationError(message="You must select at least 2 connected sites!")
