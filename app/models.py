@@ -222,7 +222,7 @@ class Employee(User):
         args = (self.username, self.first_name, self.last_name, self.is_visitor, self.phone)
         result, error = db_procedure("edit_profile", args)
         if error:
-            raise DatabaseError("An error occurred when updating user profile: " + error)
+            raise DatabaseError(error, "updating user profile")
 
 
 class Transit:
@@ -243,7 +243,7 @@ class Transit:
     def get_all():
         result, error = db_procedure("get_all_transit", ())
         if error:
-            raise DatabaseError("An error occurred when querying all transits: " + error)
+            raise DatabaseError(error, "querying all transits")
         transits = []
         for row in result:
             transits.append(Transit(*row))
@@ -254,7 +254,7 @@ class Transit:
         args = (site_name, "", "", 0, 0)
         result, error = db_procedure("filter_transit", args)
         if error:
-            raise DatabaseError("An error occurred when querying transits by site name: " + error)
+            raise DatabaseError(error, "querying transits by site name")
         transits = []
         for row in result:
             transits.append(Transit(*row))
@@ -267,5 +267,5 @@ class Site:
     def get_all_sites():
         result, error = db_procedure("get_all_sites", ())
         if error:
-            raise DatabaseError("An error occurred when getting all sites: " + error)
+            raise DatabaseError(error, "getting all sites")
         return result

@@ -12,7 +12,7 @@ class EditSiteForm(FlaskForm):
         args = ()
         result, error = db_procedure("get_free_managers", args)
         if error:
-            raise DatabaseError("An error occurred when getting all free managers: " + error)
+            raise DatabaseError(error, "getting all free managers")
         return [row[0] for row in result]
 
     name = StringField(label="Name", validators=[InputRequired()])  # TODO: check duplicate validation
@@ -35,7 +35,7 @@ class EditTransitForm(FlaskForm):
         if route_field.data != self.old_route.data:
             result, error = db_procedure("check_transit", (route_field.data, self.transport_type.data))
             if error:
-                raise DatabaseError("An error occurred when checking if a transit already exists: " + error)
+                raise DatabaseError(error, "checking if a transit already exists")
             if result[0][0] == 0:
                 raise ValidationError(message="An identical transit already exists!")
 
@@ -55,7 +55,7 @@ class CreateTransitForm(FlaskForm):
     def validate_route(self, route_field):
         result, error = db_procedure("check_transit", (route_field.data, self.transport_type.data))
         if error:
-            raise DatabaseError("An error occurred when checking if a transit already exists: " + error)
+            raise DatabaseError(error, "checking if a transit already exists")
         if result[0][0] == 0:
             raise ValidationError(message="An identical transit already exists!")
 

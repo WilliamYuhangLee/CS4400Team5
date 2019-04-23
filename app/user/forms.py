@@ -29,7 +29,7 @@ class ManageProfileForm(FlaskForm):
             args = (email_field.data,)
             result, error = db_procedure("check_email", args)  # return True if valid, False otherwise
             if error:
-                raise DatabaseError("An error occurred when validating email with database: " + error)
+                raise DatabaseError(error, "validating email with database")
             if not result[0][0]:
                 raise ValidationError("This email has been taken.")
         if self.submit.data:
@@ -65,7 +65,7 @@ class ManageProfileForm(FlaskForm):
         args = (user.username,)
         result, error = db_procedure("query_employee_sitename", args)
         # if error:
-        #     raise DatabaseError("An error occurred when query user's site: " + error)  #TODO: fix error handling logic
+        #     raise DatabaseError(error, "query user's site")  #TODO: fix error handling logic
         if error or len(result) == 0:
             self.site_name.data = "No site assigned."
         else:
@@ -73,7 +73,7 @@ class ManageProfileForm(FlaskForm):
 
         result, error = db_procedure("query_email_by_username", args)
         if error:
-            raise DatabaseError("An error occurred when query user's emails: " + error)
+            raise DatabaseError(error, "query user's emails")
         for row in result:
             subform = EmailEntryForm()
             subform.email.data = row[0]

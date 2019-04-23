@@ -18,7 +18,7 @@ def home():
 def manage_user():
     result, error = db_procedure("filter_user", ("", "", ""))
     if error:
-        raise DatabaseError("An error occurred when getting all users: " + error)
+        raise DatabaseError(error, "getting all users")
     users = []
     for row in result:
         users.append({"username": row[0], "email_count": row[1], "user_type": row[2], "status": row[3]})
@@ -53,7 +53,7 @@ def manage_user_send_data():
 def manage_site():
     result, error = db_procedure("filter_site_adm", ("", "", 0))
     if error:
-        raise DatabaseError("An error occurred when getting all sites: " + error)
+        raise DatabaseError(error, "getting all sites")
     sites = []
     for row in result:
         sites.append({
@@ -73,7 +73,7 @@ def manage_site_send_data():
         return jsonify({"result": False, "message": "An error occurred preventing deletion of the site: " + error})
     result, error = db_procedure("filter_site_adm", ("", "", 0))
     if error:
-        raise DatabaseError("An error occurred when getting all sites: " + error)
+        raise DatabaseError(error, "getting all sites")
     sites = []
     for row in result:
         sites.append({
@@ -93,13 +93,13 @@ def edit_site():
         args = (form.name.data, form.zip_code.data, form.address.data, form.manager.data, int(form.open_everyday.data))
         result, error = db_procedure("edit_site", args)
         if error:
-            raise DatabaseError("An error occurred when editing site: " + error)
+            raise DatabaseError(error, "editing site")
         flash(message="Site updated!", category="success")
         return redirect(url_for(".manage_site"))
     args = (site_name,)
     result, error = db_procedure("query_site_by_site_name", args)
     if error:
-        raise DatabaseError("An error occurred when querying site: " + error)
+        raise DatabaseError(error, "querying site")
     zip_code, address, open_everyday, manager = result[0]
     form.name.data = site_name
     form.zip_code.data = zip_code
@@ -118,7 +118,7 @@ def create_site():
         args = (form.name.data, form.zip_code.data, form.address.data, form.manager.data, int(form.open_everyday.data))
         result, error = db_procedure("create_site", args)
         if error:
-            raise DatabaseError("An error occurred when creating site: " + error)
+            raise DatabaseError(error, "creating site")
         flash(message="Site created!", category="success")
         return redirect(url_for(".manage_site"))
     form.manager.choices = [(manager, manager) for manager in EditSiteForm.get_free_managers()]
@@ -130,7 +130,7 @@ def create_site():
 def manage_transit():
     result, error = db_procedure("get_all_sites", ())
     if error:
-        raise DatabaseError("An error occurred when getting all sites: " + error)
+        raise DatabaseError(error, "getting all sites")
     site_names = [row[0] for row in result]
     return render_template("administrator-manage-transit.html", title="Take Transit", sites=site_names)
 
@@ -142,7 +142,7 @@ def manage_transit_get_table_data():
     args = (site_name, "", "", 0, 0)
     result, error = db_procedure("filter_transit", args)
     if error:
-        raise DatabaseError("An error occurred when querying transits by site name: " + error)
+        raise DatabaseError(error, "querying transits by site name")
     transits = []
     for row in result:
         transits.append({
@@ -163,7 +163,7 @@ def manage_transit_send_data():
     args = (route, transport_type)
     result, error = db_procedure("delete_transit", args)
     if error:
-        raise DatabaseError("An error occurred when deleting transit: " + error)
+        raise DatabaseError(error, "deleting transit")
     return jsonify({"result": True, "message": "Successfully deleted transit."})
 
 
@@ -178,25 +178,25 @@ def edit_transit():
         price = form.price.data
         result, error = db_procedure("edit_transit", (transport_type, old_route, new_route, price))
         if error:
-            raise DatabaseError("An error occurred when editing transit: " + error)
+            raise DatabaseError(error, "editing transit")
         sites = form.connected_sites.data
         for site in sites:
             if site not in session[current_user.username]["sites"]:
                 result, error = db_procedure("connect_site", (transport_type, new_route, site))
                 if error:
-                    raise DatabaseError("An error occurred when connecting site: " + error)
+                    raise DatabaseError(error, "connecting site")
         for site in session[current_user.username]["sites"]:
             if site not in sites:
                 result, error = db_procedure("disconnect_site", (transport_type, new_route, site))
                 if error:
-                    raise DatabaseError("An error occurred when disconnecting site: " + error)
+                    raise DatabaseError(error, "disconnecting site")
         flash(message="Transit updated!", category="success")
         return redirect(url_for(".manage_transit"))
     route = request.args.get("route", type=str)
     transport_type = request.args.get("transport_type", type=Transit.Type.coerce)
     result, error = db_procedure("query_transit_by_pk", (route, transport_type))
     if error:
-        raise DatabaseError("An error occurred when fetching transit: " + error)
+        raise DatabaseError(error, "fetching transit")
     price = result[0][0]
     sites = []
     for row in result:
@@ -221,12 +221,12 @@ def create_transit():
         price = form.price.data
         result, error = db_procedure("create_transit", (transport_type, route, price))
         if error:
-            raise DatabaseError("An error occurred when creating transit: " + error)
+            raise DatabaseError(error, "creating transit")
         sites = form.connected_sites.data
         for site in sites:
             result, error = db_procedure("connect_site", (transport_type, route, site))
             if error:
-                raise DatabaseError("An error occurred when connecting site: " + error)
+                raise DatabaseError(error, "connecting site")
         flash(message="Transit created!", category="success")
         return redirect(url_for(".manage_transit"))
     form.connected_sites.choices = [(site, site) for site in Site.get_all_sites()]

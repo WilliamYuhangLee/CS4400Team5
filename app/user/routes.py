@@ -19,7 +19,7 @@ def home():
 def take_transit():
     result, error = db_procedure("get_all_sites", ())
     if error:
-        raise DatabaseError("An error occurred when getting all sites: " + error)
+        raise DatabaseError(error, "getting all sites")
     site_names = [row[0] for row in result]
     return render_template("user-take-transit.html", title="Take Transit", sites=site_names)
 
@@ -31,7 +31,7 @@ def take_transit_get_table_data():
     args = (site_name, "", "", 0, 0)
     result, error = db_procedure("filter_transit", args)
     if error:
-        raise DatabaseError("An error occurred when querying transits by site name: " + error)
+        raise DatabaseError(error, "querying transits by site name")
     transits = []
     for row in result:
         transits.append({
@@ -54,7 +54,7 @@ def take_transit_send_data():
     args = (current_user.username, route, str(transport_type), date)
     result, error = db_procedure("take_transit", args)
     if error:
-        raise DatabaseError("An error occurred when logging transit: " + error)
+        raise DatabaseError(error, "logging transit")
     return jsonify({"result": "Successfully logged transit."})
 
 
@@ -63,7 +63,7 @@ def take_transit_send_data():
 def transit_history():
     result, error = db_procedure("get_all_sites", ())
     if error:
-        raise DatabaseError("An error occurred when getting all sites: " + error)
+        raise DatabaseError(error, "getting all sites")
     site_names = [row[0] for row in result]
     return render_template("user-transit-history.html", title="Take Transit", sites=site_names)
 
@@ -75,7 +75,7 @@ def transit_history_get_table_data():
     args = (current_user.username, site_name, "", "0000-00-00", "0000-00-00")
     result, error = db_procedure("filter_transit_history", args)
     if error:
-        raise DatabaseError("An error occurred when querying user transit history: " + error)
+        raise DatabaseError(error, "querying user transit history")
     return jsonify({"data": [{
         "route": row[0],
         "transport_type": row[1],

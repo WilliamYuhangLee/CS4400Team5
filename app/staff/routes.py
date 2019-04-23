@@ -18,7 +18,7 @@ def view_schedule():
     username = current_user.username
     result, error = db_procedure("filter_schedule", (username, "", "", "0000-00-00", "0000-00-00"))
     if error:
-        raise DatabaseError("An error occurred when getting staff's events: " + error)
+        raise DatabaseError(error, "getting staff's events")
     events = []
     for row in result:
         events.append({
@@ -40,11 +40,11 @@ def event_detail():
     start_date = request.args.get("start_date")
     result, error = db_procedure("query_event_by_pk", (site_name, event_name, start_date))
     if error:
-        raise DatabaseError("An error occurred when getting event detail: " + error)
+        raise DatabaseError(error, "getting event detail")
     end_date, min_staff_req, capacity, description, duration, price = result[0]
     result, error = db_procedure("query_staff_by_event", (site_name, event_name, start_date))
     if error:
-        raise DatabaseError("An error occurred when getting event's assigned staffs: " + error)
+        raise DatabaseError(error, "getting event's assigned staffs")
     staffs = [row[1] + row[2] for row in result]
     form = EventDetailForm()
     form.event.data = event_name

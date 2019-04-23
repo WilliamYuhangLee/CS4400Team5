@@ -11,7 +11,7 @@ def explore_event():
     args = (current_user.username,) + ("",) * 3 + ("0000-00-00",) * 2 + (0,) * 4 + (1,) * 2
     result, error = db_procedure("filter_event_vis", args)
     if error:
-        raise DatabaseError("An error occurred when getting all events for a visitor:" + error)
+        raise DatabaseError(error, "getting all events for a visitor")
     events = []
     for row in result:
         events.append({
@@ -36,7 +36,7 @@ def event_detail():
         args = (form.site.data, form.event.data, form.start_date.data, current_user.username, date)
         result, error = db_procedure("log_event", args)
         if error:
-            raise DatabaseError("An error occurred when logging event for visitor: " + error)
+            raise DatabaseError(error, "logging event for visitor")
         flash(message="You have successfully logged your visit!", category="success")
         return redirect(url_for(".explore_event"))
     site_name = request.args.get("site_name", type=str)
@@ -46,12 +46,12 @@ def event_detail():
         raise ValueError("Start date format incorrect!")
     result, error = db_procedure("query_event_by_pk", (site_name, event_name, start_date))
     if error:
-        raise DatabaseError("An error occurred when getting event detail for visitor: " + error)
+        raise DatabaseError(error, "getting event detail for visitor")
     end_date, _, _, description, _, price = result[0]
     args = (current_user.username, event_name, "", site_name, start_date, "0000-00-00") + (0,) * 4 + (1,) * 2
     result, error = db_procedure("filter_event_vis", args)
     if error:
-        raise DatabaseError("An error occurred when querying event for visitor:" + error)
+        raise DatabaseError(error, "querying event for visitor")
     tickets_remaining = result[3]
     form.event.data = event_name
     form.site.data = site_name
@@ -69,7 +69,7 @@ def explore_site():
     args = (current_user.username, "", 0,) + ("0000-00-00",) * 2 + (0,) * 4 + (1,)
     result, error = db_procedure("filter_site_vis", args)
     if error:
-        raise DatabaseError("An error occurred when getting all sites for visitor: " + error)
+        raise DatabaseError(error, "getting all sites for visitor")
     sites = []
     for row in result:
         sites.append({
@@ -89,7 +89,7 @@ def transit_detail():
     site_name = request.args.get("site_name", type=str)
     result, error = db_procedure("query_transit_by_site", (site_name,))
     if error:
-        raise DatabaseError("An error occurred when getting all transits for site: " + error)
+        raise DatabaseError(error, "getting all transits for site")
     transits = []
     for row in result:
         transits.append({
@@ -108,7 +108,7 @@ def transit_detail_send_data():
     date = request.json["date"]
     result, error = db_procedure("take_transit", (current_user.username, route, transport_type, date))
     if error:
-        raise DatabaseError("An error occurred when logging transit for visitor: " + error)
+        raise DatabaseError(error, "logging transit for visitor")
     return jsonify({"result": True, "message": "Successfully logged transit."})
 
 
@@ -119,13 +119,13 @@ def site_detail():
     if form.validate_on_submit():
         result, error = db_procedure("log_site", (form.site.data, current_user.username, form.visit_date.data))
         if error:
-            DatabaseError("An error occurred when logging site for visitor: " + error)
+            raise DatabaseError(error, "logging site for visitor")
         flash(message="You have successfully logged your visit to the site!", category="success")
         return redirect(url_for(".explore_site"))
     site_name = request.args.get("site_name", type=str)
     result, error = db_procedure("query_site_by_site_name", (site_name,))
     if error:
-        raise DatabaseError("An error occurred when getting site detail: " + error)
+        raise DatabaseError(error, "getting site detail")
     zip_code, address, open_everyday, manager_name = result[0]
     form.site.data = site_name
     form.open_everyday.data = open_everyday
@@ -138,7 +138,7 @@ def site_detail():
 def visit_history():
     result, error = db_procedure("filter_visit_history", (current_user.username,))
     if error:
-        raise DatabaseError("An error occurred when getting visit history: " + error)
+        raise DatabaseError(error, "getting visit history")
     visits = []
     for row in result:
         visits.append({

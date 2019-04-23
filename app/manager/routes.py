@@ -17,7 +17,7 @@ def manage_event():
     args = (current_user.username, "", "",) + ("0000-00-00",) * 2 + (0,) * 6
     result, error = db_procedure("filter_event_adm", args)
     if error:
-        raise DatabaseError("An error occurred when querying events for manager: " + error)
+        raise DatabaseError(error, "querying events for manager")
     events = []
     for row in result:
         events.append({
@@ -41,7 +41,7 @@ def manage_event_send_data():
     start_date = request.json["start_date"]
     result, error = db_procedure("delete_event", (site_name, event_name, start_date))
     if error:
-        raise DatabaseError("An error occurred when deleting event: " + error)
+        raise DatabaseError(error, "deleting event")
     return jsonify({"result": True, "message": "Successfully deleted event."})
 
 
@@ -58,16 +58,16 @@ def edit_event():
             if staff not in old_staffs:
                 result, error = db_procedure("assign_staff", (site_name, form.name.data, form.start_date.data, all_staffs[staff]))
                 if error:
-                    raise DatabaseError("An error occurred when assigning staff: " + error)
+                    raise DatabaseError(error, "assigning staff")
         for staff in old_staffs:
             if staff not in new_staffs:
                 result, error = db_procedure("remove_staff", (site_name, form.name.data, form.start_date.data, all_staffs[staff]))
                 if error:
-                    raise DatabaseError("An error occurred when removing staff: " + error)
+                    raise DatabaseError(error, "removing staff")
         result, error = db_procedure("edit_event",
                                     (site_name, form.name.data, form.start_date.data, form.description.data))
         if error:
-            raise DatabaseError("An error occurred when editing description for event: " + error)
+            raise DatabaseError(error, "editing description for event")
         flash(message="You have successfully edited the event!", category="success")
         return redirect(url_for(".manage_event"))
     event_name = request.args.get("event_name")
@@ -75,11 +75,11 @@ def edit_event():
     start_date = request.args.get("start_date")
     result, error = db_procedure("query_event_by_pk", (site_name, event_name, start_date))
     if error:
-        raise DatabaseError("An error occurred when getting event detail: " + error)
+        raise DatabaseError(error, "getting event detail")
     end_date, min_staff_req, capacity, description, duration, price = result[0]
     result, error = db_procedure("query_staff_by_event", (site_name, event_name, start_date))
     if error:
-        raise DatabaseError("An error occurred when querying staff for an event: " + error)
+        raise DatabaseError(error, "querying staff for an event")
     old_staffs = {}
     for staff in result:
         old_staffs[staff[1] + staff[2]] = staff[0]
@@ -99,7 +99,7 @@ def edit_event():
     form.description.data = description
     result, error = db_procedure("filter_daily_event", (site_name, "0000-00-00"))
     if error:
-        DatabaseError("An error occurred when getting events for site: " + error)
+        DatabaseError(error, "getting events for site")
     days = []
     for row in result:
         days.append({
@@ -141,11 +141,11 @@ def site_report_get_data():
         return jsonify({"result": False, "message": "End date format incorrect."})
     result, error = db_procedure("query_employee_sitename", (current_user.username,))
     if error:
-        raise DatabaseError("An error occurred when getting manager's site name: " + error)
+        raise DatabaseError(error, "getting manager's site name")
     site_name = result[0][0]
     result, error = db_procedure("filter_daily_site", (site_name, start_date, end_date, 0, 0, 0, 0, 0, 0, 0, 0))
     if error:
-        raise DatabaseError("An error occurred when getting manager's site reports: " + error)
+        raise DatabaseError(error, "getting manager's site reports")
     reports = []
     for row in result:
         reports.append({
@@ -166,11 +166,11 @@ def daily_detail():
         raise ValueError("Date format incorrect!")
     result, error = db_procedure("query_employee_sitename", (current_user.username,))
     if error:
-        raise DatabaseError("An error occurred when getting manager's site name: " + error)
+        raise DatabaseError(error, "getting manager's site name")
     site_name = result[0][0]
     result, error = db_procedure("filter_daily_event", (site_name, date))
     if error:
-        raise DatabaseError("An error occurred when getting site's daily detail: " + error)
+        raise DatabaseError(error, "getting site's daily detail")
     detail = []
     for row in result:
         detail.append({
@@ -183,7 +183,7 @@ def daily_detail():
     for event in detail:
         result, error = db_procedure("query_staff_by_event", (event["site_name"], event["event_name"], event["start_date"]))
         if error:
-            raise DatabaseError("An error occurred when querying staff for an event: " + error)
+            raise DatabaseError(error, "querying staff for an event")
         event["staff_names"] = []
         for staff in result:
             event["staff_names"].append(staff[1] + staff[2])

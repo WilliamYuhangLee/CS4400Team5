@@ -4,7 +4,13 @@ from app import db
 
 
 class DatabaseError(Exception):
-    pass
+    def __init__(self, dberror=None, message=None):
+        result = "An error occurred during DB operation"
+        if message is not None:
+            result += " (%s)" % message
+        if dberror is not None:
+            result += ": " + dberror
+        super(DatabaseError, self).__init__(result)
 
 
 class EnumAttribute(Enum):

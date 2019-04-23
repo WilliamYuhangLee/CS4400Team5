@@ -56,7 +56,7 @@ class UserRegistrationForm(FlaskForm):
         args = (username_field.data,)
         result, error = db_procedure("check_username", args)  # return True if valid, False otherwise
         if error:
-            raise DatabaseError("An error occurred when validating username with database: " + error)
+            raise DatabaseError(error, "validating username with database")
         if not result[0][0]:
             raise ValidationError("This username has been taken. Please enter another one.")
 
@@ -65,7 +65,7 @@ class UserRegistrationForm(FlaskForm):
             args = (email_field.data,)
             result, error = db_procedure("check_email", args)  # return True if valid, False otherwise
             if error:
-                raise DatabaseError("An error occurred when validating email with database: " + error)
+                raise DatabaseError(error, "validating email with database")
             if not result[0][0]:
                 raise ValidationError("This email has been taken.")
         if self.submit.data:
