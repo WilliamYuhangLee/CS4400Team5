@@ -87,7 +87,7 @@
                         data: "end_date"
                     },
                 ],
-                "columnDefs": [
+                columnDefs: [
                     {
                         "targets": [3],
                         "visible": false,
@@ -112,7 +112,7 @@
                             .appendTo($(column.footer()).empty())
                             .on('change', function () {
                                 var val = $.fn.dataTable.util.escapeRegex(
-                                    $(this).val()
+                                    $(this).val(),
                                 );
 
                                 column
@@ -128,6 +128,7 @@
             });
 
             $('#first_name_search').on('change', function () {
+                console.log(this.value);
                 table.columns(3).search(this.value).draw();
             });
 
@@ -140,10 +141,13 @@
                     var min_test = $('#date_min').val().replace(/-/g, '');
                     var max_test = $('#date_max').val().replace(/-/g, '');
                     var min = parseInt(min_test, 10);
-                    var max = parseInt(min_test, 10);
-                    var start = parseFloat(data[5].replace(/-/g, ' ')) || 0;
-                    var end = parseFloat(data[6].replace(/-/g, ' ')) || 0;
-
+                    var max = parseInt(max_test, 10);
+                    var wq1 = new Date(Date.parse(data[5].replace(/-/g, ' '))) || 0;
+                    var wq2 = new Date(Date.parse(data[6].replace(/-/g, ' '))) || 0;
+                    var start = (wq1.getFullYear() + 1) + '' + ("0" + (wq1.getMonth() + 1)).slice(-2) + '' +  ("0" + wq1.getDate()).slice(-2)
+                    var end = (wq2.getFullYear() + 1) + '' + ("0" + (wq2.getMonth() + 1)).slice(-2) + '' +  ("0" + wq2.getDate()).slice(-2)
+                    console.log(start);
+                    console.log(end);
                     if ((isNaN(min) && isNaN(max)) ||
                         (isNaN(min) && end <= max) ||
                         (min <= start && isNaN(max)) ||
