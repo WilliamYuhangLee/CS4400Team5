@@ -1,7 +1,7 @@
 {% extends "home.html" %}
 {% block content %}
     <legend class="border-bottom mb-4">
-       Manage Staff
+        Manage Staff
     </legend>
     <div class="col-md-12">
         <label>Site<select id="contain_site" name="contain_site" class="form-control">
@@ -27,6 +27,7 @@
         <table id="take_transit" class="display" cellspacing="0" width="100%">
             <thead>
             <tr>
+                <th>Site Name</th>
                 <th>Staff Name</th>
                 <th>#Event Shifts</th>
                 <th style="display:none;"></th>
@@ -35,16 +36,31 @@
                 <th style="display:none;"></th>
             </tr>
             </thead>
+            <tfoot>
+            <tr>
+                <th>Site Name</th>
+                <th>Staff Name</th>
+                <th>#Event Shifts</th>
+                <th style="display:none;"></th>
+                <th style="display:none;"></th>
+                <th style="display:none;"></th>
+                <th style="display:none;"></th>
+            </tr>
+            </tfoot>
         </table>
     </div>
     <div class="col-md-12">
-        <button type="button" class="btn btn-outline-info" onclick="location.href='{{ url_for('main.login') }}'">Back</button>
+        <button type="button" class="btn btn-outline-info" onclick="location.href='{{ url_for('main.login') }}'">Back
+        </button>
     </div>
     <script>
         $(document).ready(function () {
             var table = $('#staff_list').DataTable({
                 data: JSON.parse({{ staffs|tojson|safe }}),
                 columns: [
+                    {
+                        data: "site_name"
+                    },
                     {
                         data: "name"
                     },
@@ -63,18 +79,35 @@
                     {
                         data: "end_date"
                     },
-                    {
-                        data: "site_name"
-                    },
                 ],
+                initComplete: function () {
+                    this.api().columns().every(function () {
+                        var column = this;
+                        var select = $('<select><option value=""></option></select>')
+                            .appendTo($(column.footer()).empty())
+                            .on('change', function () {
+                                var val = $.fn.dataTable.util.escapeRegex(
+                                    $(this).val()
+                                );
+
+                                column
+                                    .search(val ? '^' + val + '$' : '', true, false)
+                                    .draw();
+                            });
+
+                        column.data().unique().sort().each(function (d, j) {
+                            select.append('<option value="' + d + '">' + d + '</option>')
+                        });
+                    });
+                }
             });
 
             $('#first_name_search').on('change', function () {
-                table.columns(2).search(this.value).draw();
+                table.columns(3).search(this.value).draw();
             });
 
             $('#last_name_search').on('change', function () {
-                table.columns(3).search(this.value).draw();
+                table.columns(4).search(this.value).draw();
             });
 
             $.fn.dataTable.ext.search.push(
@@ -83,8 +116,8 @@
                     var max_test = $('#date_max').val().replace(/-/g, '');
                     var min = parseInt(min_test, 10);
                     var max = parseInt(min_test, 10);
-                    var start = parseFloat(data[5].replace(/-/g, ' ')) || 0;
-                    var end = parseFloat(data[6].replace(/-/g, ' ')) || 0;
+                    var start = parseFloat(data[6].replace(/-/g, ' ')) || 0;
+                    var end = parseFloat(data[7].replace(/-/g, ' ')) || 0;
 
                     if ((isNaN(min) && isNaN(max)) ||
                         (isNaN(min) && end <= max) ||
