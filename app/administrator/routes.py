@@ -60,7 +60,7 @@ def manage_site():
         sites.append({
             "site_name": row[0],
             "manager_name": row[1],
-            "open_every_date": row[2]
+            "open_every_day": row[2]
         })
     return render_template("administrator-manage-site.html", title="Manage Sites", sites=dumps(sites))
 
@@ -112,7 +112,7 @@ def edit_site():
     return render_template("administrator-edit-site.html", title="Edit Site", form=form)
 
 
-@bp.route("/create_site")
+@bp.route("/create_site", methods=["GET", "POST"])
 @login_required
 def create_site():
     form = EditSiteForm()
@@ -169,7 +169,7 @@ def manage_transit_send_data():
     return jsonify({"result": True, "message": "Successfully deleted transit."})
 
 
-@bp.route("/edit_transit")
+@bp.route("/edit_transit", methods=["GET", "POST"])
 @login_required
 def edit_transit():
     form = EditTransitForm()
@@ -213,7 +213,7 @@ def edit_transit():
     return render_template("administrator-edit-transit.html", title="Edit Transit", form=form)
 
 
-@bp.route("/create_transit")
+@bp.route("/create_transit", methods=["GET", "POST"])
 @login_required
 def create_transit():
     form = CreateTransitForm()
