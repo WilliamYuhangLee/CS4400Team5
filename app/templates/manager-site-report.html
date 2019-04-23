@@ -87,6 +87,10 @@
                 },
                 columns: [
                     {
+                        "data": "null",
+                        "defaultContent": '',
+                    },
+                    {
                         data: "data.date"
                     },
                     {
@@ -131,7 +135,7 @@
 
 
             $('#daily_detail').on('click', function () {
-                var date = table.cell('.selected', 0).data();
+                var date = table.cell('.selected', 1).data();
                 if ( date == undefined) {
                     alert("You must Select a date first!");
                     return false;
@@ -145,8 +149,8 @@
                     var max_test = $('#date_max').val().replace(/-/g, '');
                     var min = parseInt(min_test, 10);
                     var max = parseInt(min_test, 10);
-                    var start = parseFloat(data[5].replace(/-/g, ' ')) || 0;
-                    var end = parseFloat(data[6].replace(/-/g, ' ')) || 0;
+                    var start = parseFloat(data[6].replace(/-/g, ' ')) || 0;
+                    var end = parseFloat(data[7].replace(/-/g, ' ')) || 0;
 
                     if ((isNaN(min) && isNaN(max)) ||
                         (isNaN(min) && end <= max) ||
@@ -162,7 +166,7 @@
                 function (settings, data, dataIndex) {
                     var min = parseInt($('#event_count_min').val(), 10);
                     var max = parseInt($('#event_count_max').val(), 10);
-                    var event_count = parseFloat(data[1]) || 0;
+                    var event_count = parseFloat(data[2]) || 0;
 
                     if ((isNaN(min) && isNaN(max)) ||
                         (isNaN(min) && event_count <= max) ||
@@ -178,7 +182,7 @@
                 function (settings, data, dataIndex) {
                     var min = parseInt($('#staff_count_min').val(), 10);
                     var max = parseInt($('#staff_count_max').val(), 10);
-                    var staff_count = parseFloat(data[2]) || 0;
+                    var staff_count = parseFloat(data[3]) || 0;
 
                     if ((isNaN(min) && isNaN(max)) ||
                         (isNaN(min) && staff_count <= max) ||
@@ -194,7 +198,7 @@
                 function (settings, data, dataIndex) {
                     var min = parseInt($('#total_visit_min').val(), 10);
                     var max = parseInt($('#total_visit_max').val(), 10);
-                    var visit = parseFloat(data[3]) || 0;
+                    var visit = parseFloat(data[4]) || 0;
 
                     if ((isNaN(min) && isNaN(max)) ||
                         (isNaN(min) && visit <= max) ||
@@ -210,7 +214,7 @@
                 function (settings, data, dataIndex) {
                     var min = parseInt($('#total_revenue_min').val(), 10);
                     var max = parseInt($('#total_revenue_max').val(), 10);
-                    var revenue = parseFloat(data[4]) || 0;
+                    var revenue = parseFloat(data[5]) || 0;
 
                     if ((isNaN(min) && isNaN(max)) ||
                         (isNaN(min) && revenue <= max) ||

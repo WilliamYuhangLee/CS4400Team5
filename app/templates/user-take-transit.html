@@ -5,15 +5,12 @@
     </legend>
     <div class="form-group">
         <div class="form-row">
-            <div class="form-group col-md-6">
                 <label>Contain Site<select id="contain_site" name="contain_site" class="form-control">
                     {% for site in sites %}
                         <option value="{{ site }}">{{ site }}</option>
                     {% endfor %}
                 </select>
                 </label>
-            </div>
-            <div class="form-group col-md-6">
                 <label>Transport Type<select id="transport_type" name="transport_type" class="form-control">
                     <option value="">ALL</option>
                     <option value="MARTA">MARTA</option>
@@ -21,7 +18,6 @@
                     <option value="Bike">Bike</option>
                 </select>
                 </label>
-            </div>
         </div>
         <div class="form-group form-row">
             <div class="form-group col-md-12">
@@ -38,7 +34,7 @@
         </div>
     </div>
     <div class="col-md-12">
-        <table id="take_transit" class="form-group display" cellspacing="0" width="100%">
+        <table id="take_transit" class="table table-striped table-bordered" cellspacing="0" width="100%">
             <thead>
             <tr>
                 <th></th>
@@ -73,6 +69,10 @@
                 },
                 columns: [
                     {
+                        "data": "null",
+                        "defaultContent": '',
+                    },
+                    {
                         data: "route"
                     },
                     {
@@ -105,14 +105,14 @@
             });
 
             $('#transport_type').on('change', function () {
-                table.columns(1).search(this.value).draw();
+                table.columns(2).search(this.value).draw();
             });
 
             $.fn.dataTable.ext.search.push(
                 function (settings, data, dataIndex) {
                     var min = parseInt($('#min').val(), 10);
                     var max = parseInt($('#max').val(), 10);
-                    var price = parseFloat(data[2]) || 0;
+                    var price = parseFloat(data[3]) || 0;
 
                     if ((isNaN(min) && isNaN(max)) ||
                         (isNaN(min) && price <= max) ||
@@ -129,8 +129,8 @@
             });
 
             $('#log_transit').on('click', function () {
-                var route = table.cell('.selected', 0).data();
-                var type = table.cell('.selected', 1).data();
+                var route = table.cell('.selected', 1).data();
+                var type = table.cell('.selected', 2).data();
                 var date = $('#transit_date').val();
                 var data = JSON.stringify({route: route, transport_type: type, date: date});
                 console.log(data);
@@ -141,7 +141,7 @@
                     dataType: 'json',
                     data: data,
                     success: function (data) {
-                        alert(data.result)
+                        alert(data.message)
                     },
                     error: function(data) {
                         alter("Transit Duplicate!")

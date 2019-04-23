@@ -88,6 +88,10 @@
                 data: JSON.parse({{ events|tojson|safe }}),
                 columns: [
                     {
+                        "data": "null",
+                        "defaultContent": '',
+                    },
+                    {
                         data: "events_name",
                         render: "[</br>]".event_name
                     },
@@ -138,9 +142,9 @@
 
             ////need restruction
             $('#event_detail').on('click', function () {
-                var name = table.cell('.selected', 1).data();
-                var eventname = table.cell('.selected', 0).data();
-                var startdate = table.cell('.selected', 5).data();
+                var name = table.cell('.selected', 2).data();
+                var eventname = table.cell('.selected', 1).data();
+                var startdate = table.cell('.selected', 6).data();
                 if ( name == undefined) {
                     alert("You must Select a site first!");
                     return false;
@@ -162,8 +166,8 @@
                     var max_test = $('#date_max').val().replace(/-/g, '');
                     var min = parseInt(min_test, 10);
                     var max = parseInt(min_test, 10);
-                    var start = parseFloat(data[6].replace(/-/g, ' ')) || 0;
-                    var end = parseFloat(data[7].replace(/-/g, ' ')) || 0;
+                    var start = parseFloat(data[7].replace(/-/g, ' ')) || 0;
+                    var end = parseFloat(data[8].replace(/-/g, ' ')) || 0;
 
                     if ((isNaN(min) && isNaN(max)) ||
                         (isNaN(min) && end <= max) ||
@@ -180,7 +184,7 @@
                 function (settings, data, dataIndex) {
                     var min = parseInt($('#ticket_price_min').val(), 10);
                     var max = parseInt($('#ticket_price_max').val(), 10);
-                    var price = parseFloat(data[2]) || 0;
+                    var price = parseFloat(data[3]) || 0;
 
                     if ((isNaN(min) && isNaN(max)) ||
                         (isNaN(min) && price <= max) ||
@@ -196,7 +200,7 @@
                 function (settings, data, dataIndex) {
                     var min = parseInt($('#total_visit_min').val(), 10);
                     var max = parseInt($('#total_visit_max').val(), 10);
-                    var visit = parseFloat(data[4]) || 0;
+                    var visit = parseFloat(data[5]) || 0;
 
                     if ((isNaN(min) && isNaN(max)) ||
                         (isNaN(min) && visit <= max) ||
@@ -221,22 +225,22 @@
 
 
             $('#name_search').on('change', function () {
-                table.columns(0).search(this.value).draw();
+                table.columns(1).search(this.value).draw();
             });
             $('#description_search').on('change', function () {
-                table.columns(8).search(this.value).draw();
+                table.columns(9).search(this.value).draw();
             });
 
             $('#visit_status').on('change', function () {
-                table.columns(9).search(this.value).draw();
+                table.columns(10).search(this.value).draw();
             });
             $('#sold_out').on('change', function () {
-                table.columns(10).search(this.value).draw();
+                table.columns(11).search(this.value).draw();
             });
 
 
             $('#contain_site').on('change', function () {
-                table.columns(1).search(this.value).draw();
+                table.columns(2).search(this.value).draw();
             });
 
         });

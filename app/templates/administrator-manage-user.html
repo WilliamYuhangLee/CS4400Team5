@@ -41,7 +41,9 @@
         </table>
     </div>
     <div class="col-md-12">
-        <button type="button" class="btn btn-outline-info" onclick="location.href={{ url_for(administrator.manage_user_back) }};">Back</button>
+        <button type="button" class="btn btn-outline-info"
+                onclick="location.href={{ url_for(administrator.manage_user_back) }};">Back
+        </button>
     </div>
 
     <script>
@@ -49,6 +51,10 @@
             var table = $('#user_list').DataTable({
                 data: JSON.parse({{ users|tojson|safe }}),
                 columns: [
+                    {
+                        "data": "null",
+                        "defaultContent": '',
+                    },
                     {
                         data: "username"
                     },
@@ -76,7 +82,7 @@
                 ]
             });
 
-            table.columns(0).every(function () {
+            table.columns(1).every(function () {
                 var that = this;
                 $('#username_search').on('keyup change', function () {
                     if (that.search() !== this.value) {
@@ -88,15 +94,15 @@
             });
 
             $('#user_type').on('change', function () {
-                table.columns(2).search(this.value).draw();
-            });
-
-            $('#user_status').on('change', function () {
                 table.columns(3).search(this.value).draw();
             });
 
+            $('#user_status').on('change', function () {
+                table.columns(4).search(this.value).draw();
+            });
+
             $('#admin_manage_user_approve').on('click', function () {
-                var user = table.cell('.selected', 0).data();
+                var user = table.cell('.selected', 1).data();
                 var status = "APPROVED";
                 var data = JSON.stringify({username: user, status: status})
                 console.log(data)
@@ -109,7 +115,7 @@
                     success: function (data) {
                         alert(data.message);
                         if (data.result == "True") {
-                            table.cell('.selected', 3).data("APPROVED");
+                            table.cell('.selected', 4).data("APPROVED");
                         }
                     },
                     error: function (data) {
@@ -119,7 +125,7 @@
             });
 
             $('#admin_manage_user_decline').on('click', function () {
-                var user = table.cell('.selected', 0).data();
+                var user = table.cell('.selected', 1).data();
                 var status = "DECLINED";
                 var data = JSON.stringify({username: user, status: status})
                 $.ajax({
@@ -131,7 +137,7 @@
                     success: function (data) {
                         alert(data.message);
                         if (data.result == "True") {
-                            table.cell('.selected', 3).data("DECLINED");
+                            table.cell('.selected', 4).data("DECLINED");
                         }
                     },
                     error: function (data) {

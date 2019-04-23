@@ -90,7 +90,10 @@
                     var min = parseInt(min_test, 10);
                     var max = parseInt(min_test, 10);
                     var date = parseFloat(data[0].replace(/-/g, ' ')) || 0;
-
+                    console.log(min);
+                    console.log(max);
+                    console.log(data[0]);
+                    console.log(date);
                     if ((isNaN(min) && isNaN(max)) ||
                         (isNaN(min) && date <= max) ||
                         (min <= date && isNaN(max)) ||

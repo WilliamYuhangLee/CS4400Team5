@@ -43,6 +43,10 @@
                 data: JSON.parse({{ detail|tojson|safe }}),
                 columns: [
                     {
+                        "data": "null",
+                        "defaultContent": '',
+                    },
+                    {
                         data: "route"
                     },
                     {
@@ -58,12 +62,12 @@
             });
 
             $('#transport_type').on('change', function () {
-                table.columns(1).search(this.value).draw();
+                table.columns(2).search(this.value).draw();
             });
 
             $('#log_transit').on('click', function () {
-                var route = table.cell('.selected', 0).data();
-                var type = table.cell('.selected', 1).data();
+                var route = table.cell('.selected', 1).data();
+                var type = table.cell('.selected', 2).data();
                 var date = $('#transit_date').val();
                 var data = JSON.stringify({route: route, transport_type: type, date: date});
                 console.log(data);

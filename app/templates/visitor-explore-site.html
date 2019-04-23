@@ -82,6 +82,10 @@
                 data: JSON.parse({{ sites|tojson|safe }}),
                 columns: [
                     {
+                        "data": "null",
+                        "defaultContent": '',
+                    },
+                    {
                         data: "site_name",
                         render: "[</br>]".event_name
                     },
@@ -122,7 +126,7 @@
             });
 
             $('#site_detail').on('click', function () {
-                var name = table.cell('.selected', 0).data();
+                var name = table.cell('.selected', 1).data();
                 if ( name == undefined) {
                     alert("You must Select a site first!");
                     return false;
@@ -130,7 +134,7 @@
                 window.location.replace("{{ url_for('visitor.site_detail') }}" + "?site_name=" + name);
             });
             $('#transit_detail').on('click', function () {
-                var name = table.cell('.selected', 0).data();
+                var name = table.cell('.selected', 1).data();
                 if ( name == undefined) {
                     alert("You must Select a site first!");
                     return false;
@@ -144,8 +148,8 @@
                     var max_test = $('#date_max').val().replace(/-/g, '');
                     var min = parseInt(min_test, 10);
                     var max = parseInt(min_test, 10);
-                    var start = parseFloat(data[4].replace(/-/g, ' ')) || 0;
-                    var end = parseFloat(data[5].replace(/-/g, ' ')) || 0;
+                    var start = parseFloat(data[5].replace(/-/g, ' ')) || 0;
+                    var end = parseFloat(data[6].replace(/-/g, ' ')) || 0;
 
                     if ((isNaN(min) && isNaN(max)) ||
                         (isNaN(min) && end <= max) ||
@@ -162,7 +166,7 @@
                 function (settings, data, dataIndex) {
                     var min = parseInt($('#total_visit_min').val(), 10);
                     var max = parseInt($('#total_visit_max').val(), 10);
-                    var visit = parseFloat(data[2]) || 0;
+                    var visit = parseFloat(data[3]) || 0;
 
                     if ((isNaN(min) && isNaN(max)) ||
                         (isNaN(min) && visit <= max) ||
@@ -178,7 +182,7 @@
                 function (settings, data, dataIndex) {
                     var min = parseInt($('#event_count_min').val(), 10);
                     var max = parseInt($('#event_count_max').val(), 10);
-                    var event = parseFloat(data[1]) || 0;
+                    var event = parseFloat(data[2]) || 0;
 
                     if ((isNaN(min) && isNaN(max)) ||
                         (isNaN(min) && event <= max) ||
@@ -202,13 +206,13 @@
             });
 
             $('#contain_site').on('change', function () {
-                table.columns(0).search(this.value).draw();
+                table.columns(1).search(this.value).draw();
             });
             $('#visit_status').on('change', function () {
-                table.columns(7).search(this.value).draw();
+                table.columns(8).search(this.value).draw();
             });
             $('#open_everyday').on('change', function () {
-                table.columns(6).search(this.value).draw();
+                table.columns(7).search(this.value).draw();
             });
 
         });

@@ -3,14 +3,19 @@
     <legend class="border-bottom mb-4">
         Manage Event
     </legend>
-    <div class="col-md-12">
+    <div class="form-group">
+    <div class="form-row">
+    <div class="form-group col-md-6">
         <label>Name<input type="text" id="name_search" class="form-control">
         </label>
+    </div>
+    <div class="form-group col-md-6">
         <label>Description Keyword<input type="text" id="description_search" class="form-control">
         </label>
     </div>
-
-    <div class="col-md-12">
+    </div>
+<div class="form-row">
+    <div class="form-group col-md-12">
 
     </div>       <label>Start Date<input type="text" id="date_min" class="form-control">
 </label>
@@ -79,6 +84,10 @@
                 data: JSON.parse({{ events|tojson|safe }}),
                 columns: [
                     {
+                        "data": "null",
+                        "defaultContent": '',
+                    },
+                    {
                         data: "name"
                     },
                     {
@@ -118,14 +127,14 @@
             });
 
             $('#name_search').on('change', function () {
-                table.columns(0).search(this.value).draw();
+                table.columns(1).search(this.value).draw();
             });
             $('#description_search').on('change', function () {
-                table.columns(7).search(this.value).draw();
+                table.columns(8).search(this.value).draw();
             });
 
             $('#event_edit').on('click', function () {
-                var name = table.cell('.selected', 0).data();
+                var name = table.cell('.selected', 1).data();
                 if ( name == undefined) {
                     alert("You must Select a event first!");
                     return false;
@@ -138,7 +147,7 @@
             });
 
             $('#event_delete').on('click', function () {
-                var name = table.cell('.selected', 0).data();
+                var name = table.cell('.selected', 1).data();
                 var action = "DELETE"
                 var data = JSON.stringify({event_name: name, action: action})
                 $.ajax({
@@ -163,8 +172,8 @@
                 var max_test = $('#date_max').val().replace(/-/g, '');
                 var min = parseInt(min_test, 10);
                 var max = parseInt(min_test, 10);
-                var start = parseFloat(data[5].replace(/-/g, ' ')) || 0;
-                var end = parseFloat(data[6].replace(/-/g, ' ')) || 0;
+                var start = parseFloat(data[6].replace(/-/g, ' ')) || 0;
+                var end = parseFloat(data[7].replace(/-/g, ' ')) || 0;
 
                 if ((isNaN(min) && isNaN(max)) ||
                     (isNaN(min) && end <= max) ||
@@ -180,7 +189,7 @@
             function (settings, data, dataIndex) {
                 var min = parseInt($('#duration_min').val(), 10);
                 var max = parseInt($('#duration_max').val(), 10);
-                var duration = parseFloat(data[2]) || 0;
+                var duration = parseFloat(data[3]) || 0;
 
                 if ((isNaN(min) && isNaN(max)) ||
                     (isNaN(min) && duration <= max) ||
@@ -196,7 +205,7 @@
             function (settings, data, dataIndex) {
                 var min = parseInt($('#total_revenue_min').val(), 10);
                 var max = parseInt($('#total_revenue_max').val(), 10);
-                var revenue = parseFloat(data[4]) || 0;
+                var revenue = parseFloat(data[5]) || 0;
 
                 if ((isNaN(min) && isNaN(max)) ||
                     (isNaN(min) && revenue <= max) ||
@@ -212,7 +221,7 @@
             function (settings, data, dataIndex) {
                 var min = parseInt($('#total_visit_min').val(), 10);
                 var max = parseInt($('#total_visit_max').val(), 10);
-                var visit = parseFloat(data[3]) || 0;
+                var visit = parseFloat(data[4]) || 0;
 
                 if ((isNaN(min) && isNaN(max)) ||
                     (isNaN(min) && visit <= max) ||
