@@ -125,7 +125,9 @@
                     data: data,
                     success: function (data) {
                         alert(data.message);
-                        if (data.result == "True") {
+                        var result = String(data.result);
+                        var check = "true"
+                        if (result === check) {
                             table.cell('.selected', 4).data("APPROVED");
                         }
                     },
@@ -147,7 +149,9 @@
                     data: data,
                     success: function (data) {
                         alert(data.message);
-                        if (data.result == "True") {
+                        var result = String(data.result);
+                        var check = "true"
+                        if (result === check) {
                             table.cell('.selected', 4).data("DECLINED");
                         }
                     },
