@@ -22,7 +22,7 @@ def manage_user():
         raise DatabaseError(error, "getting all users")
     users = []
     for row in result:
-        users.append({"username": row[0], "email_count": row[1], "user_type": row[2], "status": row[3]})
+        users.append({"username": row[0], "user_type": row[1], "status": row[2], "email_count": row[3]})
     return render_template("administrator-manage-user.html", title="Manage Users", users=dumps(users))
 
 
@@ -208,7 +208,7 @@ def edit_transit():
     form.old_route.data = route
     form.transport_type.data = transport_type
     form.price.data = price
-    form.connected_sites.choices = [(site, site) for site in Site.get_all_sites()]
+    form.connected_sites.choices = [(site[0], site[0]) for site in Site.get_all_sites()]
     form.connected_sites.data = sites
     return render_template("administrator-edit-transit.html", title="Edit Transit", form=form)
 
@@ -231,5 +231,5 @@ def create_transit():
                 raise DatabaseError(error, "connecting site")
         flash(message="Transit created!", category="success")
         return redirect(url_for(".manage_transit"))
-    form.connected_sites.choices = [(site, site) for site in Site.get_all_sites()]
+    form.connected_sites.choices = [(site[0], site[0]) for site in Site.get_all_sites()]
     return render_template("administrator-edit-transit.html", title="Create Transit", form=form)
