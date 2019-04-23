@@ -91,10 +91,6 @@ SELECT SiteName, EventName, StartDate, Events.Price, IF(DailyVisit >= 1, sum(Dai
 FROM daily_event RIGHT JOIN Events USING(SiteName, EventName, StartDate) INNER JOIN for_event_pre USING (SiteName, EventName, StartDate)
 GROUP BY SiteName, EventName, StartDate;
 
-CREATE VIEW for_event AS 
-SELECT SiteName, EventName, StartDate, Events.Price, IF(DailyVisit >= 1, sum(DailyVisit), 0) AS TotalVisit, IF(DailyVisit >= 1, sum(DailyRevenue), 0) AS TotalRevenue, IF(DailyVisit >= 1, Capacity - sum(DailyVisit), Capacity) AS TicketRem, (Events.EndDate - StartDate + 1) AS Duration, Description, CountStaff, Capacity, Events.EndDate   
-FROM daily_event RIGHT JOIN Events USING(SiteName, EventName, StartDate) INNER JOIN for_event_pre USING (SiteName, EventName, StartDate)
-GROUP BY SiteName, EventName, StartDate;
 
 CREATE VIEW daily_visit_site AS 
 SELECT SiteName, `Date`, count(*) AS DailyVisit, 0 AS DailyRevenue 
