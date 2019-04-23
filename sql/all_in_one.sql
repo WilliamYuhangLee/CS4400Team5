@@ -2078,6 +2078,44 @@ BEGIN
     SELECT start_res, end_res;
 END $$
 
+
+
+CREATE PROCEDURE check_log_site(in user_name varchar(100), in site_name varchar(50), in date_ date)
+BEGIN
+    DECLARE result int;
+    IF EXISTS(SELECT * FROM VisitSite WHERE SiteName = site_name AND UserName = user_name AND `Date` = date_) THEN
+        SET result = 0;
+    ELSE 
+        SET result = 1;
+    END IF;
+    SELECT result;
+END $$
+
+
+CREATE PROCEDURE check_log_event(in user_name varchar(100), in site_name varchar(50), in event_name varchar(50), in start_date date, in date_ date)
+BEGIN
+    DECLARE result int;
+    IF EXISTS(SELECT * FROM VisitEvent WHERE SiteName = site_name AND UserName = user_name AND `Date` = date_ AND EventName = event_name AND StartDate = start_date) THEN
+        SET result = 0;
+    ELSE 
+        SET result = 1;
+    END IF;
+    SELECT result;
+END $$
+
+
+CREATE PROCEDURE check_take_transit(in user_name varchar(100), in route varchar(50), in transport_type varchar(50), in date_ date)
+BEGIN
+    DECLARE result int;
+    IF EXISTS(SELECT * FROM Take WHERE Route = route_ AND UserName = user_name AND TransportType = transport_type AND `Date` = date_) THEN
+        SET result = 0;
+    ELSE 
+        SET result = 1;
+    END IF;
+    SELECT result;
+END $$
+
+
 DELIMITER ;
 
 
