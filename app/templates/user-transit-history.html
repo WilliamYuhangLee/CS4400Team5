@@ -69,6 +69,16 @@
                         return {site_name: $("#contain_site option:selected").text()};
                     },
                 },
+                "columnDefs": [
+                    {
+                        "targets": [5],
+                        "visible": false,
+                    },
+                    {
+                        "targets": [4],
+                        "visible": false
+                    },
+                ],
                 columns: [
                     {
                         data: "date"

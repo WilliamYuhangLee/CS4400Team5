@@ -25,32 +25,33 @@
         </div>
     </div>
     <div class="row">
-    <div class="col-md-12">
-        <button type="button" class="btn btn-outline-info" id="view_event">View Event</button>
-    </div>
+        <div class="col-md-12">
+            <button type="button" class="btn btn-outline-info" id="view_event">View Event</button>
+        </div>
     </div>
     <div class="row mt-3">
-    <div class="col-md-12">
-        <table id="view_schedule" class="table table-striped table-bordered" style="width:100%">
-            <thead>
-            <tr>
-                <th></th>
-                <th>Event Name</th>
-                <th>Site Name</th>
-                <th>Start Date</th>
-                <th>End Date</th>
-                <th>Staff Count</th>
-                <th style="display:none;"></th>
-            </tr>
-            </thead>
-        </table>
-    </div>
+        <div class="col-md-12">
+            <table id="view_schedule" class="table table-striped table-bordered" style="width:100%">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>Event Name</th>
+                    <th>Site Name</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Staff Count</th>
+                    <th style="display:none;"></th>
+                </tr>
+                </thead>
+            </table>
+        </div>
     </div>
     <div class="row">
-    <div class="col-md-12">
-        <button type="button" class="btn btn-outline-info" onclick="location.href='{{ url_for('main.login') }}'">Back
-        </button>
-    </div>
+        <div class="col-md-12">
+            <button type="button" class="btn btn-outline-info" onclick="location.href='{{ url_for('main.login') }}'">
+                Back
+            </button>
+        </div>
     </div>
     <script>
         $(document).ready(function () {
@@ -84,7 +85,11 @@
                     orderable: false,
                     className: 'select-checkbox',
                     targets: 0
-                }],
+                },
+                    {
+                        "targets": [6],
+                        "visible": false,
+                    },],
                 select: {
                     style: 'os',
                     selector: 'td:first-child'

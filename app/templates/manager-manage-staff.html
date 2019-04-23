@@ -24,42 +24,42 @@
         </div>
     </div>
     <div class="row mt-3">
-    <div class="col-md-12">
-        <table id="staff_list" class="table table-striped table-bordered" style="width:100%">
-            <thead>
-            <tr>
-                <th>Site Name</th>
-                <th>Staff Name</th>
-                <th>#Event Shifts</th>
-                <th style="display:none;"></th>
-                <th style="display:none;"></th>
-                <th style="display:none;"></th>
-                <th style="display:none;"></th>
-            </tr>
-            </thead>
-            <tfoot>
-            <tr>
-                <th>Site Name</th>
-                <th>Staff Name</th>
-                <th>#Event Shifts</th>
-                <th style="display:none;"></th>
-                <th style="display:none;"></th>
-                <th style="display:none;"></th>
-                <th style="display:none;"></th>
-            </tr>
-            </tfoot>
-        </table>
-    </div>
+        <div class="col-md-12">
+            <table id="staff_list" class="table table-striped table-bordered" style="width:100%">
+                <thead>
+                <tr>
+                    <th>Site Name</th>
+                    <th>Staff Name</th>
+                    <th>#Event Shifts</th>
+                    <th style="display:none;"></th>
+                    <th style="display:none;"></th>
+                    <th style="display:none;"></th>
+                    <th style="display:none;"></th>
+                </tr>
+                </thead>
+                <tfoot>
+                <tr>
+                    <th>Site Name</th>
+                    <th>Staff Name</th>
+                    <th>#Event Shifts</th>
+                    <th style="display:none;"></th>
+                    <th style="display:none;"></th>
+                    <th style="display:none;"></th>
+                    <th style="display:none;"></th>
+                </tr>
+                </tfoot>
+            </table>
+        </div>
     </div>
     <div class="row">
-    <div class="col-md-12">
-        <button type="button" class="btn btn-outline-info" onclick="location.href='{{ url_for('main.login') }}'">Back
-        </button>
-    </div>
+        <div class="col-md-12">
+            <button type="button" class="btn btn-outline-info" onclick="location.href='{{ url_for('main.login') }}'">
+                Back
+            </button>
+        </div>
     </div>
     <script>
         $(document).ready(function () {
-            console.log(JSON.parse({{ staffs|tojson|safe }}));
             var table = $('#staff_list').DataTable({
                 data: JSON.parse({{ staffs|tojson|safe }}),
                 columns: [
@@ -85,6 +85,24 @@
                     },
                     {
                         data: "end_date"
+                    },
+                ],
+                "columnDefs": [
+                    {
+                        "targets": [3],
+                        "visible": false,
+                    },
+                    {
+                        "targets": [4],
+                        "visible": false
+                    },
+                    {
+                        "targets": [5],
+                        "visible": false,
+                    },
+                    {
+                        "targets": [6],
+                        "visible": false,
                     },
                 ],
                 initComplete: function () {
