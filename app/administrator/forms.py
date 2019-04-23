@@ -9,6 +9,7 @@ class EditSiteForm(FlaskForm):
 
     name = StringField(label="Name", validators=[DataRequired()])
     old_name = HiddenField()
+    old_manager = HiddenField()
     zip_code = StringField(label="Zip Code", validators=[InputRequired(), Length(min=5, max=5, message="A valid zip code must be 5 digits.")])
     address = StringField(label="Address", default="")
     manager = SelectField(label="Manager", validators=[InputRequired()], coerce=str)
