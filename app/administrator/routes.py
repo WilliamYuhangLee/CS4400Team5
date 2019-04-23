@@ -88,7 +88,6 @@ def manage_site_send_data():
 @bp.route("/edit_site", methods=["GET", "POST"])
 @login_required
 def edit_site():
-    site_name = request.args.get("site_name", type=str)
     form = EditSiteForm()
     if form.validate_on_submit():
         args = (form.name.data, form.zip_code.data, form.address.data, form.manager.data, int(form.open_everyday.data))
@@ -97,15 +96,17 @@ def edit_site():
             raise DatabaseError(error, "editing site")
         flash(message="Site updated!", category="success")
         return redirect(url_for(".manage_site"))
+    site_name = request.args.get("site_name", type=str)
     args = (site_name,)
     result, error = db_procedure("query_site_by_site_name", args)
     if error:
         raise DatabaseError(error, "querying site")
     zip_code, address, open_everyday, manager = result[0]
     form.name.data = site_name
+    form.old_name = site_name
     form.zip_code.data = zip_code
     form.address.data = address
-    form.manager.choices = [(manager, manager) for manager in EditSiteForm.get_free_managers()] + [(manager, manager)]
+    form.manager.choices += [(manager, manager)]
     form.manager.data = manager
     form.open_everyday.data = open_everyday
     return render_template("administrator-edit-site.html", title="Edit Site", form=form)
@@ -122,7 +123,6 @@ def create_site():
             raise DatabaseError(error, "creating site")
         flash(message="Site created!", category="success")
         return redirect(url_for(".manage_site"))
-    form.manager.choices = [(manager, manager) for manager in EditSiteForm.get_free_managers()]
     return render_template("administrator-edit-site.html", title="Create Site", form=form)
 
 
