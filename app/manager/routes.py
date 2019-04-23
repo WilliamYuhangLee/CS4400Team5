@@ -1,13 +1,17 @@
 from flask import render_template, request, jsonify, json, session, flash, redirect, url_for
 from flask_login import login_required, current_user
 from . import bp
-from .forms import EditEventForm
+from .forms import EditEventForm, CreateEventForm
 from app.util import validate_date, db_procedure, DatabaseError
 
 
 @bp.route("/home")
 @login_required
 def home():
+    result, error = db_procedure("query_employee_sitename", (current_user.username,))
+    if error:
+        raise DatabaseError(error, "query_employee_sitename")
+    session[current_user.username]["site_name"] = result[0][0]
     return render_template("home-manager.html", title="Home")
 
 
@@ -36,7 +40,7 @@ def manage_event():
 @bp.route("/manage_event/_send_data", methods=["POST", "DELETE"])
 @login_required
 def manage_event_send_data():
-    site_name = request.json["site_name"]
+    site_name = session[current_user.username]["site_name"]
     event_name = request.json["event_name"]
     start_date = request.json["start_date"]
     result, error = db_procedure("delete_event", (site_name, event_name, start_date))
@@ -49,10 +53,10 @@ def manage_event_send_data():
 @login_required
 def edit_event():
     form = EditEventForm()
+    site_name = session[current_user.username]["site_name"]
     if form.validate_on_submit():
         new_staffs = form.staff_assigned.data
         old_staffs = session[current_user.username]["old_staffs"]
-        site_name = session[current_user.username]["site_name"]
         all_staffs = session[current_user.username]["all_staffs"]
         for staff in new_staffs:
             if staff not in old_staffs:
@@ -71,7 +75,6 @@ def edit_event():
         flash(message="You have successfully edited the event!", category="success")
         return redirect(url_for(".manage_event"))
     event_name = request.args.get("event_name")
-    site_name = request.args.get("site_name")
     start_date = request.args.get("start_date")
     result, error = db_procedure("query_event_by_pk", (site_name, event_name, start_date))
     if error:
@@ -86,7 +89,11 @@ def edit_event():
     session[current_user.username]["old_staffs"] = old_staffs
     session[current_user.username]["site_name"] = site_name
     all_staffs = old_staffs.copy()
-    # TODO: query all avaiable staffs
+    result, error = db_procedure("get_free_staff", (start_date, end_date))
+    if error:
+        raise DatabaseError(error, "get_free_staff")
+    for staff in result:
+        all_staffs[staff[1] + staff[2]] = staff[0]
     session[current_user.username]["all_staffs"] = all_staffs
     form.staff_assigned.choices = [(name, name) for name in all_staffs.keys()]
     form.name.data = event_name
@@ -115,7 +122,35 @@ def edit_event():
 @bp.route("/create-event")
 @login_required
 def create_event():
-    return "Not implemented yet!"  # TODO: implement this method
+    form = CreateEventForm()
+    site_name = session[current_user.username]["site_name"]
+    if form.validate_on_submit():
+        args = (site_name, form.name.data, form.start_date.data, form.end_date.data,
+                form.minimum_staff_required.data, form.price.data, form.capacity.data, form.description.data)
+        result, error = db_procedure("create_event", args)
+        if error:
+            raise DatabaseError(error, "create_event")
+        free_staffs = session[current_user.username]["free_staffs"]
+        for staff in form.assign_staff.data:
+            result, error = db_procedure("assign_staff", (site_name, form.name.data, form.start_date.data, free_staffs[staff]))
+            if error:
+                raise DatabaseError(error, "assign_staff")
+        flash(message="Event created!", category="success")
+        return redirect(url_for(".manage_event"))
+    if form.start_date.data and form.end_date.data:
+        args = (form.start_date.data, form.end_date.data)
+    else:
+        args = ("0000-00-00",) * 2
+    result, error = db_procedure("get_free_staff", args)
+    if error:
+        raise DatabaseError(error, "get_free_staff")
+    free_staffs = {}
+    for staff in result:
+        free_staffs[staff[1] + staff[2]] = staff[0]
+    form.assign_staff.choices = free_staffs.keys()
+    session[current_user.username]["free_staffs"] = free_staffs
+    form.site_name.data = site_name
+    return render_template("manager-create-event.html", title="Create Event", form=form)
 
 
 @bp.route("/manage-staff")
