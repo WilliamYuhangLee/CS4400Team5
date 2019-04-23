@@ -130,7 +130,7 @@
 
 
             $('#daily_detail').on('click', function () {
-                var date = table.cell('.selected', 1).data();
+                var date = encodeURIComponent(table.cell('.selected', 1).data());
                 if (date == undefined) {
                     alert("You must Select a date first!");
                     return false;

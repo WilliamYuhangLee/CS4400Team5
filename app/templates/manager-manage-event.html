@@ -157,12 +157,13 @@
             });
 
             $('#event_edit').on('click', function () {
-                var name = table.cell('.selected', 1).data();
+                var name = encodeURIComponent(table.cell('.selected', 1).data());
+                var date = encodeURIComponent(table.cell('.selected', 6).data());
                 if (name == undefined) {
                     alert("You must Select a event first!");
                     return false;
                 }
-                window.location.replace("{{ url_for('manager.edit_event')}}" + "?event_name" + name);
+                window.location.replace("{{ url_for('manager.edit_event')}}" + "?event_name" + name + "&start_date" + date);
             });
 
             $('#event_create').on('click', function () {
