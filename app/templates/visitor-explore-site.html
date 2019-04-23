@@ -105,6 +105,7 @@
     </div>
     <script>
         $(document).ready(function () {
+            console.log(JSON.parse({{ sites|tojson|safe }}))
             var table = $('#explore_site').DataTable({
                 data: JSON.parse({{ sites|tojson|safe }}),
                 columns: [
