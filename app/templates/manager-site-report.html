@@ -107,12 +107,6 @@
                     {
                         data: "total_revenue"
                     },
-                    {
-                        data: "start_date"
-                    },
-                    {
-                        data: "end_date"
-                    },
                 ],
                 columnDefs: [{
                     orderable: false,
@@ -159,13 +153,12 @@
                     var max_test = $('#date_max').val().replace(/-/g, '');
                     var min = parseInt(min_test, 10);
                     var max = parseInt(min_test, 10);
-                    var start = parseFloat(data[6].replace(/-/g, ' ')) || 0;
-                    var end = parseFloat(data[7].replace(/-/g, ' ')) || 0;
+                    var start = parseFloat(data[1].replace(/-/g, ' ')) || 0;
 
                     if ((isNaN(min) && isNaN(max)) ||
-                        (isNaN(min) && end <= max) ||
+                        (isNaN(min) && start <= max) ||
                         (min <= start && isNaN(max)) ||
-                        (min <= start && end <= max)) {
+                        (min <= start && start <= max)) {
                         return true;
                     }
                     return false;
