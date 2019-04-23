@@ -86,41 +86,32 @@
         $(document).ready(function () {
 
             var table = $('#site_report').DataTable({
-                ajax: {
-                    url: "{{ url_for('manager.site_report_get_table_data') }}",
-                    type: "GET",
-                    data: function () {
-                        return {
-                            start_date: $("#date_min").text(),
-                            end_date: $("#date_min").text(),
-                        }
-                    }
-                },
+                data: JSON.parse({{ reports|tojson|safe }}),
                 columns: [
                     {
                         "data": "null",
                         "defaultContent": '',
                     },
                     {
-                        data: "data.date"
+                        data: "date"
                     },
                     {
-                        data: "data.event_count",
+                        data: "event_count",
                     },
                     {
-                        data: "data.staff_count"
+                        data: "staff_count"
                     },
                     {
-                        data: "data.total_visits"
+                        data: "total_visits"
                     },
                     {
-                        data: "data.total_revenue"
+                        data: "total_revenue"
                     },
                     {
-                        data: "data.start_date"
+                        data: "start_date"
                     },
                     {
-                        data: "data.end_date"
+                        data: "end_date"
                     },
                 ],
                 columnDefs: [{

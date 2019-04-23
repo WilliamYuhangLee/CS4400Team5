@@ -95,7 +95,7 @@
                         data: "num_of_connected_sites"
                     },
                     {
-                        data: "num_of_transit_logged"
+                        data: "num_of_logged_transits"
                     }
                 ],
                 columnDefs: [{
@@ -115,6 +115,11 @@
             $('#transport_type').on('change', function () {
                 table.columns(2).search(this.value).draw();
             });
+
+            $('#contain_site').on('change', function () {
+                    table.ajax.reload(function (json) {
+                    });
+                });
 
             table.columns(1).every(function () {
                 var that = this;
